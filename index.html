@@ -290,6 +290,1675 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day08-file-recursive/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day08-file-recursive/" itemprop="url">day08_file_recursive</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:36:39+08:00">
+                2018-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="File类的使用和递归思想"><a href="#File类的使用和递归思想" class="headerlink" title="File类的使用和递归思想"></a>File类的使用和递归思想</h1><h2 id="File类"><a href="#File类" class="headerlink" title="File类"></a>File类</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>文件: 存储数据</p>
+<p>文件夹: 管理文件与文件夹</p>
+<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><ul>
+<li>public File(String pathname) ：通过将给定的路径名字符串转换为抽象路径名来创建新的 File实例。</li>
+<li>public File(String parent, String child) ：从父路径名字符串和子路径名字符串创建新的 File实例。</li>
+<li>public File(File parent, String child) ：从父抽象路径名和子路径名字符串创建新的 File实例。</li>
+</ul>
+<h3 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h3><h4 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h4><ul>
+<li>public boolean createNewFile() : 创建文件,存在返回false,不存在创建文件返回true</li>
+<li>boolean mkdir() : 创建文件夹,存在返回false,不存在创建文件夹返回true</li>
+<li>boolean mkdirs() : 创建多级文件夹,存在返回false,不存在创建多级文件夹返回true</li>
+</ul>
+<h4 id="删除方法"><a href="#删除方法" class="headerlink" title="删除方法"></a>删除方法</h4><ul>
+<li>boolean delete() : 删除文件或者文件夹,文件存在返回true,文件不存在返回false;<br>可以删除空的文件夹,如果文件夹下有子文件或者子文件夹,删除不掉</li>
+</ul>
+<h4 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h4><ul>
+<li>public boolean exists() ：此File表示的文件或目录是否实际存在。</li>
+<li>public boolean isDirectory() ：此File表示的是否为目录(文件夹)。</li>
+<li>public boolean isFile() ：此File表示的是否为文件。</li>
+</ul>
+<h4 id="路径问题"><a href="#路径问题" class="headerlink" title="路径问题"></a>路径问题</h4><p>绝对路径 : 以盘符开头<br>相对路径 : 相对于本项目 </p>
+<ul>
+<li>public String getAbsolutePath() ：返回此File的绝对路径名字符串。</li>
+<li>public String getParent() : 获取父路径,在创建对象时制定了父路径才能获取,没有指定返回null(相对路径返回null).</li>
+<li>public String getPath() ：将此File转换为路径名字符串(获取构建时的路径)。</li>
+<li>public String getName() ：返回由此File表示的文件或目录的名称。</li>
+<li>public long length() ：返回由此File表示的文件的长度。</li>
+</ul>
+<h4 id="高级方法"><a href="#高级方法" class="headerlink" title="高级方法"></a>高级方法</h4><ul>
+<li>public String[] list() ：返回一个String数组，表示该File目录中的所有子文件或目录。</li>
+<li>public File[] listFiles() ：返回一个File数组，表示该File目录中的所有的子文件或目录。</li>
+</ul>
+<h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><h3 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h3><p>递归就是方法内部自己调用自己.</p>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<li>必须有出口,否则会出现栈内存溢出的错误.</li>
+<li>递归的次数不宜过多.否则容易出现栈内存溢出</li>
+<li>构造方法不能递归</li>
+</ul>
+<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><p>对于递归,可以使用栈来理解,入栈和出栈,对于整个程序的流程,首先,main方法入栈,接着递归方法入栈,方法内调用自己,<br>继续入栈,知道出口进行返回出栈,层层出栈,这个就是底层的原理吧.</p>
+<h3 id="计算n的阶乘"><a href="#计算n的阶乘" class="headerlink" title="计算n的阶乘"></a>计算n的阶乘</h3><pre><code>import java.util.Scanner;
+
+/**
+ * 求n阶乘
+ *  1.手动输入计算的值
+ *  2.创建递归方法进行计算
+ * @author WZLOVE
+ * @create 2018-07-20 14:34
+ */
+public class Demo1 {
+
+    public static void main(String[] args) {
+
+        Scanner in = new Scanner(System.in);
+
+        System.out.println(&quot;请输入您要计算的值是:&quot;);
+        int n = in.nextInt();
+        in.close();
+
+        long result = getRecursive(n);
+
+        System.out.println(&quot;您输入的值的阶乘计算结果为:&quot; + result);
+
+    }
+
+    public static long getRecursive(int n){
+
+        // 定义出口
+        if( n == 1 ){
+            return 1;
+        }
+
+        return n * getRecursive( n - 1 );
+    }
+}
+</code></pre><h3 id="打印多级目录"><a href="#打印多级目录" class="headerlink" title="打印多级目录"></a>打印多级目录</h3><pre><code>package com.wzlove.recursive;
+
+import java.io.File;
+
+/**
+ * 遍历多级目录
+ *
+ * @author WZLOVE
+ * @create 2018-07-20 15:11
+ */
+public class Demo2 {
+
+    public static void main(String[] args) {
+
+        // 程序的健壮性测试
+        // File file = null;
+       // File file = new File(&quot;E:\\&quot;);
+       // 测试路径
+        File file = new File(&quot;G:\\工作区间\\Intellij IDEA\\JavaSE&quot;);
+        printDirsAndFiles(file);
+    }
+
+    public static void printDirsAndFiles(File file){
+
+        // 程序的健壮性
+        if(file == null || !file.exists()){
+            return ;
+        }
+
+        // 如果是文件,直接输出
+        if(file.isFile()){
+            System.out.println(file.getAbsolutePath());
+        }
+
+
+        // 如果是文件夹,进行遍历递
+        File[] files = file.listFiles();
+        // 如果没有访问权限,直接返回
+        if(files == null){
+            return ;
+        }
+        for (File file1 : files) {
+
+            if(file1.isFile()){
+
+                System.out.println(file1.getAbsolutePath());
+
+            } else {
+
+                System.out.println(file1.getAbsolutePath());
+
+                printDirsAndFiles(file1);
+
+            }
+
+        }
+    }
+}
+</code></pre><h3 id="打印某个目录下的所有-java文件"><a href="#打印某个目录下的所有-java文件" class="headerlink" title="打印某个目录下的所有.java文件"></a>打印某个目录下的所有.java文件</h3><p>两种方法,第一种:</p>
+<pre><code>package com.wzlove.recursive;
+
+import java.io.File;
+
+/**
+ * 搜索G:\工作区间\Intellij IDEA\JavaSE 目录中的.java 文件。
+ *  1.创建File的对象,传递File的虚拟路径
+ *  2.递归方法
+ *  3.进行健壮性判断:
+ *      * null的判断
+ *      * 文件不存在
+ *      * 如果路径是文件,这三种情况都是直接返回
+ *      * 如果路径合法
+ *          (1) 判断有无权限,有继续向下,无直接返回
+ *          (2) 返回该文件夹下的所有文件和文件夹
+ *          (3) 增强for循环进行遍历
+ *              如果是文件,判断是否满足要求(递归的出口)
+ *              如果是文件夹,进行递归调用
+ *
+ * @author WZLOVE
+ * @create 2018-07-20 16:27
+ */
+public class Demo3 {
+
+    public static void main(String[] args) {
+        File file = new File(&quot;G:\\工作区间\\Intellij IDEA\\JavaSE&quot;);
+        printAllJavaFiles(file);
+    }
+
+    public static void printAllJavaFiles(File file){
+        if(file == null || !file.exists() || file.isFile()){
+            return ;
+        }
+
+        File[] files = file.listFiles();
+        if(files == null){
+            return ;
+        }
+        for (File file1 : files) {
+            if(file1.isFile()){
+                if(file1.getName().endsWith(&quot;.java&quot;)){
+                    System.out.println(file1.getAbsolutePath());
+                }
+            }else{
+                printAllJavaFiles(file1);
+            }
+        }
+    }
+
+}
+</code></pre><p>第二种,要使用到文件过滤器:</p>
+<ul>
+<li><p>File[] listFiles(FileFilter filter) 返回一个抽象路径名数组，表示由此抽象路径名表示的满足指定过滤器的目录中的文件和目录。</p>
+<pre><code>package com.wzlove.recursive;
+
+import java.io.File;
+import java.io.FileFilter;
+
+/**
+ *
+ * @author WZLOVE
+ * @create 2018-07-20 16:27
+ */
+public class Demo4 {
+
+    public static void main(String[] args) {
+        File file = new File(&quot;G:\\工作区间\\Intellij IDEA\\传智播客\\JavaSE&quot;);
+        printAllJavaFiles(file);
+    }
+
+    public static void printAllJavaFiles(File file){
+        if(file == null || !file.exists() || file.isFile()){
+            return ;
+        }
+
+        // 使用listFiles(FileFilter)
+        /**
+         * File[] listFiles(FileFilter filter)
+         * 返回一个抽象路径名数组，表示由此抽象路径名表示的满足指定过滤器的目录中的文件和目录。
+         */
+        File[] files = file.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                if(pathname.isFile() &amp;&amp; pathname.getName().endsWith(&quot;.java&quot;)){
+                    // 是以.java文件结尾的文件
+                    return true;
+                }
+                // 如果是文件夹,也进行返回
+                if(pathname.isDirectory()){
+                    return true;
+                }
+                // 其余情况返回false
+                return false;
+            }
+        });
+
+        for (File file1 : files) {
+            if(file1.isFile()){
+                System.out.println(file1.getAbsolutePath());
+            }else{
+                printAllJavaFiles(file1);
+            }
+        }
+
+    }
+
+}
+</code></pre></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day07-threadpool-lambda/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day07-threadpool-lambda/" itemprop="url">day07_threadpool_lambda</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:36:05+08:00">
+                2018-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="线程池和lambda表达式"><a href="#线程池和lambda表达式" class="headerlink" title="线程池和lambda表达式"></a>线程池和lambda表达式</h1><p><strong><em>学习线程池和lambda表达式的理解</em></strong></p>
+<h2 id="补充一个知识点-单例设计模式"><a href="#补充一个知识点-单例设计模式" class="headerlink" title="补充一个知识点(单例设计模式)"></a>补充一个知识点(单例设计模式)</h2><p>在多线程中,我们只需要一个任务类,为了防止创建多个任务类,这个时候就需要用到单例模式,单例模式有两种设计:</p>
+<ol>
+<li>延迟加载(懒汉式)<ul>
+<li>私有构造方法</li>
+<li>创建本类对象,但不初始化</li>
+<li>创建静态方法进行初始化对象并返回</li>
+</ul>
+</li>
+<li>立即加载(饿汉式)<ul>
+<li>私有构造方法</li>
+<li>创建本类的对象并初始化(私有的)</li>
+<li>创建静态方法获取本类对象</li>
+</ul>
+</li>
+</ol>
+<p>下面用代码做个实例:</p>
+<pre><code>package com.wzlove.single;
+
+/**
+ * 延迟加载(懒汉式)
+ *  1.私有构造方法
+ *  2.创建本类对象,但不初始化
+ *  3.创建静态方法进行初始化对象并返回
+ *
+ *  优点:
+ *      使用到类的对象才会加载,不消耗内存
+ *  缺点:
+ *      可能会出现线程安全问题,但是可以使用同步代码块消除这个安全问题
+ * @author WZLOVE
+ * @create 2018-07-19 10:36
+ */
+public class DeplayedSingle {
+
+    // 私有构造方法
+    private DeplayedSingle(){}
+
+    // 创建本类对象,不初始化
+    private  static DeplayedSingle instance ;
+
+    // 静态方法初始化
+    public static DeplayedSingle getInstance(){
+        synchronized (DeplayedSingle.class){
+            if(instance == null){
+                instance = new DeplayedSingle();
+            }
+        }
+        return instance;
+    }
+}
+
+
+
+package com.wzlove.single;
+
+/**
+ * 立即加载(饿汉式)
+ *  1.私有构造方法
+ *  2.创建本类的对象并初始化(私有的)
+ *  3.创建静态方法获取本类对象
+ *
+ *  优点:
+ *      保证的线程的安全,没有线程安全问题
+ *  缺点:
+ *      使用类就会加载,比较消耗内存
+ * @author WZLOVE
+ * @create 2018-07-19 10:37
+ */
+public class ImmediateSingle {
+
+    private ImmediateSingle(){}
+
+    private static ImmediateSingle instance = new ImmediateSingle();
+
+    public static ImmediateSingle getInstance(){
+        return instance;
+    }
+}
+</code></pre><h2 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h2><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>线程池其实就是一个容纳多个线程的容器，其中的线程可以反复使用，省去了频繁创建线程对象的操作，<br>无需反复创建线程而消耗过多资源。作用是节省资源,原理是容器.</p>
+<p>使用线程池的好处是减少在创建和销毁线程上所花的时间以及系统资源的开销,解决资源不足的问题.如果不使用线程池,<br>有可能造成系统创建大量同类线程而导致消耗完内存或者”过度切换”的问题.</p>
+<p>创建线程池:</p>
+<ul>
+<li>public static ExecutorService newFixedThreadPool(int nThreads) ：返回线程池对象。(创建的是有界线<br>程池,也就是池中的线程个数可以指定最大数量)</li>
+<li>public Future&lt;?&gt; submit(Runnable task) :获取线程池中的某一个线程对象，并执行</li>
+<li>Future接口：用来记录线程任务执行完毕后产生的结果。线程池创建与使用。</li>
+</ul>
+<p>步骤:</p>
+<ul>
+<li>使用线程池的工厂类Executors里面提供静态方法newFixedThreadPool生产一个指定线程数量的线程池</li>
+<li>创建一个类,实现Runnable接口,重写run方法,设置线程任务</li>
+<li>调用ExecutorService中的方法submit,传递线程任务(实现类),开启线程(前提是线程池中有线程可用),执行run方法</li>
+<li>调用ExecutorService中的shutdown方法销毁线程池(不建议执行)</li>
+</ul>
+<h2 id="补充线程的创建"><a href="#补充线程的创建" class="headerlink" title="补充线程的创建"></a>补充线程的创建</h2><p>创建线程的第三种方式(这种方式很少见)</p>
+<pre><code>package com.wzlove.executor;
+
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
+
+/**
+ * 线程的第三种创建方法
+ *  Callable有返回值并且可以抛出异常
+ * @author WZLOVE
+ * @create 2018-07-18 14:14
+ */
+public class CallableImpl implements Callable&lt;String&gt; {
+
+    private static ArrayList&lt;String&gt; arrayList = new ArrayList&lt;&gt;();
+
+    static{
+        arrayList.add(&quot;1&quot;);
+    }
+
+    @Override
+    public String call() throws Exception {
+        return Thread.currentThread().getName();
+    }
+}
+
+
+
+package com.wzlove.executor;
+
+import java.util.concurrent.*;
+
+/**
+ * 测试线程的第三中创建方式
+ *
+ * @author WZLOVE
+ * @create 2018-07-18 14:14
+ */
+public class Demo {
+
+    public static void main(String[] args) {
+        // 创建实现Callable的实现类对象
+        Callable&lt;String&gt; callable = new CallableImpl();
+        // 创建FutureTask,并传递Callable接口的实现类对象
+        FutureTask task = new FutureTask(callable);
+        // 创建线程池对象
+        // ExecutorService executor = Executors.newSingleThreadExecutor();
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+        executor.submit(callable);
+        // 执行线程
+        executor.execute(task);
+
+        try {
+            System.out.println(task.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+}
+</code></pre><h2 id="Lambda表达式"><a href="#Lambda表达式" class="headerlink" title="Lambda表达式"></a>Lambda表达式</h2><p>lambda体现的是一种函数式编程的思想, 它强调的是做什么，而不是以什么形式做。</p>
+<h3 id="使用前提"><a href="#使用前提" class="headerlink" title="使用前提"></a>使用前提</h3><ul>
+<li>使用Lambda必须具有接口，且要求接口中有且仅有一个抽象方法。无论是JDK内置的Runnable 、Comparator 接口还是自定义的接口，只有当接口中的抽象方法存在且唯一时，才可以使用Lambda。</li>
+<li>使用Lambda必须具有上下文推断。也就是方法的参数或局部变量类型必须为Lambda对应的接口类型，才能使用Lambda作为该接口的实例。</li>
+</ul>
+<blockquote>
+<p>有且仅有一个抽象方法的接口，称为“函数式接口”。</p>
+</blockquote>
+<h3 id="Lambda标准格式"><a href="#Lambda标准格式" class="headerlink" title="Lambda标准格式"></a>Lambda标准格式</h3><p>Lambda省去面向对象的条条框框，格式由3个部分组成：</p>
+<ul>
+<li>一些参数</li>
+<li>一个箭头</li>
+<li>一段代码  </li>
+</ul>
+<p>Lambda表达式的标准格式为：</p>
+<pre><code>(参数类型 参数名称) ‐&gt; { 代码语句 }
+</code></pre><p>格式说明:</p>
+<ul>
+<li>小括号内的语法与传统方法参数列表一致：无参数则留空；多个参数则用逗号分隔。</li>
+<li>-&gt; 是新引入的语法格式，代表指向动作。</li>
+<li>大括号内的语法与传统方法体要求基本一致。</li>
+</ul>
+<h4 id="线程匿名内部类的转化-无参无返回值"><a href="#线程匿名内部类的转化-无参无返回值" class="headerlink" title="线程匿名内部类的转化(无参无返回值)"></a>线程匿名内部类的转化(无参无返回值)</h4><p>实现Runnable接口的匿名内部类的实现:</p>
+<pre><code>public class Demo01Runnable {
+    public static void main(String[] args) {
+        // 匿名内部类
+        Runnable task = new Runnable() {
+            @Override
+            public void run() { // 覆盖重写抽象方法
+                System.out.println(&quot;多线程任务执行！&quot;);
+            }
+        };
+        new Thread(task).start(); // 启动线程
+    }
+}
+</code></pre><blockquote>
+<p>代码分析</p>
+<blockquote>
+<ul>
+<li>Thread 类需要Runnable 接口作为参数，其中的抽象run 方法是用来指定线程任务内容的核心；</li>
+<li>为了指定run 的方法体，不得不需要Runnable 接口的实现类；</li>
+<li>为了省去定义一个RunnableImpl 实现类的麻烦，不得不使用匿名内部类；</li>
+<li>必须覆盖重写抽象run 方法，所以方法名称、方法参数、方法返回值不得不再写一遍，且不能写错；</li>
+<li>而实际上，似乎只有方法体才是关键所在。</li>
+</ul>
+</blockquote>
+</blockquote>
+<p>使用Lambda进行简化:</p>
+<pre><code>public class Demo01Runnable {
+    public static void main(String[] args) {
+         new Thread(()-&gt;System.out.println(&quot;多线程任务执行！&quot;)).start(); // 启动线程
+    }
+}
+</code></pre><h4 id="比较器内部类的转化-有参有返回值"><a href="#比较器内部类的转化-有参有返回值" class="headerlink" title="比较器内部类的转化(有参有返回值)"></a>比较器内部类的转化(有参有返回值)</h4><p>使用比较器举个例子:</p>
+<pre><code>// 创建数组
+Integer[] arr = {1,8,3,4,9,2,5};
+
+// 匿名内部类实现数组升序排序
+Arrays.sort(arr,new Comparator&lt;Integer&gt;(){
+
+    @Override
+    public int compare(Integer o1, Integer o2) {
+        return 0;
+    }
+});
+
+// 使用lambda进行数组的升序排序
+Arrays.sort(arr,( a, b)-&gt;{ return a - b ;});
+</code></pre><h4 id="Lambda表达式的省略规则"><a href="#Lambda表达式的省略规则" class="headerlink" title="Lambda表达式的省略规则"></a>Lambda表达式的省略规则</h4><p>在Lambda标准格式的基础上，使用省略写法的规则为：</p>
+<ol>
+<li>小括号内参数的类型可以省略；</li>
+<li>如果小括号内有且仅有一个参，则小括号可以省略；</li>
+<li>如果大括号内有且仅有一个语句，则无论是否有返回值，都可以省略大括号、return关键字及语句分号。</li>
+</ol>
+<p>虽然有省略写法,但是我感觉这个有点灵活,所以不建议省略,因为代码是给别人看的,省略的话感觉别人看起来会有点费劲.</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day06-thread/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day06-thread/" itemprop="url">day06_thread</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:35:40+08:00">
+                2018-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h1><p><strong><em>学习线程相关的笔记,前面写过关于很多线程的使用,有兴趣的可以去了解下</em></strong></p>
+<h2 id="线程-1"><a href="#线程-1" class="headerlink" title="线程"></a>线程</h2><h4 id="概念理解"><a href="#概念理解" class="headerlink" title="概念理解"></a>概念理解</h4><ul>
+<li>并发 : 指两个或多个事件在<strong>同一个时间段内</strong>发生(交替执行)。</li>
+<li>并行 : 指两个或多个事件在<strong>同一时刻</strong>发生（同时发生）。</li>
+<li>进程 : 是指一个内存中运行的应用程序，每个进程都有一个独立的内存空间，一个应用程序可以同时运行多<br>   个进程；进程也是程序的一次执行过程，是系统运行程序的基本单位；系统运行一个程序即是一个进程从创<br>   建、运行到消亡的过程。</li>
+<li>线程 : 进程内部的一个独立执行单元；一个进程可以同时并发的运行多个线程，可以理解为一个进程便相当<br>   于一个单 CPU 操作系统，而线程便是这个系统中运行的多个任务(一个程序至少有一个进程,一个进程可以有多个线程)。<blockquote>
+<p>线程和进程的区别 : </p>
+<blockquote>
+<p>1.进程：有独立的内存空间，进程中的数据存放空间（堆空间和栈空间）是独立的，至少有一个线程。<br>2.线程：堆空间是共享的，栈空间是独立的，线程消耗的资源比进程小的多。</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<h3 id="多线程的原理"><a href="#多线程的原理" class="headerlink" title="多线程的原理"></a>多线程的原理</h3><p><img src="./image/thread.jpg" alt="多线程的原理"></p>
+<p>从图中可以看出,线程的启动实际上是开辟了新的空间,这样的话jvm就可以在U盾讴歌栈之间相互切换,这个就是多线程的原理.</p>
+<h3 id="Runnable接口"><a href="#Runnable接口" class="headerlink" title="Runnable接口"></a>Runnable接口</h3><p>Runnable是多线程的祖宗类,多线程都间接或直接的实现了这个接口.内部只有run方法,所以也可以看出run方法时多线程的核心.</p>
+<h3 id="Thread类"><a href="#Thread类" class="headerlink" title="Thread类"></a>Thread类</h3><p>先了解一下Thread类的内部方法:</p>
+<p>构造方法:</p>
+<ul>
+<li>public Thread() :分配一个新的线程对象。</li>
+<li>public Thread(String name) :分配一个指定名字的新的线程对象。</li>
+<li>public Thread(Runnable target) :分配一个带有指定目标新的线程对象。</li>
+<li>public Thread(Runnable target,String name) :分配一个带有指定目标新的线程对象并指定名字。</li>
+</ul>
+<p>常用方法:</p>
+<ul>
+<li>public String getName() :获取当前线程名称。</li>
+<li>public void start() :导致此线程开始执行; Java虚拟机调用此线程的run方法。</li>
+<li>public void run() :此线程要执行的任务在此处定义代码。</li>
+<li>public static void sleep(long millis) :使当前正在执行的线程以指定的毫秒数暂停（暂时停止执行）。</li>
+<li>public static Thread currentThread() :返回对当前正在执行的线程对象的引用。</li>
+</ul>
+<h4 id="使用Thread来创建线程"><a href="#使用Thread来创建线程" class="headerlink" title="使用Thread来创建线程"></a>使用Thread来创建线程</h4><ol>
+<li>创建Thread类的子类  </li>
+<li>在Thread类的子类中重写run方法,设置线程任务  </li>
+<li>创建Thread类的子类  </li>
+<li>调用Thread类的方法start方法,开启新的线程,执行run方法.(这需要注意,是调用start方法,而不是直接调用run方法)</li>
+</ol>
+<blockquote>
+<p>void start() :导致此线程开始执行; Java虚拟机调用此线程的run方法。结果是两个线程并发执行,当前线程(main)<br>和另一个线程(创建的新线程,执行其run方法),多次启动一个线程是非法的.特别当线程已经结束后,不能重新启动.java程序<br>是抢占式调度,哪个线程优先级高,哪个线程先执行;同一个优先级,随机选择一个.</p>
+</blockquote>
+<h5 id="获取线程名称"><a href="#获取线程名称" class="headerlink" title="获取线程名称"></a>获取线程名称</h5><p>获取线程的名称有两种方法:</p>
+<ul>
+<li>使用getName()获取线程名称,这个需要使用Thread类的子类对象来调用.</li>
+<li>使用Thread.currentThread().getName()获取线程名称(推荐使用)</li>
+</ul>
+<h5 id="设置线程名称"><a href="#设置线程名称" class="headerlink" title="设置线程名称"></a>设置线程名称</h5><p>设置线程的名称也有两种方式:</p>
+<ul>
+<li>使用setName()方法设置线程名称,也是需要Thread类或者子类的对象调用.</li>
+<li>使用构造方法,可以使用有参构造来设置线程名称.</li>
+</ul>
+<h3 id="Runnable接口-1"><a href="#Runnable接口-1" class="headerlink" title="Runnable接口"></a>Runnable接口</h3><ol>
+<li>定义一个类,实现Runnable接口(任务类).</li>
+<li>重写Runnable的run方法</li>
+<li>创建任务类对象</li>
+<li>创建线程类对象,并将任务对象参数作为参数进行传递</li>
+<li>使用线程类对象调用start方法启动线程.<blockquote>
+<p>这个过程中需要注意的是第四步,需要使用public Thread(Runnable target) :分配一个带有指定目标新的线程对象。<br>public Thread(Runnable target,String name) :分配一个带有指定目标新的线程对象并指定名字。这两个构造方法.</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="创建线程的方式"><a href="#创建线程的方式" class="headerlink" title="创建线程的方式"></a>创建线程的方式</h3><ul>
+<li><p>实现Runnable接口</p>
+<pre><code>/**
+ * 使用实现Runnable接口实现多线程
+ *
+ * @author WZLOVE
+ * @create 2018-07-16 19:46
+ */
+public class MyRunnable implements Runnable{
+
+    @Override
+    public void run() {
+        for (int i = 0; i &lt; 100; i++) {
+            System.out.println(Thread.currentThread().getName() + &quot;:&quot; + i);
+        }
+    }
+}
+</code></pre></li>
+<li><p>继承Thread类</p>
+<pre><code>/**
+ * 使用继承实现多线程
+ *
+ * @author WZLOVE
+ * @create 2018-07-16 19:47
+ */
+public class MyThread extends Thread{
+
+    public MyThread() {
+    }
+
+    public MyThread(String name) {
+        super(name);
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i &lt; 100; i++) {
+            System.out.println(getName() + &quot;:&quot; + i);
+        }
+    }
+}
+</code></pre></li>
+<li><p>不同的方法实现多线程,创建对象使用的方式也不同:</p>
+<pre><code>/**
+ * @author WZLOVE
+ * @create 2018-07-16 19:45
+ */
+public class ThreadDemo {
+
+    public static void main(String[] args) {
+        // 继承创建对象相对简单
+        MyThread mt = new MyThread(&quot;继承&quot;);
+        mt.start();
+
+        // 实现接口创建对象
+        // 创建自定义类对象
+        MyRunnable mr = new MyRunnable();
+        // 创建线程对象
+        Thread thread = new Thread(mr,&quot;实现接口&quot;);
+        thread.start();
+    }
+}
+</code></pre><blockquote>
+<p>注意点:</p>
+<blockquote>
+<p>1.实际上,Thread类也实现了Runnable接口.<br>2.所有的多线程代码都在run方法里面<br>3.所有的多线程代码都是通过运行Thread的start()方法来运行的<br>4.Runnable对象仅仅作为Thread对象的target，Runnable实现类里包含的run()方法仅作为线程执行体。<br> 而实际的线程对象依然是Thread实例，只是该Thread线程负责执行其target的run()方法。</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<h3 id="实现Runnable接口与继承Thread类的不同点"><a href="#实现Runnable接口与继承Thread类的不同点" class="headerlink" title="实现Runnable接口与继承Thread类的不同点"></a>实现Runnable接口与继承Thread类的不同点</h3><p>使用接口比类是更有优势的:</p>
+<ul>
+<li>可以避免java中的单继承的局限性。</li>
+<li>增加程序的健壮性，实现解耦操作，代码可以被多个线程共享，代码和线程独立(任务类和线程类进行分离,解耦)。</li>
+<li>但是实现接口不能直接使用Thread类的方法,但是可以通过获取当前线程对象进行调用方法.</li>
+<li>适合多个相同的程序代码的线程去共享同一个资源。</li>
+<li>线程池只能放入实现Runable或Callable类线程，不能直接放入继承Thread的类。</li>
+</ul>
+<h3 id="线程的安全问题的产生"><a href="#线程的安全问题的产生" class="headerlink" title="线程的安全问题的产生"></a>线程的安全问题的产生</h3><p>线程的安全问题的产生是由于多个线程对共享资源的访问.简单的说线程安全问题都是由全局变量及静态变量引起的。<br>若每个线程中对全局变量、静态变量只有读操作，而无写操作，一般来说，这个全局变量是线程安全的；<br>若有多个线程同时执行写操作，一般都需要考虑线程同步，否则的话就可能影响线程安全。<br>买电影票的例子(出现安全问题,运行一下):</p>
+<pre><code>package com.wzlove.thread.movie;
+
+/**
+ * 票数的任务类
+ *
+ * @author WZLOVE
+ * @create 2018-07-17 14:35
+ */
+public class TicketRunnableImpl implements Runnable{
+    /**
+     * 定义共享资源
+     */
+    private  int ticket = 100;
+    @Override
+    public void run() {
+        while  (true){
+            if(ticket &gt; 0){
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName()+&quot;正在卖第&quot;+  ticket -- + &quot;张票&quot;);
+            }
+
+        }
+    }
+}
+
+
+
+package com.wzlove.thread.movie;
+
+/**
+ * 多线程安全问题的测试
+ *
+ * @author WZLOVE
+ * @create 2018-07-17 14:37
+ */
+public class MovieDemo {
+
+    public static void main(String[] args) {
+        // 创建任务类对象
+        TicketRunnableImpl ticketRunnable = new TicketRunnableImpl();
+        // 创建线程对象
+        Thread t1 = new Thread(ticketRunnable,&quot;窗口1&quot;);
+        Thread t2 = new Thread(ticketRunnable,&quot;窗口2&quot;);
+        Thread t3 = new Thread(ticketRunnable,&quot;窗口3&quot;);
+        // 开始线程
+        t1.start();
+        t2.start();
+        t3.start();
+    }
+}
+</code></pre><p>上面的情况就会出现线程安全问题.</p>
+<h3 id="线程的安全问题的解决"><a href="#线程的安全问题的解决" class="headerlink" title="线程的安全问题的解决"></a>线程的安全问题的解决</h3><p>使用同步解决线程的安全问题.</p>
+<ul>
+<li>同步代码块</li>
+<li>同步方法</li>
+<li>lock锁机制</li>
+</ul>
+<p>1.同步代码块</p>
+<p>格式 : </p>
+<pre><code>// 同步对象可一是任意对象,推荐使用this
+synchronized(同步对象){
+    可能出现同步问题的代码
+}
+</code></pre><blockquote>
+<p>锁对象可以是任意对象,但是锁对象必须唯一.</p>
+</blockquote>
+<p>2.同步方法</p>
+<p>格式:</p>
+<pre><code>// 同步方法也是有锁对象的,也就是当前对象this
+修饰符 synchronized 返回值类型 方法名(参数列表){
+    可能出现同步问题的代码
+}
+</code></pre><blockquote>
+<p>需要注意的是静态同步方法内的同步锁不是this(因为静态代码的执行在this之前产生),而是类的字节码对象,也就是(类名.class)</p>
+</blockquote>
+<p>3.Lock锁机制</p>
+<ul>
+<li>public void lock() :加同步锁。</li>
+<li>public void unlock() :释放同步锁。</li>
+</ul>
+<p>使用步骤:</p>
+<ol>
+<li>创建ReentrantLock的对象</li>
+<li>在使用共享资源前使用lock方法进行加锁</li>
+<li>在使用共享资源结束后使用unlock方法释放同步锁</li>
+</ol>
+<h3 id="线程状态的概述"><a href="#线程状态的概述" class="headerlink" title="线程状态的概述"></a>线程状态的概述</h3><table><br>    <tr><br>        <th>线程状态</th><br>        <th>导致状态发生条件</th><br>    </tr><br>    <tr><br>        <td>new()新建</td><br>        <td>线程刚被创建，但是并未启动。还没调用start方法。</td><br>    </tr><br>    <tr><br>        <td>Runnable(可运行)</td><br>        <td>线程可以在java虚拟机中运行的状态，可能正在运行自己代码，也可能没有，这取决于操<br>            作系统处理器。</td><br>    </tr><br>    <tr><br>        <td>Blocked(锁阻塞)</td><br>        <td>当一个线程试图获取一个对象锁，而该对象锁被其他的线程持有，则该线程进入Blocked状<br>            态；当该线程持有锁时，该线程将变成Runnable状态。</td><br>    </tr><br>    <tr><br>        <td>Waiting(无限等待)</td><br>        <td>一个线程在等待另一个线程执行一个（唤醒）动作时，该线程进入Waiting状态。进入这个<br>            状态后是不能自动唤醒的，必须等待另一个线程调用notify或者notifyAll方法才能够唤醒。</td><br>    </tr><br>    <tr><br>        <td>Timed Waiting(计时等待)</td><br>        <td>同waiting状态，有几个方法有超时参数，调用他们将进入Timed Waiting状态。这一状态<br>            将一直保持到超时期满或者接收到唤醒通知。带有超时参数的常用方法有Thread.sleep 、<br>            Object.wait。</td><br>    </tr><br>    <tr><br>        <td>Teminated(被终止)</td><br>        <td>因为run方法正常退出而死亡，或者因为没有捕获的异常终止了run方法而死亡。</td><br>    </tr><br></table>
+
+<p>状态图:<br><img src="./image/thread_stata.jpg" alt="状态图"></p>
+<h3 id="等待唤醒机制"><a href="#等待唤醒机制" class="headerlink" title="等待唤醒机制"></a>等待唤醒机制</h3><p>Object类中的四个方法:</p>
+<ul>
+<li>wait() : 使线程处于等待状态,等待着其他的线程唤醒</li>
+<li>wait(long millis) : 使线程处于等待状态, 等待着其他的线程唤醒/等待时间到达</li>
+<li>notify() : 唤醒其他的单个等待的线程</li>
+<li>notifyAll() : 唤醒其他的所有等待的线程</li>
+</ul>
+<h4 id="sleep-与wait"><a href="#sleep-与wait" class="headerlink" title="sleep()与wait()"></a>sleep()与wait()</h4><ul>
+<li>sleep:Thread类中的静态方法,休眠指定的时间,在指定时间后自动唤醒,不回释放锁对象</li>
+<li>wait : Object类中的方法,无限等待,等待其他线程的唤醒,必须释放锁对象</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day05-exception-thread/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day05-exception-thread/" itemprop="url">day05_exception_thread</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:35:18+08:00">
+                2018-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><p><strong><em>学习异常的笔记记录</em></strong></p>
+<h2 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h2><h4 id="异常的概念"><a href="#异常的概念" class="headerlink" title="异常的概念"></a>异常的概念</h4><p>指的是程序在执行过程中，出现的非正常的情况，最终会导致JVM的非正常停止。</p>
+<blockquote>
+<p>异常指的并不是语法错误,语法错了,编译不通过,不会产生字节码文件,根本不能运行.</p>
+</blockquote>
+<h4 id="异常的体系"><a href="#异常的体系" class="headerlink" title="异常的体系"></a>异常的体系</h4><p><img src="./image/throwable.jpg" alt="异常体系"></p>
+<p>简单划分下 : </p>
+<pre><code>Throwable : java语言中所有异常和错误的超类
+    |-- Exception : 编译期异常(日期格式化,日期解析,需要try-catch/throws抛出)
+        |--RuntimeException : 运行期异常(数组越界异常)
+    |--Error : 错误(数组创建长度过大)
+</code></pre><h4 id="异常-Exception-的分类"><a href="#异常-Exception-的分类" class="headerlink" title="异常(Exception)的分类"></a>异常(Exception)的分类</h4><ul>
+<li>编译期异常 :在编译时期就要处理(IO流的文件不存在,日期解析格式化),不处理便已不能通过</li>
+<li>运行期异常 : 在运行时出现的异常(/by zero,索引越界等等)</li>
+</ul>
+<p>举个例子(异常是怎么产生的和产生后如何处理) :<br><img src="./image/exception.jpg" alt="异常"></p>
+<h4 id="异常的处理"><a href="#异常的处理" class="headerlink" title="异常的处理"></a>异常的处理</h4><p><strong>throw 关键字:</strong>  </p>
+<ul>
+<li>作用 : 可以使用throw关键字在指定的方法中抛出异常</li>
+<li>使用格式 : throw new xxxException(“异常产生的原因””);<blockquote>
+<p>1.throw new 必须写在方法的内部<br>2.throw new 后面的对象必须是Exception类或者是Exception的子类对象<br>3.throw抛出RuntimeException或者它的子类,可以不处理,交给JVM处理.<br>  抛出编译异常,就必须处理该异常,try{}catch{}或者throws</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>throws 关键字:</strong>  </p>
+<ul>
+<li>作用 : 当方法内部抛出异常对象的时候,处理时可以使用throws抛出给调用者,让调用者处理.</li>
+<li><p>使用格式 : 在方法声明时在最后使用throws抛出</p>
+<pre><code>修饰符 返回值类型 方法名(参数列表) throws xxxException{}
+</code></pre><blockquote>
+<p>1.throws关键字必须写在方法声明处<br>2.throws关键字后边声明的异常必须是Exception或者是他的子类<br>3.方法内部如果抛出多个异常,throws也必须写多个异常,存在父子关系的,可以直接写父类,如果都写子类必须在父类的前面<br>4.调用方法处理时,可以继续使用throws,也可以try{}catch{}</p>
+</blockquote>
+</li>
+</ul>
+<p>throw与throws的区别 : </p>
+<ul>
+<li>位置不同,前者方法中,后者方法声明处</li>
+<li>含义不同,前者制造异常,后者是处理异常</li>
+<li>格式不同,throw + 异常对象,throws + 异常名称(多个异常,使用逗号隔开就好)</li>
+</ul>
+<p><strong>try..catch..:</strong></p>
+<ul>
+<li><p>格式 : </p>
+<pre><code>try{
+    可能出现问题的代码
+}catch(异常类型 变量名){  // 声明异常变量
+    处理异常的代码  // 尽量不要只用printStackTrace() 处理
+}
+</code></pre></li>
+<li>执行流程 : try内代码出现异常,catch会捕获异常(使用catch中的类型进行匹配,匹配成功之后就会执行catch内的代码<br>如果匹配失败,则继续向上抛出,交给调用者去处理,最后都没有处理时会交给JVM进行处理),try出现异常的地方后面的代码<br>停止执行,执行catch内的代码,如果try内没有出现异常代码正确执行,不会执行catch的代码.</li>
+</ul>
+<p><strong>try…catch..finally :</strong> </p>
+<ul>
+<li>当程序出现一种需求,无论程序是否出现异常,都需要执行某个代码块(比如流的关闭,sql连接关闭等等),这个时候就需要finally了</li>
+<li><p>格式 : </p>
+<pre><code>try{
+    可能出现异常的代码
+} catch(异常类型 变量名){
+    异常处理
+} finally{
+    无论是否出现异常都需要执行的代码
+}
+</code></pre></li>
+<li><p>执行流程 : 在try..catch的基础上,catch执行完毕或者JVM处理完异常之后,执行finally代码块,除非使用System.exit(0)强行停止代码.</p>
+<blockquote>
+<p>不要再finally中使用return语句,虽然语法上无错误,但尽量避免,finally语句一般用于回收资源,<br>如果在try或catch中进行一个返回值.这个时候这个返回通道的值已经确定,在finally语句中修改值,这个<br>时候返回值并不会被修改.</p>
+</blockquote>
+</li>
+</ul>
+<p>举个例子,用来说明上面那个返回通道的问题:</p>
+<p><strong>Throwable类定义了处理异常的三个方法:</strong></p>
+<ul>
+<li>public String getMessage() :获取异常的描述信息,原因(提示给用户的时候,就提示错误原因。</li>
+<li>public String toString() :获取异常的类型和异常描述信息(不用)。</li>
+<li>public void printStackTrace() :打印异常的跟踪栈信息并输出到控制台。</li>
+</ul>
+<p><strong>多个异常如何处理:</strong>  </p>
+<ul>
+<li>多次捕获,多次处理(也就是每个可能出现异常的代码都使用一个try..catch进行捕获处理)</li>
+<li>一次捕获,多次处理(也就是一个try,多个catch,注意的是catch中有子父类关系,子类异常必须在父类异常的前面)</li>
+<li>一次捕获,一次处理(也就是catch中使用具有较高父类的Exception对象)(建议使用)</li>
+</ul>
+<p>举个例子:</p>
+<pre><code>public class TryCatchDemo {
+
+    public static void main(String[] args) {
+
+        // 多个异常多个处理
+        try {
+            // 产生空指针异常(创建对象赋值为null,使用对象调用方法可以产生空指针异常)
+            Integer integer = null;
+            System.out.println(integer.toString());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        // 出现的顺序很奇怪,正好体现的是多线程
+        try {
+            // 产生字符串越界异常,访问字符串的索引查过字符串的长度就可以产生
+            String s = &quot;dilireba&quot;;
+            for(int i = 0; i &lt;= s.length(); i++){
+                System.out.println(s.charAt(i));
+            }
+        } catch (StringIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+        // 多个异常一次捕获,多次处理
+        try {
+            // 产生空指针异常(创建对象赋值为null,使用对象调用方法可以产生空指针异常)
+            Integer integer = null;
+            System.out.println(integer.toString());
+            // 产生字符串越界异常,访问字符串的索引查过字符串的长度就可以产生
+            String s = &quot;dilireba&quot;;
+            for(int i = 0; i &lt;= s.length(); i++){
+                System.out.println(s.charAt(i));
+            }
+            // 会出现NullPointerException,因为第一次异常之后后面的代码停止执行
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }catch (StringIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+        // 多个异常一次捕获,一次处理,建议使用这种
+        try {
+            // 产生空指针异常(创建对象赋值为null,使用对象调用方法可以产生空指针异常)
+            Integer integer = null;
+            System.out.println(integer.toString());
+            // 产生字符串越界异常,访问字符串的索引查过字符串的长度就可以产生
+            String s = &quot;dilireba&quot;;
+            for(int i = 0; i &lt;= s.length(); i++){
+                System.out.println(s.charAt(i));
+            }
+        } catch (Exception e) { // 实际上是使用了多态
+            // 会出现NullPointerException,因为第一次异常之后后面的代码停止执行
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre><blockquote>
+<p>异常的注意事项:</p>
+<blockquote>
+<p>1.如果父类抛出了多个异常,子类覆盖父类方法时,只能抛出相同的异常或者是他的子集。<br>2.父类方法没有抛出异常，子类覆盖父类该方法时也不可抛出异常。此时子类产生该异常，只能捕获处理，不<br>     能声明抛出<br>3.运行时异常被抛出可以不处理。即不捕获也不声明抛出。<br>4.在try/catch后可以追加finally代码块，其中的代码一定会被执行，通常用于资源回收。<br>5.如果finally有return语句,永远返回finally中的结果,避免该情况.  </p>
+</blockquote>
+</blockquote>
+<h4 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h4><p>Java提供的异常类,有时候对于我们来说不够用,做不到见名知意,这个时候需要自定义异常类</p>
+<ul>
+<li><p>格式 : </p>
+<pre><code>public class XXXException extends Exception | RuntimeException{
+    添加一个空参数构造方法
+    添加一个带异常信息的构造方法
+}
+</code></pre></li>
+<li><p>注意 :<br>  1.自定义异常一般都是以Exception结尾的,说明该类是一个异常类  </p>
+<pre><code>2.自定义异常类,必须继承Exception或者是RuntimeException,前者用于自定义编译期异常,后者用于自定义运行期异常(可以不处理,交给JVM处理).
+</code></pre><p>  如下所示,自定义异常类:</p>
+<pre><code>/**
+ * 自定义异常类,在进行开发的时候一定要做到见名知意
+ *
+ * @author WZLOVE
+ * @create 2018-07-16 15:53
+ */
+public class MyException extends Exception{  // 自定义编译期异常类,继承Exception类,重写两个构造方法
+</code></pre></li>
+</ul>
+<pre><code>    public MyException() {
+    }
+
+    public MyException(String message) {
+        super(message);
+    }
+}
+</code></pre><blockquote>
+<p>可以尝试着自己写一个注册的异常类,尝试一下.</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day04-map/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day04-map/" itemprop="url">day04_map</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:34:41+08:00">
+                2018-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Map的初次学习"><a href="#Map的初次学习" class="headerlink" title="Map的初次学习"></a>Map的初次学习</h1><p><strong><em>首次学习map的学习笔记,有错误还请谅解</em></strong></p>
+<h2 id="map的层次结构"><a href="#map的层次结构" class="headerlink" title="map的层次结构"></a>map的层次结构</h2><p><img src="./image/Map的实现.jpg" alt="Map的层次结构"></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>java.util.Map&lt;Key,Value&gt;的特点:</p>
+<ul>
+<li>Map集合是一个双列集合,存放的是键值对</li>
+<li>Map的键不可以重复,但是值可以重复.</li>
+<li>Map中的key和value的类型不一定相同</li>
+<li>key和value一一对应</li>
+</ul>
+<h2 id="子类"><a href="#子类" class="headerlink" title="子类"></a>子类</h2><p>HashMap集合的特点:</p>
+<ul>
+<li>底层是哈希表 : 查询速度很快.<blockquote>
+<p>JDK1.8之前是数组 + 单向链表,JDK1.8之后是数组 + 单向链表/红黑树</p>
+</blockquote>
+</li>
+<li>hashMap的集合是一个无序的集合,存取顺序可能不一致</li>
+</ul>
+<p>LinkedHashMap的特点:</p>
+<ul>
+<li>底层是哈希表 + 链表(保证元素有序,迭代顺序一致)</li>
+<li>存取的顺序是一直的.</li>
+</ul>
+<p>常用的方法:</p>
+<ul>
+<li>public V put(K key, V value) : 把指定的键与指定的值添加到Map集合中。<blockquote>
+<p>存储时,key不存在的时候,返回值为null,key存在时,使用新的value替换旧的value.,返回旧的value<br>所以该方法可以看做增加,也可以看做修改</p>
+</blockquote>
+</li>
+<li>public V remove(Object key) : 把指定的键 所对应的键值对元素 在Map集合中删除，返回被删除元素的<br>值。<blockquote>
+<p>key存在,返回被删除的value,key不存在,返回null</p>
+</blockquote>
+</li>
+<li>public V get(Object key) 根据指定的键，在Map集合中获取对应的值。<blockquote>
+<p>key存在,返回对应的value值,key不存在,返回null</p>
+</blockquote>
+</li>
+<li>boolean containsKey(Object key)  如果此映射包含指定键的映射，则返回 true 。  <blockquote>
+<p>包含指定的key,返回true,不包含返回false</p>
+</blockquote>
+</li>
+<li>boolean containsValue(Object value) 如果此map包含指定的值，则返回 true 。 </li>
+<li>public Set<k> keySet() : 获取Map集合中所有的键，存储到Set集合中。<blockquote>
+<p>map集合不能直接使用迭代器进行遍历,所以可以使用keySet方法和get方法可以来进行遍历.</p>
+</blockquote>
+</k></li>
+<li>Collection<v> values() 返回此结合中包含的值的Collection视图。 </v></li>
+<li>public Set&lt;Map.Entry&lt;K,V&gt;&gt; entrySet() : 获取到Map集合中所有的键值对对象的集合(Set集合)。</li>
+</ul>
+<p>在Map接口中有一个内部接口Entry,entry的作用是 :<br>当Map集合一创建,那么就会在Map集合中创建一个Entry对象,用来记录键与值(键值对对象/键与值的映射关系).</p>
+<p>Entry中常用方法 : </p>
+<ul>
+<li>K getKey() 返回与此条目相对应的键。  </li>
+<li>V getValue() 返回与此条目相对应的值。    </li>
+<li>V setValue(V value) 用指定的值替换与该条目相对应的值（可选操作）。  </li>
+</ul>
+<h4 id="Map如何保证key值唯一呢"><a href="#Map如何保证key值唯一呢" class="headerlink" title="Map如何保证key值唯一呢?"></a>Map如何保证key值唯一呢?</h4><p>可以参考前面的HashSet,底层相同,所以原理也差不多,都是依赖于hashCode方法和equals方法.</p>
+<h4 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h4><p>底层原理是 : 哈希表 + 链表(记录顺序),参考LinkedHashSet.<br>特点:</p>
+<ul>
+<li>不能存取重复的key</li>
+<li>存取有序</li>
+</ul>
+<p>案例(斗地主将牌进行排序输出):</p>
+<pre><code>import java.util.*;
+
+/**
+ * 斗地主案例
+ *  1. 组装54张扑克牌将
+ * 2. 54张牌顺序打乱
+ * 3. 三个玩家参与游戏，三人交替摸牌，每人17张牌，最后三张留作底牌。
+ * 4. 查看三人各自手中的牌（按照牌的大小排序）、底牌
+ *
+ * 1. 准备牌：
+ *      完成数字与纸牌的映射关系：
+ *      使用双列Map(HashMap)集合，完成一个数字与字符串纸牌的对应关系(相当于一个字典)。
+ * 2. 洗牌：
+ *      通过数字完成洗牌发牌
+ * 3. 发牌：
+ *      将每个人以及底牌设计为ArrayList,将最后3张牌直接存放于底牌，剩余牌通过对3取模依次发牌。
+ *      存放的过程中要求数字大小与斗地主规则的大小对应。
+ *      将代表不同纸牌的数字分配给不同的玩家与底牌。
+ * 4. 看牌：
+ *      通过Map集合找到对应字符展示。
+ * @author WZLOVE
+ * @create 2018-07-14 14:34
+ */
+public class LinkedHashMapDemo {
+
+    public static void main(String[] args) {
+        // 准备牌
+        String[] arr1 = {&quot;♠&quot;,&quot;♥&quot;,&quot;♣&quot;,&quot;♦&quot;};
+        String[] arr2 = {&quot;2&quot;,&quot;A&quot;,&quot;K&quot;,&quot;Q&quot;,&quot;J&quot;,&quot;10&quot;,&quot;9&quot;,&quot;8&quot;,&quot;7&quot;,&quot;6&quot;,&quot;5&quot;,&quot;4&quot;,&quot;3&quot;};
+        HashMap&lt;Integer,String&gt; hashMap = new HashMap&lt;&gt;();
+        int k = 0;
+        hashMap.put(k++,&quot;大王&quot;);
+        hashMap.put(k++,&quot;小王&quot;);
+        for (int i = 0; i &lt; arr2.length; i++) {
+            for (int i1 = 0; i1 &lt; arr1.length; i1++) {
+                hashMap.put(k++,arr1[i1] + arr2[i]);
+            }
+        }
+
+        /*for (Map.Entry&lt;Integer, String&gt; entry : hashMap.entrySet()) {
+            System.out.println(entry.getKey() + &quot;=&quot; + entry.getValue());
+        }*/
+
+        // 洗牌,将键洗牌,值跟随键排列
+
+        Set&lt;Integer&gt; set = hashMap.keySet();
+        ArrayList&lt;Integer&gt; intList = new ArrayList&lt;&gt;();
+        for (Integer integer : set) {
+            intList.add(integer);
+        }
+        Collections.shuffle(intList);
+
+        // 发牌
+        ArrayList&lt;Integer&gt; list1 = new ArrayList&lt;&gt;();
+        ArrayList&lt;Integer&gt; list2 = new ArrayList&lt;&gt;();
+        ArrayList&lt;Integer&gt; list3 = new ArrayList&lt;&gt;();
+        ArrayList&lt;Integer&gt; list4 = new ArrayList&lt;&gt;();
+
+        for (int i = 0; i &lt; intList.size(); i++) {
+            if(i &gt;= 51){
+                list4.add(intList.get(i));
+            } else if(i % 3 == 0){
+                list1.add(intList.get(i));
+
+            }else if(i % 3 == 1){
+
+                list2.add(intList.get(i));
+            }else if(i % 3 == 2){
+
+                list3.add(intList.get(i));
+            }
+        }
+
+        list1 = sortList(list1);
+        list2 = sortList(list2);
+        list3 = sortList(list3);
+        list4 = sortList(list4);
+
+        print(list1,hashMap);
+        print(list2,hashMap);
+        print(list3,hashMap);
+        print(list4,hashMap);
+
+    }
+
+    /**
+     * 进行排序
+     * @param list  需要排序的集合
+     * @return      排好序的集合
+     */
+    public static ArrayList&lt;Integer&gt; sortList(ArrayList&lt;Integer&gt; list){
+        Collections.sort(list, new Comparator&lt;Integer&gt;() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1- o2;
+            }
+        });
+
+        return list;
+    }
+
+    /**
+     * 格式化输出
+     * @param list      键的集合
+     * @param hashMap   map集合
+     */
+    public static void print(ArrayList&lt;Integer&gt; list,HashMap&lt;Integer,String&gt; hashMap){
+        for (int i = 0; i &lt; list.size(); i++) {
+            if( i == 0 ){
+                System.out.print(&quot;[&quot; + hashMap.get(list.get(i)) + &quot;,&quot;);
+            } else if(i == list.size() - 1){
+                System.out.println(hashMap.get(list.get(i)) + &quot;]&quot;);
+            } else{
+                System.out.print(hashMap.get(list.get(i)) + &quot;,&quot;);
+
+            }
+        }
+    }
+
+}
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/20/day03_List_Set_DataType/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1581,7 +3250,7 @@ System.out.println(&quot;该数组中对称字符串的个数为:&quot; + sum);
               
                 <a href="/WangZhi.github.io/archives">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1594,7 +3263,7 @@ System.out.println(&quot;该数组中对称字符串的个数为:&quot; + sum);
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

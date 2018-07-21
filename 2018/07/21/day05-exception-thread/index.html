@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/WangZhi.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/WangZhi.github.io/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/WangZhi.github.io/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/WangZhi.github.io/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/WangZhi.github.io/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/WangZhi.github.io/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,throwable,异常," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="异常学习异常的笔记记录 异常异常的概念指的是程序在执行过程中，出现的非正常的情况，最终会导致JVM的非正常停止。  异常指的并不是语法错误,语法错了,编译不通过,不会产生字节码文件,根本不能运行.  异常的体系 简单划分下 :  Throwable : java语言中所有异常和错误的超类     |-- Exception : 编译期异常(日期格式化,日期解析,需要try-catch/throws">
+<meta name="keywords" content="java,throwable,异常">
+<meta property="og:type" content="article">
+<meta property="og:title" content="day05_exception_thread">
+<meta property="og:url" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/21/day05-exception-thread/index.html">
+<meta property="og:site_name" content="IT小白进阶">
+<meta property="og:description" content="异常学习异常的笔记记录 异常异常的概念指的是程序在执行过程中，出现的非正常的情况，最终会导致JVM的非正常停止。  异常指的并不是语法错误,语法错了,编译不通过,不会产生字节码文件,根本不能运行.  异常的体系 简单划分下 :  Throwable : java语言中所有异常和错误的超类     |-- Exception : 编译期异常(日期格式化,日期解析,需要try-catch/throws">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/21/day05-exception-thread/image/throwable.jpg">
+<meta property="og:image" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/21/day05-exception-thread/image/exception.jpg">
+<meta property="og:updated_time" content="2018-07-21T00:38:58.767Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="day05_exception_thread">
+<meta name="twitter:description" content="异常学习异常的笔记记录 异常异常的概念指的是程序在执行过程中，出现的非正常的情况，最终会导致JVM的非正常停止。  异常指的并不是语法错误,语法错了,编译不通过,不会产生字节码文件,根本不能运行.  异常的体系 简单划分下 :  Throwable : java语言中所有异常和错误的超类     |-- Exception : 编译期异常(日期格式化,日期解析,需要try-catch/throws">
+<meta name="twitter:image" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/21/day05-exception-thread/image/throwable.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/WangZhi.github.io/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://misswanglove.github.io/WangZhi.github.io/2018/07/21/day05-exception-thread/"/>
+
+
+
+
+
+  <title>day05_exception_thread | IT小白进阶</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/MissWangLove"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/WangZhi.github.io/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IT小白进阶</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/WangZhi.github.io/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/WangZhi.github.io/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/WangZhi.github.io/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/WangZhi.github.io/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/WangZhi.github.io/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-search">
+          <a href="/WangZhi.github.io/search" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/WangZhi.github.io/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-something">
+          <a href="/WangZhi.github.io/something" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            something
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day05-exception-thread/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">day05_exception_thread</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:35:18+08:00">
+                2018-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><p><strong><em>学习异常的笔记记录</em></strong></p>
+<h2 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h2><h4 id="异常的概念"><a href="#异常的概念" class="headerlink" title="异常的概念"></a>异常的概念</h4><p>指的是程序在执行过程中，出现的非正常的情况，最终会导致JVM的非正常停止。</p>
+<blockquote>
+<p>异常指的并不是语法错误,语法错了,编译不通过,不会产生字节码文件,根本不能运行.</p>
+</blockquote>
+<h4 id="异常的体系"><a href="#异常的体系" class="headerlink" title="异常的体系"></a>异常的体系</h4><p><img src="./image/throwable.jpg" alt="异常体系"></p>
+<p>简单划分下 : </p>
+<pre><code>Throwable : java语言中所有异常和错误的超类
+    |-- Exception : 编译期异常(日期格式化,日期解析,需要try-catch/throws抛出)
+        |--RuntimeException : 运行期异常(数组越界异常)
+    |--Error : 错误(数组创建长度过大)
+</code></pre><h4 id="异常-Exception-的分类"><a href="#异常-Exception-的分类" class="headerlink" title="异常(Exception)的分类"></a>异常(Exception)的分类</h4><ul>
+<li>编译期异常 :在编译时期就要处理(IO流的文件不存在,日期解析格式化),不处理便已不能通过</li>
+<li>运行期异常 : 在运行时出现的异常(/by zero,索引越界等等)</li>
+</ul>
+<p>举个例子(异常是怎么产生的和产生后如何处理) :<br><img src="./image/exception.jpg" alt="异常"></p>
+<h4 id="异常的处理"><a href="#异常的处理" class="headerlink" title="异常的处理"></a>异常的处理</h4><p><strong>throw 关键字:</strong>  </p>
+<ul>
+<li>作用 : 可以使用throw关键字在指定的方法中抛出异常</li>
+<li>使用格式 : throw new xxxException(“异常产生的原因””);<blockquote>
+<p>1.throw new 必须写在方法的内部<br>2.throw new 后面的对象必须是Exception类或者是Exception的子类对象<br>3.throw抛出RuntimeException或者它的子类,可以不处理,交给JVM处理.<br>  抛出编译异常,就必须处理该异常,try{}catch{}或者throws</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>throws 关键字:</strong>  </p>
+<ul>
+<li>作用 : 当方法内部抛出异常对象的时候,处理时可以使用throws抛出给调用者,让调用者处理.</li>
+<li><p>使用格式 : 在方法声明时在最后使用throws抛出</p>
+<pre><code>修饰符 返回值类型 方法名(参数列表) throws xxxException{}
+</code></pre><blockquote>
+<p>1.throws关键字必须写在方法声明处<br>2.throws关键字后边声明的异常必须是Exception或者是他的子类<br>3.方法内部如果抛出多个异常,throws也必须写多个异常,存在父子关系的,可以直接写父类,如果都写子类必须在父类的前面<br>4.调用方法处理时,可以继续使用throws,也可以try{}catch{}</p>
+</blockquote>
+</li>
+</ul>
+<p>throw与throws的区别 : </p>
+<ul>
+<li>位置不同,前者方法中,后者方法声明处</li>
+<li>含义不同,前者制造异常,后者是处理异常</li>
+<li>格式不同,throw + 异常对象,throws + 异常名称(多个异常,使用逗号隔开就好)</li>
+</ul>
+<p><strong>try..catch..:</strong></p>
+<ul>
+<li><p>格式 : </p>
+<pre><code>try{
+    可能出现问题的代码
+}catch(异常类型 变量名){  // 声明异常变量
+    处理异常的代码  // 尽量不要只用printStackTrace() 处理
+}
+</code></pre></li>
+<li>执行流程 : try内代码出现异常,catch会捕获异常(使用catch中的类型进行匹配,匹配成功之后就会执行catch内的代码<br>如果匹配失败,则继续向上抛出,交给调用者去处理,最后都没有处理时会交给JVM进行处理),try出现异常的地方后面的代码<br>停止执行,执行catch内的代码,如果try内没有出现异常代码正确执行,不会执行catch的代码.</li>
+</ul>
+<p><strong>try…catch..finally :</strong> </p>
+<ul>
+<li>当程序出现一种需求,无论程序是否出现异常,都需要执行某个代码块(比如流的关闭,sql连接关闭等等),这个时候就需要finally了</li>
+<li><p>格式 : </p>
+<pre><code>try{
+    可能出现异常的代码
+} catch(异常类型 变量名){
+    异常处理
+} finally{
+    无论是否出现异常都需要执行的代码
+}
+</code></pre></li>
+<li><p>执行流程 : 在try..catch的基础上,catch执行完毕或者JVM处理完异常之后,执行finally代码块,除非使用System.exit(0)强行停止代码.</p>
+<blockquote>
+<p>不要再finally中使用return语句,虽然语法上无错误,但尽量避免,finally语句一般用于回收资源,<br>如果在try或catch中进行一个返回值.这个时候这个返回通道的值已经确定,在finally语句中修改值,这个<br>时候返回值并不会被修改.</p>
+</blockquote>
+</li>
+</ul>
+<p>举个例子,用来说明上面那个返回通道的问题:</p>
+<p><strong>Throwable类定义了处理异常的三个方法:</strong></p>
+<ul>
+<li>public String getMessage() :获取异常的描述信息,原因(提示给用户的时候,就提示错误原因。</li>
+<li>public String toString() :获取异常的类型和异常描述信息(不用)。</li>
+<li>public void printStackTrace() :打印异常的跟踪栈信息并输出到控制台。</li>
+</ul>
+<p><strong>多个异常如何处理:</strong>  </p>
+<ul>
+<li>多次捕获,多次处理(也就是每个可能出现异常的代码都使用一个try..catch进行捕获处理)</li>
+<li>一次捕获,多次处理(也就是一个try,多个catch,注意的是catch中有子父类关系,子类异常必须在父类异常的前面)</li>
+<li>一次捕获,一次处理(也就是catch中使用具有较高父类的Exception对象)(建议使用)</li>
+</ul>
+<p>举个例子:</p>
+<pre><code>public class TryCatchDemo {
+
+    public static void main(String[] args) {
+
+        // 多个异常多个处理
+        try {
+            // 产生空指针异常(创建对象赋值为null,使用对象调用方法可以产生空指针异常)
+            Integer integer = null;
+            System.out.println(integer.toString());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        // 出现的顺序很奇怪,正好体现的是多线程
+        try {
+            // 产生字符串越界异常,访问字符串的索引查过字符串的长度就可以产生
+            String s = &quot;dilireba&quot;;
+            for(int i = 0; i &lt;= s.length(); i++){
+                System.out.println(s.charAt(i));
+            }
+        } catch (StringIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+        // 多个异常一次捕获,多次处理
+        try {
+            // 产生空指针异常(创建对象赋值为null,使用对象调用方法可以产生空指针异常)
+            Integer integer = null;
+            System.out.println(integer.toString());
+            // 产生字符串越界异常,访问字符串的索引查过字符串的长度就可以产生
+            String s = &quot;dilireba&quot;;
+            for(int i = 0; i &lt;= s.length(); i++){
+                System.out.println(s.charAt(i));
+            }
+            // 会出现NullPointerException,因为第一次异常之后后面的代码停止执行
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }catch (StringIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+        // 多个异常一次捕获,一次处理,建议使用这种
+        try {
+            // 产生空指针异常(创建对象赋值为null,使用对象调用方法可以产生空指针异常)
+            Integer integer = null;
+            System.out.println(integer.toString());
+            // 产生字符串越界异常,访问字符串的索引查过字符串的长度就可以产生
+            String s = &quot;dilireba&quot;;
+            for(int i = 0; i &lt;= s.length(); i++){
+                System.out.println(s.charAt(i));
+            }
+        } catch (Exception e) { // 实际上是使用了多态
+            // 会出现NullPointerException,因为第一次异常之后后面的代码停止执行
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre><blockquote>
+<p>异常的注意事项:</p>
+<blockquote>
+<p>1.如果父类抛出了多个异常,子类覆盖父类方法时,只能抛出相同的异常或者是他的子集。<br>2.父类方法没有抛出异常，子类覆盖父类该方法时也不可抛出异常。此时子类产生该异常，只能捕获处理，不<br>     能声明抛出<br>3.运行时异常被抛出可以不处理。即不捕获也不声明抛出。<br>4.在try/catch后可以追加finally代码块，其中的代码一定会被执行，通常用于资源回收。<br>5.如果finally有return语句,永远返回finally中的结果,避免该情况.  </p>
+</blockquote>
+</blockquote>
+<h4 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h4><p>Java提供的异常类,有时候对于我们来说不够用,做不到见名知意,这个时候需要自定义异常类</p>
+<ul>
+<li><p>格式 : </p>
+<pre><code>public class XXXException extends Exception | RuntimeException{
+    添加一个空参数构造方法
+    添加一个带异常信息的构造方法
+}
+</code></pre></li>
+<li><p>注意 :<br>  1.自定义异常一般都是以Exception结尾的,说明该类是一个异常类  </p>
+<pre><code>2.自定义异常类,必须继承Exception或者是RuntimeException,前者用于自定义编译期异常,后者用于自定义运行期异常(可以不处理,交给JVM处理).
+</code></pre><p>  如下所示,自定义异常类:</p>
+<pre><code>/**
+ * 自定义异常类,在进行开发的时候一定要做到见名知意
+ *
+ * @author WZLOVE
+ * @create 2018-07-16 15:53
+ */
+public class MyException extends Exception{  // 自定义编译期异常类,继承Exception类,重写两个构造方法
+</code></pre></li>
+</ul>
+<pre><code>    public MyException() {
+    }
+
+    public MyException(String message) {
+        super(message);
+    }
+}
+</code></pre><blockquote>
+<p>可以尝试着自己写一个注册的异常类,尝试一下.</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/WangZhi.github.io/tags/java/" rel="tag"># java</a>
+          
+            <a href="/WangZhi.github.io/tags/throwable/" rel="tag"># throwable</a>
+          
+            <a href="/WangZhi.github.io/tags/异常/" rel="tag"># 异常</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/07/21/day04-map/" rel="next" title="day04_map">
+                <i class="fa fa-chevron-left"></i> day04_map
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/07/21/day06-thread/" rel="prev" title="day06_thread">
+                day06_thread <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王智家园</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/WangZhi.github.io/archives">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#异常"><span class="nav-number">1.</span> <span class="nav-text">异常</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#异常-1"><span class="nav-number">1.1.</span> <span class="nav-text">异常</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#异常的概念"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">异常的概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常的体系"><span class="nav-number">1.1.0.2.</span> <span class="nav-text">异常的体系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常-Exception-的分类"><span class="nav-number">1.1.0.3.</span> <span class="nav-text">异常(Exception)的分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常的处理"><span class="nav-number">1.1.0.4.</span> <span class="nav-text">异常的处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自定义异常"><span class="nav-number">1.1.0.5.</span> <span class="nav-text">自定义异常</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王智家园</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/WangZhi.github.io/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>

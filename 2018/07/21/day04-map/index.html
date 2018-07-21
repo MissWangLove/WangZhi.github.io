@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="java,map," />
 
 
 
@@ -79,17 +79,20 @@
 
 
 
-<meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta name="description" content="Map的初次学习首次学习map的学习笔记,有错误还请谅解 map的层次结构 概述java.util.Map&amp;lt;Key,Value&amp;gt;的特点:  Map集合是一个双列集合,存放的是键值对 Map的键不可以重复,但是值可以重复. Map中的key和value的类型不一定相同 key和value一一对应  子类HashMap集合的特点:  底层是哈希表 : 查询速度很快. JDK1.8之前是数组">
+<meta name="keywords" content="java,map">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/19/hello-world/index.html">
+<meta property="og:title" content="day04_map">
+<meta property="og:url" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/21/day04-map/index.html">
 <meta property="og:site_name" content="IT小白进阶">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="Map的初次学习首次学习map的学习笔记,有错误还请谅解 map的层次结构 概述java.util.Map&amp;lt;Key,Value&amp;gt;的特点:  Map集合是一个双列集合,存放的是键值对 Map的键不可以重复,但是值可以重复. Map中的key和value的类型不一定相同 key和value一一对应  子类HashMap集合的特点:  底层是哈希表 : 查询速度很快. JDK1.8之前是数组">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-19T12:22:16.336Z">
+<meta property="og:image" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/21/day04-map/image/Map的实现.jpg">
+<meta property="og:updated_time" content="2018-07-21T00:37:21.163Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta name="twitter:title" content="day04_map">
+<meta name="twitter:description" content="Map的初次学习首次学习map的学习笔记,有错误还请谅解 map的层次结构 概述java.util.Map&amp;lt;Key,Value&amp;gt;的特点:  Map集合是一个双列集合,存放的是键值对 Map的键不可以重复,但是值可以重复. Map中的key和value的类型不一定相同 key和value一一对应  子类HashMap集合的特点:  底层是哈希表 : 查询速度很快. JDK1.8之前是数组">
+<meta name="twitter:image" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/21/day04-map/image/Map的实现.jpg">
 
 
 
@@ -119,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="https://misswanglove.github.io/WangZhi.github.io/2018/07/19/hello-world/"/>
+  <link rel="canonical" href="https://misswanglove.github.io/WangZhi.github.io/2018/07/21/day04-map/"/>
 
 
 
 
 
-  <title>Hello World | IT小白进阶</title>
+  <title>day04_map | IT小白进阶</title>
   
 
 
@@ -293,7 +296,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/19/hello-world/">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day04-map/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="王智家园">
@@ -310,7 +313,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Hello World</h1>
+          <h1 class="post-title" itemprop="name headline">day04_map</h1>
         
 
         <div class="post-meta">
@@ -322,8 +325,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-19T20:22:16+08:00">
-                2018-07-19
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:34:41+08:00">
+                2018-07-21
               </time>
             
 
@@ -360,16 +363,189 @@
       
 
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+        <h1 id="Map的初次学习"><a href="#Map的初次学习" class="headerlink" title="Map的初次学习"></a>Map的初次学习</h1><p><strong><em>首次学习map的学习笔记,有错误还请谅解</em></strong></p>
+<h2 id="map的层次结构"><a href="#map的层次结构" class="headerlink" title="map的层次结构"></a>map的层次结构</h2><p><img src="./image/Map的实现.jpg" alt="Map的层次结构"></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>java.util.Map&lt;Key,Value&gt;的特点:</p>
+<ul>
+<li>Map集合是一个双列集合,存放的是键值对</li>
+<li>Map的键不可以重复,但是值可以重复.</li>
+<li>Map中的key和value的类型不一定相同</li>
+<li>key和value一一对应</li>
+</ul>
+<h2 id="子类"><a href="#子类" class="headerlink" title="子类"></a>子类</h2><p>HashMap集合的特点:</p>
+<ul>
+<li>底层是哈希表 : 查询速度很快.<blockquote>
+<p>JDK1.8之前是数组 + 单向链表,JDK1.8之后是数组 + 单向链表/红黑树</p>
+</blockquote>
+</li>
+<li>hashMap的集合是一个无序的集合,存取顺序可能不一致</li>
+</ul>
+<p>LinkedHashMap的特点:</p>
+<ul>
+<li>底层是哈希表 + 链表(保证元素有序,迭代顺序一致)</li>
+<li>存取的顺序是一直的.</li>
+</ul>
+<p>常用的方法:</p>
+<ul>
+<li>public V put(K key, V value) : 把指定的键与指定的值添加到Map集合中。<blockquote>
+<p>存储时,key不存在的时候,返回值为null,key存在时,使用新的value替换旧的value.,返回旧的value<br>所以该方法可以看做增加,也可以看做修改</p>
+</blockquote>
+</li>
+<li>public V remove(Object key) : 把指定的键 所对应的键值对元素 在Map集合中删除，返回被删除元素的<br>值。<blockquote>
+<p>key存在,返回被删除的value,key不存在,返回null</p>
+</blockquote>
+</li>
+<li>public V get(Object key) 根据指定的键，在Map集合中获取对应的值。<blockquote>
+<p>key存在,返回对应的value值,key不存在,返回null</p>
+</blockquote>
+</li>
+<li>boolean containsKey(Object key)  如果此映射包含指定键的映射，则返回 true 。  <blockquote>
+<p>包含指定的key,返回true,不包含返回false</p>
+</blockquote>
+</li>
+<li>boolean containsValue(Object value) 如果此map包含指定的值，则返回 true 。 </li>
+<li>public Set<k> keySet() : 获取Map集合中所有的键，存储到Set集合中。<blockquote>
+<p>map集合不能直接使用迭代器进行遍历,所以可以使用keySet方法和get方法可以来进行遍历.</p>
+</blockquote>
+</k></li>
+<li>Collection<v> values() 返回此结合中包含的值的Collection视图。 </v></li>
+<li>public Set&lt;Map.Entry&lt;K,V&gt;&gt; entrySet() : 获取到Map集合中所有的键值对对象的集合(Set集合)。</li>
+</ul>
+<p>在Map接口中有一个内部接口Entry,entry的作用是 :<br>当Map集合一创建,那么就会在Map集合中创建一个Entry对象,用来记录键与值(键值对对象/键与值的映射关系).</p>
+<p>Entry中常用方法 : </p>
+<ul>
+<li>K getKey() 返回与此条目相对应的键。  </li>
+<li>V getValue() 返回与此条目相对应的值。    </li>
+<li>V setValue(V value) 用指定的值替换与该条目相对应的值（可选操作）。  </li>
+</ul>
+<h4 id="Map如何保证key值唯一呢"><a href="#Map如何保证key值唯一呢" class="headerlink" title="Map如何保证key值唯一呢?"></a>Map如何保证key值唯一呢?</h4><p>可以参考前面的HashSet,底层相同,所以原理也差不多,都是依赖于hashCode方法和equals方法.</p>
+<h4 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h4><p>底层原理是 : 哈希表 + 链表(记录顺序),参考LinkedHashSet.<br>特点:</p>
+<ul>
+<li>不能存取重复的key</li>
+<li>存取有序</li>
+</ul>
+<p>案例(斗地主将牌进行排序输出):</p>
+<pre><code>import java.util.*;
 
+/**
+ * 斗地主案例
+ *  1. 组装54张扑克牌将
+ * 2. 54张牌顺序打乱
+ * 3. 三个玩家参与游戏，三人交替摸牌，每人17张牌，最后三张留作底牌。
+ * 4. 查看三人各自手中的牌（按照牌的大小排序）、底牌
+ *
+ * 1. 准备牌：
+ *      完成数字与纸牌的映射关系：
+ *      使用双列Map(HashMap)集合，完成一个数字与字符串纸牌的对应关系(相当于一个字典)。
+ * 2. 洗牌：
+ *      通过数字完成洗牌发牌
+ * 3. 发牌：
+ *      将每个人以及底牌设计为ArrayList,将最后3张牌直接存放于底牌，剩余牌通过对3取模依次发牌。
+ *      存放的过程中要求数字大小与斗地主规则的大小对应。
+ *      将代表不同纸牌的数字分配给不同的玩家与底牌。
+ * 4. 看牌：
+ *      通过Map集合找到对应字符展示。
+ * @author WZLOVE
+ * @create 2018-07-14 14:34
+ */
+public class LinkedHashMapDemo {
+
+    public static void main(String[] args) {
+        // 准备牌
+        String[] arr1 = {&quot;♠&quot;,&quot;♥&quot;,&quot;♣&quot;,&quot;♦&quot;};
+        String[] arr2 = {&quot;2&quot;,&quot;A&quot;,&quot;K&quot;,&quot;Q&quot;,&quot;J&quot;,&quot;10&quot;,&quot;9&quot;,&quot;8&quot;,&quot;7&quot;,&quot;6&quot;,&quot;5&quot;,&quot;4&quot;,&quot;3&quot;};
+        HashMap&lt;Integer,String&gt; hashMap = new HashMap&lt;&gt;();
+        int k = 0;
+        hashMap.put(k++,&quot;大王&quot;);
+        hashMap.put(k++,&quot;小王&quot;);
+        for (int i = 0; i &lt; arr2.length; i++) {
+            for (int i1 = 0; i1 &lt; arr1.length; i1++) {
+                hashMap.put(k++,arr1[i1] + arr2[i]);
+            }
+        }
+
+        /*for (Map.Entry&lt;Integer, String&gt; entry : hashMap.entrySet()) {
+            System.out.println(entry.getKey() + &quot;=&quot; + entry.getValue());
+        }*/
+
+        // 洗牌,将键洗牌,值跟随键排列
+
+        Set&lt;Integer&gt; set = hashMap.keySet();
+        ArrayList&lt;Integer&gt; intList = new ArrayList&lt;&gt;();
+        for (Integer integer : set) {
+            intList.add(integer);
+        }
+        Collections.shuffle(intList);
+
+        // 发牌
+        ArrayList&lt;Integer&gt; list1 = new ArrayList&lt;&gt;();
+        ArrayList&lt;Integer&gt; list2 = new ArrayList&lt;&gt;();
+        ArrayList&lt;Integer&gt; list3 = new ArrayList&lt;&gt;();
+        ArrayList&lt;Integer&gt; list4 = new ArrayList&lt;&gt;();
+
+        for (int i = 0; i &lt; intList.size(); i++) {
+            if(i &gt;= 51){
+                list4.add(intList.get(i));
+            } else if(i % 3 == 0){
+                list1.add(intList.get(i));
+
+            }else if(i % 3 == 1){
+
+                list2.add(intList.get(i));
+            }else if(i % 3 == 2){
+
+                list3.add(intList.get(i));
+            }
+        }
+
+        list1 = sortList(list1);
+        list2 = sortList(list2);
+        list3 = sortList(list3);
+        list4 = sortList(list4);
+
+        print(list1,hashMap);
+        print(list2,hashMap);
+        print(list3,hashMap);
+        print(list4,hashMap);
+
+    }
+
+    /**
+     * 进行排序
+     * @param list  需要排序的集合
+     * @return      排好序的集合
+     */
+    public static ArrayList&lt;Integer&gt; sortList(ArrayList&lt;Integer&gt; list){
+        Collections.sort(list, new Comparator&lt;Integer&gt;() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1- o2;
+            }
+        });
+
+        return list;
+    }
+
+    /**
+     * 格式化输出
+     * @param list      键的集合
+     * @param hashMap   map集合
+     */
+    public static void print(ArrayList&lt;Integer&gt; list,HashMap&lt;Integer,String&gt; hashMap){
+        for (int i = 0; i &lt; list.size(); i++) {
+            if( i == 0 ){
+                System.out.print(&quot;[&quot; + hashMap.get(list.get(i)) + &quot;,&quot;);
+            } else if(i == list.size() - 1){
+                System.out.println(hashMap.get(list.get(i)) + &quot;]&quot;);
+            } else{
+                System.out.print(hashMap.get(list.get(i)) + &quot;,&quot;);
+
+            }
+        }
+    }
+
+}
+</code></pre>
       
     </div>
     
@@ -384,6 +560,14 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/WangZhi.github.io/tags/java/" rel="tag"># java</a>
+          
+            <a href="/WangZhi.github.io/tags/map/" rel="tag"># map</a>
+          
+        </div>
+      
 
       
       
@@ -393,14 +577,18 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/WangZhi.github.io/2018/07/20/day03_List_Set_DataType/" rel="next" title="List、Set、数据结构、Collections">
+                <i class="fa fa-chevron-left"></i> List、Set、数据结构、Collections
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/WangZhi.github.io/2018/07/19/你好-Hexo/" rel="prev" title="你好,Hexo">
-                你好,Hexo <i class="fa fa-chevron-right"></i>
+              <a href="/WangZhi.github.io/2018/07/21/day05-exception-thread/" rel="prev" title="day05_exception_thread">
+                day05_exception_thread <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -524,7 +712,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Quick-Start"><span class="nav-number">1.</span> <span class="nav-text">Quick Start</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-new-post"><span class="nav-number">1.1.</span> <span class="nav-text">Create a new post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Run-server"><span class="nav-number">1.2.</span> <span class="nav-text">Run server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-static-files"><span class="nav-number">1.3.</span> <span class="nav-text">Generate static files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deploy-to-remote-sites"><span class="nav-number">1.4.</span> <span class="nav-text">Deploy to remote sites</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Map的初次学习"><span class="nav-number">1.</span> <span class="nav-text">Map的初次学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#map的层次结构"><span class="nav-number">1.1.</span> <span class="nav-text">map的层次结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子类"><span class="nav-number">1.3.</span> <span class="nav-text">子类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Map如何保证key值唯一呢"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">Map如何保证key值唯一呢?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LinkedHashMap"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">LinkedHashMap</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
