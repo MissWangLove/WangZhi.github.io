@@ -290,6 +290,1141 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/24/day10-commonsio-FileUtiles/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/24/day10-commonsio-FileUtiles/" itemprop="url">day10-commonsio-FileUtiles</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-24T18:07:38+08:00">
+                2018-07-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Apache-Commons-IO"><a href="#Apache-Commons-IO" class="headerlink" title="Apache Commons IO"></a>Apache Commons IO</h1><p><strong><em>在学习io流的时候研究(翻译)了一下这个,只有FileUtils的某些方法,并不全面,还请谅解</em></strong></p>
+<h2 id="org-apache-commons-io"><a href="#org-apache-commons-io" class="headerlink" title="org.apache.commons.io"></a>org.apache.commons.io</h2><p>这个包下定义了基于 streams, readers, writers and files.的实用工具类.</p>
+<h2 id="org-apache-commons-io-comparator"><a href="#org-apache-commons-io-comparator" class="headerlink" title="org.apache.commons.io.comparator"></a>org.apache.commons.io.comparator</h2><p>这个包下定义了基于文件的各种比较器的实现</p>
+<h2 id="org-apache-commons-io-filefilter"><a href="#org-apache-commons-io-filefilter" class="headerlink" title="org.apache.commons.io.filefilter"></a>org.apache.commons.io.filefilter</h2><p>这个包定义了一个接口（IoFielFieldField），融合了FieldField1和FielnaMeField.</p>
+<h2 id="org-apache-commons-io-input"><a href="#org-apache-commons-io-input" class="headerlink" title="org.apache.commons.io.input"></a>org.apache.commons.io.input</h2><p>这个包提供输入类的实现，如输入流和读取字符流。</p>
+<h2 id="org-apache-commons-io-monitor"><a href="#org-apache-commons-io-monitor" class="headerlink" title="org.apache.commons.io.monitor"></a>org.apache.commons.io.monitor</h2><p>这个包提供了一个用于监视文件系统事件（目录和文件创建、更新和删除事件）的组件。</p>
+<h2 id="org-apache-commons-io-output"><a href="#org-apache-commons-io-output" class="headerlink" title="org.apache.commons.io.output"></a>org.apache.commons.io.output</h2><p>这个包提供输出类的实现, 如输出流和写入流</p>
+<h2 id="org-apache-commons-io-serialization"><a href="#org-apache-commons-io-serialization" class="headerlink" title="org.apache.commons.io.serialization"></a>org.apache.commons.io.serialization</h2><p>这个包提供了一个用于控制类反序列化的框架。</p>
+<h3 id="FileUtils中的常用方法"><a href="#FileUtils中的常用方法" class="headerlink" title="FileUtils中的常用方法"></a>FileUtils中的常用方法</h3><pre><code>package com.wzlove.commons;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * 测试FileUtiles中的常用方法
+ *
+ * @author WZLOVE
+ * @create 2018-07-21 13:29
+ */
+public class FileUtilsDemo {
+
+
+    /**
+     * static void    cleanDirectory(File directory)
+     * 删除文件夹内的所有内容,但不删除本文件夹
+     */
+    @Test
+    public void testCleanDirectory() throws IOException {
+        // 注意的是创建的文件夹的虚拟路径
+        File dir = new File(&quot;F:\\ddd\\aaa&quot;);
+        FileUtils.cleanDirectory(dir);
+    }
+
+    /**
+     * static boolean contentEquals(File file1, File file2)
+     * 比较两个文件的内容是否相同,相同返回true,不同返回false(.注意的是两个文件不存在,也会返回true)
+     */
+    @Test
+    public void testContentEquals() throws IOException {
+        File file1 = new File(&quot;F:\\ddd\\aaa\\a.txt&quot;);
+        File file2 = new File(&quot;F:\\ddd\\aaa\\b.txt&quot;);
+        System.out.println(FileUtils.contentEquals(file1,file2));
+    }
+
+    /**
+     * static File[] convertFileCollectionToFileArray(Collection&lt;File&gt; files)
+     * 将集合转化为数组
+     */
+    @Test
+    public void testConvertFileCollectionToFileArray(){
+        ArrayList&lt;File&gt; fileList = new ArrayList&lt;&gt;();
+        fileList.add(new File(&quot;C:\\aa&quot;));
+        fileList.add(new File(&quot;D:\\aa&quot;));
+        fileList.add(new File(&quot;E:\\aa&quot;));
+        fileList.add(new File(&quot;F:\\aa&quot;));
+        File[] files = FileUtils.convertFileCollectionToFileArray(fileList);
+        for (int i = 0; i &lt; files.length; i++) {
+            System.out.println(files[i].getAbsolutePath());
+        }
+    }
+
+    /**
+     * static void    copyDirectory(File srcDir, File destDir)
+     * 将srcDir目录下的文件复制到destDir目录下,文件存在则不重复复制
+     * 还有很多重载的方法,可以传递文件过滤器等等
+     */
+    @Test
+    public void testCopyDirectory() throws IOException {
+        File srcDir = new File(&quot;F:\\aaa&quot;);
+        File destDir = new File(&quot;F:\\bbb&quot;);
+        FileUtils.copyDirectory(srcDir,destDir);
+    }
+
+    /**
+     * static void    copyDirectoryToDirectory(File srcDir, File destDir)
+     * 将srcDir整个文件夹放在destDir的文件夹下
+     */
+    @Test
+    public void testCopyDirectoryToDirectory() throws IOException {
+        File srcDir = new File(&quot;F:\\aaa&quot;);
+        File destDir = new File(&quot;F:\\bbb&quot;);
+        FileUtils.copyDirectoryToDirectory(srcDir,destDir);
+    }
+
+    /**
+     * static void    copyFile(File srcFile, File destFile)
+     * 将srcFile文件复制到destFile中,destFile不存在则会创建目标文件
+     */
+    @Test
+    public void testCopyFile() throws IOException {
+        File srcDir = new File(&quot;F:\\aaa\\1.txt&quot;);
+        File destDir = new File(&quot;F:\\bbb\\a.txt&quot;);
+        FileUtils.copyFile(srcDir,destDir);
+    }
+
+    /**
+     * static void    copyFileToDirectory(File srcFile, File destDir)
+     * 将srcFile文件复制到destDir的目录下
+     */
+    @Test
+    public void testCopyFileToDirectory() throws IOException {
+        File srcDir = new File(&quot;F:\\aaa\\1.txt&quot;);
+        File destDir = new File(&quot;F:\\bbb&quot;);
+        FileUtils.copyFileToDirectory(srcDir,destDir);
+    }
+
+    /**
+     * static void    copyToDirectory(File src, File destDir)
+     * 复制文件或者文件夹到目标文件夹下
+     */
+    @Test
+    public void testCopyToDirectory() throws IOException {
+        File srcDir = new File(&quot;F:\\aaa&quot;);
+        File destDir = new File(&quot;F:\\bbb&quot;);
+        FileUtils.copyToDirectory(srcDir,destDir);
+    }
+
+    /**
+     * static void    copyURLToFile(URL source, File destination)
+     * Copies bytes from the URL source to a file destination.
+     */
+    @Test
+    public void testCopyURLToFile() throws IOException {
+        File destination = new File(&quot;F:\\bbb\\baidu.txt&quot;);
+        FileUtils.copyURLToFile(new URL(&quot;http://ntlias-stu.boxuegu.com/#/index&quot;),destination);
+    }
+
+    /**
+     * static void    deleteDirectory(File directory)
+     * 删除这个文件夹,全部删除,包括这个文件,和cleanDirectory方法做个对比
+     */
+    @Test
+    public void testDeleteDirectory() throws IOException {
+        File directory = new File(&quot;F:\\bbb\\ccc&quot;);
+        FileUtils.deleteDirectory(directory);
+    }
+
+    /**
+     * static boolean    deleteQuietly(File file)
+     * 删除这个文件,不会抛出异常
+     */
+    @Test
+    public void testDeleteQuietly() {
+        File directory = new File(&quot;F:\\bbb\\a.txt&quot;);
+        System.out.println(FileUtils.deleteQuietly(directory));
+    }
+
+    /**
+     * static void    forceMkdir(File directory)
+     * 创建文件夹,可以创建多级文件夹
+     */
+    @Test
+    public void testForceMkdir() throws IOException {
+        File directory = new File(&quot;F:\\bbb\\ccc\\ddd\\aaa&quot;);
+        FileUtils.forceMkdir(directory);
+    }
+
+    /**
+     * static void    forceMkdirParent(File file)
+     * 为一个文件创建父路径,但不会创建这个文件(比较奇怪)
+     */
+    @Test
+    public void testForceMkdirParent() throws IOException {
+        File directory = new File(&quot;F:\\bbb\\aaa\\ccc\\a.txt&quot;);
+        FileUtils.forceMkdirParent(directory);
+    }
+
+    /**
+     * static String getUserDirectoryPath()
+     * 返回用户的主目录
+     */
+    @Test
+    public void testGetUserDirectoryPath(){
+        String str = FileUtils.getUserDirectoryPath();
+        System.out.println(str);
+    }
+
+    /**
+     * static void    moveDirectory(File srcDir, File destDir)
+     * 修改文件名,将srcDir.getName()的文件名更改为destDir.getName(),如果文件名存在,报错
+     */
+    @Test
+    public void testMoveDirectory() throws IOException {
+        File srcDir = new File(&quot;F:\\aaa&quot;);
+        File destDir = new File(&quot;F:\\ccc&quot;);
+        FileUtils.moveDirectory(srcDir,destDir);
+    }
+
+    /**
+     * static void    moveDirectoryToDirectory(File src, File destDir, boolean createDestDir)
+     *  将src移动到destDir,后面的boolean表示是不是当destDir文件夹不存在时创建文件夹,false是不创建,true是创建
+     *  如果src不存在报错,如果src已经存在destDir中,则报错
+     */
+    @Test
+    public void testMoveDirectoryToDirectory() throws IOException {
+        File srcDir = new File(&quot;F:\\bbb&quot;);
+        File destDir = new File(&quot;F:\\eee&quot;);
+        FileUtils.moveDirectoryToDirectory(srcDir,destDir,true);
+    }
+
+    /**
+     * static void    moveFile(File srcFile, File destFile)
+     * 修改文件名
+     * static void    moveFileToDirectory(File srcFile, File destDir, boolean createDestDir)
+     * 移动一个文件到文件夹中,最后的参数为true表示如果destDir不存在的话则创建,为false则不创建
+     * static void    moveToDirectory(File src, File destDir, boolean createDestDir)
+     * 移动文件或者文件夹到目标文件夹,最后的参数为true表示如果destDir不存在的话则创建,为false则不创建
+     */
+
+
+    /**
+     * static FileInputStream openInputStream(File file)
+     * 返回文件字节输入流
+     */
+    @Test
+    public void testOpenInputStream() throws IOException {
+        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
+        FileInputStream fis = FileUtils.openInputStream(file);
+        // 可以进行字节流的读取操作
+
+        fis.close();
+    }
+
+     /**
+      * static FileOutputStream openOutputStream(File file)
+      * 返回字节输出流,如果文件等多及目录不存在,则创建多级目录,目录存在,清空文件内容
+      */
+
+    /**
+     * static FileOutputStream    openOutputStream(File file, boolean append)
+     * 返回字节输出流,如果文件等多及目录不存在,则创建多级目录,如果目录存在,则不会清空内容,输出到文件的时候,会追加到原内容的后面
+     */
+
+    /**
+     * static byte[]    readFileToByteArray(File file)
+     * 读取文件,返回字节数组
+     */
+    @Test
+    public void testReadFileToByteArray() throws IOException {
+        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
+        byte[] bytes = FileUtils.readFileToByteArray(file);
+        System.out.println(new String(bytes));
+    }
+
+    /**
+     * static String    readFileToString(File file, String encoding)
+     * 按照指定编码格式读取文件
+     */
+    @Test
+    public void testReadFileToString() throws IOException {
+        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
+        String str = FileUtils.readFileToString(file,&quot;UTF-8&quot;);
+        System.out.println(str);
+    }
+
+    /**
+     * static List&lt;String&gt;    readLines(File file, String encoding)
+     *  按照指定编码读取文件,返回String集合,文件的每一行是一个元素
+     */
+    @Test
+    public void testReadLines() throws IOException {
+        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
+        List&lt;String&gt; list = FileUtils.readLines(file, &quot;UTF-8&quot;);
+        for (String s : list) {
+            System.out.println(s);
+        }
+    }
+
+    /**
+     * static long    sizeOf(File file)
+     * 返回文件或者文件夹的大小
+     */
+    @Test
+    public void testSizeOf() throws IOException {
+        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
+        long l  = FileUtils.sizeOf(file);
+        System.out.println(l);
+        File file1 = new File(&quot;F:\\bbb&quot;);
+        System.out.println(FileUtils.sizeOf(file1));
+    }
+
+    /**
+     * static File    toFile(URL url)
+     * Convert from a URL to a File.
+     * 没理解
+     */
+    @Test
+    public void testToFile() throws IOException {
+        File file = FileUtils.toFile(new URL(&quot;file:\\F:\\bbb&quot;));
+        System.out.println(file.getAbsolutePath());
+    }
+
+    /**
+     * static void    writeByteArrayToFile(File file, byte[] data)
+     * 向文件中写入字节数组,如果目标文件不存在,则会创建目标文件,文件存在清空文件内容,再进行输入
+     * static void    writeByteArrayToFile(File file, byte[] data, boolean append)
+     * 向文件中写入字节数组,如果目标文件不存在,则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
+     * static void    writeByteArrayToFile(File file, byte[] data, int off, int len)
+     * 将byte类型的数组data,从off索引开始,长度为len的内容输出到指定的文件,如果目标文件不存在,则会创建目标文件,文件存在清空文件内容,再进行输入
+     * static void    writeByteArrayToFile(File file, byte[] data, int off, int len, boolean append)
+     * 将byte类型的数组data,从off索引开始,长度为len的内容输出到指定的文件,如果目标文件不存在,则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
+     * static void    writeStringToFile(File file, String data, String encoding)
+     * 按照指定的编码格式将String类型的数据写入到文件中,如果目标文件不存在,则会创建目标文件,文件存在清空文件内容,再进行输入
+     * static void    writeStringToFile(File file, String data, String encoding, boolean append)
+     * 按照指定的编码格式将String类型的数据写入到文件中,如果目标文件不存在,则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
+     */
+
+
+    /**
+     * static void    writeLines(File file, Collection&lt;?&gt; lines)
+     * 将集合数据写入文件,每条数据占据一行,如果目标文件不存在,则会创建目标文件,文件存在清空文件内容,再进行输入
+     * static void    writeLines(File file, Collection&lt;?&gt; lines, boolean append)
+     *  将集合数据写入文件,每条数据占据一行,
+     */
+    @Test
+    public void testWriteLines() throws IOException {
+        File file = new File(&quot;F:\\ddd\\a.txt&quot;);
+        ArrayList&lt;String&gt; coll = new ArrayList&lt;&gt;();
+        coll.add(&quot;I love Java&quot;);
+        coll.add(&quot;I love you&quot;);
+        FileUtils.writeLines(file,coll);
+    }
+
+    /**
+     * static void    writeLines(File file, Collection&lt;?&gt; lines, String lineEnding)
+     * 所有的集合数据保存在一行,并且是间隔的,也就是每条集合数据后会跟一个lineEnding字符串,如果目标文件不存在,
+     * 则会创建目标文件,文件存在清空文件内容,再进行输入
+     * static void    writeLines(File file, Collection&lt;?&gt; lines, String lineEnding, boolean append)
+     * 所有的集合数据保存在一行,并且是间隔的,也就是每条集合数据后会跟一个lineEnding字符串.如果目标文件不存在,
+     * 则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
+     */
+    @Test
+    public void tesWriteLines2() throws IOException {
+        File file = new File(&quot;F:\\ddd\\a.txt&quot;);
+        ArrayList&lt;String&gt; coll = new ArrayList&lt;&gt;();
+        coll.add(&quot;I love Java&quot;);
+        coll.add(&quot;I love Java&quot;);
+        coll.add(&quot;I love Java&quot;);
+        FileUtils.writeLines(file,coll,&quot;I love you&quot;);
+    }
+
+    /**
+     * static void    writeLines(File file, String encoding, Collection&lt;?&gt; lines)
+     * 按照encoding编码格式将集合数据写出到文件中,每条数据占据一行,如果目标文件不存在,
+     * 则会创建目标文件,文件存在清空文件内容,再进行输入
+     * static void    writeLines(File file, String encoding, Collection&lt;?&gt; lines, boolean append)
+     * 按照encoding编码格式将集合数据写出到文件中,每条数据占据一行,如果目标文件不存在,
+     *  则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
+     */
+    @Test
+    public void tesWriteLines3() throws IOException {
+        File file = new File(&quot;F:\\ddd\\a.txt&quot;);
+        ArrayList&lt;String&gt; coll = new ArrayList&lt;&gt;();
+        coll.add(&quot;I love Java&quot;);
+        coll.add(&quot;I love Java&quot;);
+        coll.add(&quot;I love Java&quot;);
+        FileUtils.writeLines(file,&quot;UTF-8&quot;,coll);
+    }
+
+    /**
+     * static void    writeLines(File file, String encoding, Collection&lt;?&gt; lines, String lineEnding)
+     * 按照encoding编码格式将集合数据写出到文件中,所有的集合数据保存在一行,并且是间隔的,也就是每条集合数据后会跟一
+     * 个lineEnding字符串,如果目标文件不存在, 则会创建目标文件,文件存在清空文件内容,再进行输入
+     * static void    writeLines(File file, String encoding, Collection&lt;?&gt; lines, String lineEnding, boolean append)
+     * 按照encoding编码格式将集合数据写出到文件中,所有的集合数据保存在一行,并且是间隔的,也就是每条集合数据后会跟一
+     * 个lineEnding字符串,如果目标文件不存在, 则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
+     */
+    @Test
+    public void tesWriteLines4() throws IOException {
+        File file = new File(&quot;F:\\ddd\\a.txt&quot;);
+        ArrayList&lt;String&gt; coll = new ArrayList&lt;&gt;();
+        coll.add(&quot;I love Java&quot;);
+        coll.add(&quot;I love Java&quot;);
+        coll.add(&quot;I love Java&quot;);
+        FileUtils.writeLines(file,&quot;UTF-8&quot;,coll,&quot;I love you&quot;);
+    }
+
+}
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/24/day09-io流/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/24/day09-io流/" itemprop="url">day09-io流</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-24T18:06:55+08:00">
+                2018-07-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="IO流和Properties"><a href="#IO流和Properties" class="headerlink" title="IO流和Properties"></a>IO流和Properties</h1><h2 id="IO流"><a href="#IO流" class="headerlink" title="IO流"></a>IO流</h2><p>IO流是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，<br>因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。<br>在 Java 编程中，一直使用流的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，<br>通过一个称为 Stream 的对象一次移动一个字节。流 I/O 用于与外部世界接触。它也在内部使用，<br>用于将对象转换为字节，然后再转换回对象。输入也叫做读取数据，输出也叫做作写出数据。</p>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><ul>
+<li>IO流是设备间的数据的传输.  </li>
+<li>IO流的输入和输出(基于程序的角度,而不是基于文件的角度)</li>
+</ul>
+<h3 id="IO流的分类"><a href="#IO流的分类" class="headerlink" title="IO流的分类"></a>IO流的分类</h3><p>数据流向:</p>
+<ul>
+<li>输入流: 文件到程序</li>
+<li>输出流: 程序到文件</li>
+</ul>
+<p>数据类型(计算机内的数据存储都是以字节的形式存储的):</p>
+<ul>
+<li>字节流: 所有的文件都可以使用字节流操作</li>
+<li>字符流: 在文本文件的读取的时候,我们需要将字节转化为字符.</li>
+</ul>
+<p>几个字节表示一个字符?  不一定.</p>
+<h3 id="基类"><a href="#基类" class="headerlink" title="基类"></a>基类</h3><p>数据流向:</p>
+<ul>
+<li>输入流:</li>
+<li>输出流: </li>
+</ul>
+<p>数据类型:</p>
+<ul>
+<li>字节流: <ol>
+<li>字节输入流(InputStream):将内存中的数据输如入到指定的设备上</li>
+<li>字符输出流(OutputStream):将设备上的数据输出到设备上</li>
+</ol>
+</li>
+<li>字符流: </li>
+</ul>
+<h3 id="FileOutputStream"><a href="#FileOutputStream" class="headerlink" title="FileOutputStream"></a>FileOutputStream</h3><p>构造方法(如果指定的文件不存在,则创建对象;存在,会清空文件中的数据(除非使用后两个构造方法,字符流同理)):</p>
+<ul>
+<li>public FileOutputStream(File file) ：创建文件输出流以写入由指定的 File对象表示的文件。</li>
+<li>public FileOutputStream(String name) ： 创建文件输出流以指定的名称写入文件(name表示操作文件的路径)。</li>
+<li>FileOutputStream(File file, boolean append) : 创建文件输出流以写入由指定的 File对象表示的文件,boolean类型表示是否追加内容。</li>
+<li>FileOutputStream(String name, boolean append) : 创建文件输出流以指定的名称写入文件,boolean类型表示是否追加内容。  </li>
+</ul>
+<p>常用方法:</p>
+<ul>
+<li>void write(int b) : 将指定的字节写出到文件中(97 -&gt; a)。</li>
+<li>void write(byte[] b) : 将字节数组中的字节写出到文件中。</li>
+<li>void write(byte[] b, int off, int len) : off表示字节数组起始的索引位置,输出len个字节长度到文件中的</li>
+<li>void close() : 关闭此文件输出流并释放与此流相关联的任何系统资源。</li>
+</ul>
+<p>使用步骤:</p>
+<ol>
+<li>创建流</li>
+<li>写入流</li>
+<li><p>关闭流</p>
+<pre><code>public static void main(String[] args) throws Exception {
+    // 使用构造方法创建FileOutputStream对象
+    FileOutputStream fos = new FileOutputStream(&quot;F:\\bbb\\wangzhi.txt&quot;);
+    // FileOutputStream fos2 = new FileOutputStream(new File(&quot;F:\\bbb\\wangzhi.txt&quot;));
+
+    // 调用write方法向文件中输出内容
+    // int字节,查询ASICC表
+    fos.write(97);
+    fos.write(65);
+    fos.write(98);
+    fos.write(66);
+    fos.write(99);
+
+    fos.write(new byte[]{67,100,68});
+
+    fos.close();
+}    
+</code></pre></li>
+</ol>
+<h3 id="FileInputStream"><a href="#FileInputStream" class="headerlink" title="FileInputStream"></a>FileInputStream</h3><p>构造方法(文件必须存在,不存在抛异常):</p>
+<ul>
+<li>FileInputStream(File file) : 通过打开与实际文件的连接创建一个 FileInputStream ，该文件由文件系统中的 File对象 file命名。  </li>
+<li>FileInputStream(String name) : 通过打开与实际文件的连接来创建一个 FileInputStream ，该文件由文件系统中的路径名 name命名。  </li>
+</ul>
+<p>常用方法:</p>
+<ul>
+<li>int read() : 从该输入流读取一个字节的数据。  </li>
+<li>int read(byte[] b) : 从该输入流读取最多 b.length个字节的数据为字节数组(返回的是读取到的字节的个数)。  </li>
+<li><p>void close() : 关闭此文件输入流并释放与流相关联的任何系统资源。</p>
+<pre><code>// 使用字节流复制图片
+public static void main(String[] args) throws IOException {
+
+    FileInputStream fis = new FileInputStream(&quot;D:\\美女.jpg&quot;);
+
+    FileOutputStream fos = new FileOutputStream(&quot;F:\\bbb\\美女.jpg&quot;);
+
+    /*long start = System.currentTimeMillis();
+    byte[] arr = new byte[1024 * 4];
+    int len;
+    while((len = fis.read(arr)) != -1){
+        fos.write(arr,0,len);
+    }
+    long end = System.currentTimeMillis();
+    System.out.println(end - start);*/
+
+    byte[] arr1 = new byte[1024 * 4];
+    int len1;
+    StringBuilder sb = new StringBuilder();
+    while((len1 = fis.read(arr1)) != -1){
+        sb.append(new String(arr1,0,len1));
+    }
+    fos.write(sb.toString().getBytes());
+
+    /*System.out.println(System.currentTimeMillis() - end);*/
+    fos.close();
+    fis.close();
+</code></pre></li>
+</ul>
+<pre><code>}
+</code></pre><h3 id="字符流"><a href="#字符流" class="headerlink" title="字符流"></a>字符流</h3><p>使用字节流去读中文(一个中文占据3个字节)可能出现乱码.</p>
+<ul>
+<li>Writer: 写数据的流<ol>
+<li>FileWriter</li>
+</ol>
+</li>
+<li>Reader: 读数据的流<ol>
+<li>FileReader</li>
+</ol>
+</li>
+</ul>
+<h3 id="FileReader"><a href="#FileReader" class="headerlink" title="FileReader"></a>FileReader</h3><p>构造方法:</p>
+<ul>
+<li>FileReader(String fileName)<br>创建一个新的 FileReader ，给定要读取的文件的名称。 </li>
+<li>FileReader(File file)<br>创建一个新的 FileReader ，给出 File读取。 </li>
+</ul>
+<p>常用方法:</p>
+<ul>
+<li>int read()<br>读一个字符  </li>
+<li>int read(char[] cbuf)<br>将字符读入数组。 </li>
+<li>void close()<br>关闭流并释放与之相关联的任何系统资源。 </li>
+</ul>
+<h3 id="FileWriter"><a href="#FileWriter" class="headerlink" title="FileWriter"></a>FileWriter</h3><p>构造方法:</p>
+<ul>
+<li>FileWriter(File file)<br>给一个File对象构造一个FileWriter对象。  </li>
+<li>FileWriter(File file, boolean append)<br>给一个File对象构造一个FileWriter对象。 </li>
+<li>FileWriter(String fileName)<br> 构造一个给定文件名的FileWriter对象。  </li>
+<li>FileWriter(String fileName, boolean append)<br> 构造一个FileWriter对象，给出一个带有布尔值的文件名，表示是否附加写入的数据。 </li>
+</ul>
+<p>常用方法:</p>
+<ul>
+<li>void write(char[] cbuf)<br>写入一个字符数组。    </li>
+<li>void write(int c)<br>写一个字符  </li>
+<li>void write(String str)<br>写一个字符串  </li>
+<li>void write(String str, int off, int len)<br>写一个字符串的一部分。</li>
+<li>void flush()<br>刷新流。  </li>
+<li>void close()<br>关闭流，先刷新。  </li>
+</ul>
+<pre><code>// 复制txt文件
+public static void main(String[] args) throws IOException {
+    // 创建字符输入流
+    FileReader fr = new FileReader(&quot;wangzhi.txt&quot;);
+
+    // 创建字符输出流
+    FileWriter fw = new FileWriter(&quot;wangzhi2.txt&quot;);
+
+    // 读取资源
+    char[] arr = new char[1024];
+    int len;
+    StringBuilder sb = new StringBuilder();
+    while((len = fr.read(arr)) != -1){
+        sb.append(arr);
+    }
+    fw.write(sb.toString());
+
+
+    // 关闭流
+    fw.close();
+    fr.close();
+}
+</code></pre><h1 id="IO流-高级"><a href="#IO流-高级" class="headerlink" title="IO流(高级)"></a>IO流(高级)</h1><h2 id="释放资源的标准代码"><a href="#释放资源的标准代码" class="headerlink" title="释放资源的标准代码"></a>释放资源的标准代码</h2><p>主要考虑的是在什么时候释放资源比较合适.而且在jdk1.7之前和之后是不同的.</p>
+<pre><code>package com.wzlove.demo;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+/**
+ * 标准的IO格式处理
+ *
+ * @author WZLOVE
+ * @create 2018-07-23 9:54
+ */
+public class StandardIO {
+
+    // jdk7之前
+    public static void main(String[] args) {
+
+        // 初始赋值为null
+        FileReader fr = null;
+        FileWriter fw = null;
+
+
+        try {
+            // 创建字符流对象
+            fr = new FileReader(&quot;student.txt&quot;);
+            fw = new FileWriter(&quot;student.txt&quot;);
+
+            // 操作资源(边读编写,耗资源,仅作为示例)
+            int len;
+            while((len = fr.read()) != -1){
+                fw.write((char) len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                // 判断输入流是否为null
+                if(fr != null){
+                    // 关闭资源
+                    fr.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+
+                try {
+                    // 判断输入流是否为null
+                    if(fw != null) {
+                        // 关闭资源
+                        fw.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
+    // jdk7之后
+
+    /**
+     * try(创建IO流对象的代码){
+     *     其他代码
+     * }catch(可能出现的异常){
+     *      打印异常信息
+     * }
+     * 上面的代码会自动调用close方法(也就是IO流对象都实现了Closeable接口(Closeable实现了AutoCloseable接口),
+     * 重写close方法).有兴趣的可以查看源码
+     */
+    public static void main(String[] args) {
+        try (
+                // 创建字符流对象
+                FileReader fr = new FileReader(&quot;student.txt&quot;);
+                FileWriter fw = new FileWriter(&quot;student.txt&quot;);
+                ){
+
+
+                // 操作资源(边读编写,耗资源,仅作为示例)
+                int len;
+                while((len = fr.read()) != -1){
+                    fw.write((char) len);
+                }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre><h2 id="Properties"><a href="#Properties" class="headerlink" title="Properties"></a>Properties</h2><p>是Map下的一个子类(意味着map有的它都有).该类的key和value的类型都是String类型,<br>开发中Properties使用会结合IO流对文件进行操作,  </p>
+<p>特殊的方法:</p>
+<ul>
+<li>String getProperties(String key): 根据键获取对应的值</li>
+<li>Object setProperties(String key,String value): 给集合中添加键值对映射关系,返回值是被替换的值.</li>
+</ul>
+<p>将Properties对象中的数据进行持久化保存(写数据到文件中):</p>
+<ul>
+<li>void store(OutputStream out, String comments):使用字节流将Properties对象中的内容写入到指定文件,<br>comments的意思是对文件的数据进行说明</li>
+<li>void store(Writer writer, String comments):使用字符流将Properties对象中的内容写入到指定文件,<br>comments的意思是对文件的数据进行说明</li>
+</ul>
+<p>从文件中获取数据到Properties集合中</p>
+<ul>
+<li>void load(InputStream inStream) : 将文件中的内容以字节流的方式写入到Properties的对象中.</li>
+<li>void load(Reader reader) : 将文件中的内容以字符流的方式写入到Properties的对象中.</li>
+</ul>
+<pre><code>public static void main(String[] args) throws IOException {
+
+       // 创建属性集对象
+       Properties p = new Properties();
+       // 添加数据
+       /*p.put(&quot;001&quot;,&quot;迪丽热巴&quot;);
+       p.put(&quot;002&quot;,&quot;郑爽&quot;);
+       p.put(&quot;003&quot;,&quot;杨紫&quot;);*/
+       // 调用方法,写入文件
+       // p.store(new FileWriter(&quot;a.properties&quot;),&quot;测试文件&quot;);
+
+       // p.store(new FileWriter(&quot;a.txt&quot;),&quot;测试文件&quot;);
+       //p.store(new FileOutputStream(&quot;b.properties&quot;),&quot;测试文件&quot;);
+
+       // 调用方法,读取文件
+       /*p.load(new FileReader(&quot;a.properties&quot;));
+       // map的子类,遍历的方法和map一样
+       Set&lt;Map.Entry&lt;Object, Object&gt;&gt; entries = p.entrySet();
+       for (Map.Entry&lt;Object, Object&gt; entry : entries) {
+           System.out.println(entry.getKey() + &quot;=&quot; + entry.getValue());
+       }*/
+
+       p.load(new FileInputStream(&quot;b.properties&quot;));
+       // map的子类,遍历的方法和map一样
+       Set&lt;Map.Entry&lt;Object, Object&gt;&gt; entries = p.entrySet();
+       Iterator&lt;Map.Entry&lt;Object, Object&gt;&gt; iterator = entries.iterator();
+       while(iterator.hasNext()){
+           Map.Entry&lt;Object, Object&gt; map = iterator.next();
+           System.out.println(map.getKey() + &quot;=&quot; + map.getValue());
+
+       }
+
+
+   }
+</code></pre><h2 id="高效流"><a href="#高效流" class="headerlink" title="高效流"></a>高效流</h2><ul>
+<li>高效字节流:<ol>
+<li>高效字节输入流(BufferedInputStream)</li>
+<li>高效字节输出流(BufferedOutStream)</li>
+</ol>
+</li>
+<li>高效字符流:<ol>
+<li>高效字符输入流(BufferedReader)</li>
+<li>高效字符输出流(BufferedWriter)</li>
+</ol>
+</li>
+</ul>
+<h3 id="高效字节流"><a href="#高效字节流" class="headerlink" title="高效字节流"></a>高效字节流</h3><p>构造方法:</p>
+<ul>
+<li>public BufferedInputStream(InputStream in) ：创建一个 新的缓冲输入流。</li>
+<li>public BufferedOutputStream(OutputStream out) ： 创建一个新的缓冲输出流。</li>
+</ul>
+<p>常用方法:<br>方法与普通字节流的方法没有区别.下面用个例子测试一下两个的效率,文件大小是七十几兆</p>
+<pre><code>public static void main(String[] args) throws IOException {
+
+    // bufferedCopy();
+
+    byteCopy();
+}
+
+public static void bufferedCopy() throws IOException {
+
+    long startTime = System.currentTimeMillis();
+
+    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(&quot;F:\\desktop\\Desktop\day09\\day09\\avi\\01-今日内容.itcast&quot;));
+    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(&quot;abc.avi&quot;));
+
+    int len;
+    while((len = bis.read()) != -1){
+        bos.write(len);
+    }
+
+    bos.close();
+    bis.close();
+    System.out.println(System.currentTimeMillis() - startTime); // 3171
+
+}
+
+public static void byteCopy() throws IOException {
+
+    long startTime = System.currentTimeMillis();
+
+    FileInputStream fis = new FileInputStream(&quot;F:\\desktop\\Desktop\\day09\\day09\\avi\\01-今日内容.itcast&quot;);
+    FileOutputStream fos = new FileOutputStream(&quot;bcd.avi&quot;);
+
+    int len;
+    while((len = fis.read()) != -1){
+        fos.write(len);
+    }
+
+    fis.close();
+    fos.close();
+
+    System.out.println(System.currentTimeMillis() - startTime); // 297409
+
+}
+</code></pre><h3 id="字符高效流"><a href="#字符高效流" class="headerlink" title="字符高效流"></a>字符高效流</h3><p>构造方法:</p>
+<ul>
+<li>public BufferedReader(Reader in) ：创建一个 新的缓冲输入流。</li>
+<li>public BufferedWriter(Writer out) ： 创建一个新的缓冲输出流。    </li>
+</ul>
+<p>常用方法(父类有的它都有):</p>
+<ul>
+<li>void newLine() : (高效输出字符流的方法)写出一个换行符,跨平台.</li>
+<li>String readLine() : 读取一行数据(结束标志为null)</li>
+</ul>
+<pre><code>package com.wzlove.buffered;
+
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ * 测试高效字符流
+ *
+ * @author WZLOVE
+ * @create 2018-07-23 15:32
+ */
+public class Demo1 {
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bw = new BufferedWriter(new FileWriter(&quot;c.txt&quot;));
+        Scanner in = new Scanner(System.in);
+        String str;
+        while(true){
+            System.out.println(&quot;请输入您想要的内容:&quot;);
+            str = in.nextLine();
+            if(str.equals(&quot;ends&quot;)){
+                break;
+            }
+            bw.write(str);
+            bw.newLine();
+        }
+        bw.flush();
+        bw.close();
+
+        System.out.println(&quot;您输入的内容是:&quot;);
+        BufferedReader br = new BufferedReader(new FileReader(&quot;c.txt&quot;));
+        String str2;
+        while((str2 = br.readLine()) != null){
+            System.out.println(str2);
+        }
+        br.close();
+    }
+}
+</code></pre><h3 id="转换流-字符流"><a href="#转换流-字符流" class="headerlink" title="转换流(字符流)"></a>转换流(字符流)</h3><ul>
+<li>InputStreamReader<ol>
+<li>构造方法<ol>
+<li>InputStreamReader(InputStream in) : 创建一个使用默认字符集的字符流。</li>
+<li>InputStreamReader(InputStream in, String charsetName) : 创建一个指定字符集的字符流。</li>
+</ol>
+</li>
+<li>常用方法<ol>
+<li>int read() 读一个字符  </li>
+<li>void close() 关闭流并释放与之相关联的任何系统资源。 </li>
+</ol>
+</li>
+</ol>
+</li>
+<li>OutputStreamWriter<ol>
+<li>构造方法<ol>
+<li>OutputStreamWriter(OutputStream in) : 创建一个使用默认字符集的字符流。</li>
+<li>OutputStreamWriter(OutputStream in, String charsetName) : 创建一个指定字符集的字符流。</li>
+</ol>
+</li>
+<li>常用方法:<ol>
+<li>void close()  关闭流，先刷新。  </li>
+<li>void flush()  刷新流。</li>
+<li>void write(int c)  写一个字符</li>
+<li>void write(String str) 写一个字符串  </li>
+</ol>
+</li>
+</ol>
+</li>
+</ul>
+<p>什么时候使用?如果需要以指定的字符集进行数据的读写操作.</p>
+<pre><code>package com.wzlove.demo1;
+
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ * 测试转换流
+ * @author WZLOVE
+ * @create 2018-07-23 18:20
+ */
+public class Demo {
+
+    public static void main(String[] args) throws IOException {
+        // 创建高效输出流
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(&quot;d.txt&quot;),&quot;GBK&quot;));
+
+        // 写入数据
+        Scanner in = new Scanner(System.in);
+        while(true){
+            System.out.println(&quot;请输出内容&quot;);
+            String str = in.nextLine();
+            if(str.equals(&quot;ends&quot;)){
+                break;
+            }
+            bw.write(str);
+            bw.newLine();
+        }
+        in.close();
+        // 关闭流
+        bw.flush();
+        bw.close();
+
+        // 创建高效输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(&quot;d.txt&quot;),&quot;GBK&quot;));
+        String str;
+        while((str = br.readLine()) != null){
+            System.out.println(str);
+        }
+        br.close();
+    }
+}
+</code></pre><p>回忆学过的IO流:</p>
+<pre><code>字节:
+    InputStream
+        |-- FileInputStream : 输入字节流
+        |-- FilterInputStream (不用管,没学)
+            |-- BufferedInputStream : 高效缓冲输入字节流
+    OutputStream
+        |-- FileOutputStream : 输出字符流
+        |-- FilterOutputStream (不用管,没学)
+            |-- BufferedOutputStream : 高效缓冲输出字节流
+字符:      
+    Reader
+        |-- BufferedReader : 高效缓冲字符输入流
+        |-- InputStreamReader : 转换流,从字节流到字符流的桥
+            |-- FileReader : 字符输入流
+    Writer
+        |-- BufferedWriter : 高效缓冲字符输出流
+        |-- OutputStreamWriter : 转换流,是字符的桥梁流以字节流
+            |-- FileWriter : 字符输出流
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day08-file-recursive/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2956,257 +4091,13 @@ System.out.println(&quot;该数组中对称字符串的个数为:&quot; + sum);
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/19/你好-Hexo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/19/你好-Hexo/" itemprop="url">你好,Hexo</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-19T21:45:19+08:00">
-                2018-07-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>测试是否成功.我的第一个上传.</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/19/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/19/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-19T20:22:16+08:00">
-                2018-07-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/WangZhi.github.io/page/2/">2</a><a class="extend next" rel="next" href="/WangZhi.github.io/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -3250,7 +4141,7 @@ System.out.println(&quot;该数组中对称字符串的个数为:&quot; + sum);
               
                 <a href="/WangZhi.github.io/archives">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3263,7 +4154,7 @@ System.out.println(&quot;该数组中对称字符串的个数为:&quot; + sum);
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
