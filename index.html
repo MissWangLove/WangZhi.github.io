@@ -290,6 +290,323 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/26/day11-网络编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/26/day11-网络编程/" itemprop="url">day10-网络编程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-26T19:31:48+08:00">
+                2018-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>网络编程 : 通过编程实现不同计算机间数据的共享</li>
+<li>C/S : 客户端/服务器模式<ol>
+<li>好处:部分代码放在客户端,访问服务器只需要传输有效的数据.</li>
+<li>弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.</li>
+</ol>
+</li>
+<li>B/S : 浏览器/服务器模式<ol>
+<li>好处:不需要安装客户端,不需要考虑服务器升级问题.</li>
+<li>弊端:所有的数据都在服务器,网络不好,反应慢,不友好.</li>
+</ol>
+</li>
+</ul>
+<h2 id="网络编程三要素"><a href="#网络编程三要素" class="headerlink" title="网络编程三要素"></a>网络编程三要素</h2><ol>
+<li>协议 : 计算机与计算机之间传输的规则(协议的三要素如下)<ol>
+<li>语法，就是这一段内容要符合一定的规则和格式。例如，括号要成对，结束要使用分号等。</li>
+<li>语义，就是这一段内容要代表某种意义。例如数字减去数字是有意义的，数字减去文本一般来说就没有意义。</li>
+<li>顺序，就是先干啥，后干啥。例如，可以先加上某个数值，然后再减去某个数值。</li>
+</ol>
+</li>
+<li>IP地址 : 在网络中,ip地址是唯一标识</li>
+<li>端口号 : 计算机中应用程序的唯一标识</li>
+</ol>
+<h4 id="客户端的代码步骤"><a href="#客户端的代码步骤" class="headerlink" title="客户端的代码步骤"></a>客户端的代码步骤</h4><ol>
+<li>创建Socket的对象,指定ip地址和端口号</li>
+<li>利用socket获取文件字节输出流对象(可以使用转换流将字节流转化为打印流)</li>
+<li>利用字节流向服务端发送消息</li>
+<li>关闭socket资源</li>
+</ol>
+<h4 id="服务端的代码步骤"><a href="#服务端的代码步骤" class="headerlink" title="服务端的代码步骤"></a>服务端的代码步骤</h4><ol>
+<li>创建ServerSocket对象,设置端口号</li>
+<li>利用创建的ServerSocket对象使用sccept方法获取Socket对象</li>
+<li>利用第二步获取的socket获取字节输入流对象(可以只用转换流将字节流转化为字符高效流)</li>
+<li>使用第三步的流读取客户端发送的信息</li>
+<li>关闭资源</li>
+</ol>
+<blockquote>
+<p>在整个过程中,需要注意的是随时刷新缓冲区和关闭流,所以推荐使用打印流,会自动刷新和自动换行.</p>
+</blockquote>
+<p>写个小例子,实现客户端和服务端的单次通信</p>
+<pre><code>package homework.demo5;
+
+import java.io.*;
+import java.net.Socket;
+
+/**
+ * 创建客户端
+ *
+ * @author WZLOVE
+ * @create 2018-07-25 20:47
+ */
+public class ClientDemo {
+
+    public static void main(String[] args) throws IOException {
+        // 创建Socket对象
+        Socket socket = new Socket(&quot;localhost&quot;,8888);
+
+        // 利用转换流转换成打印流
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
+
+        // 向服务器写内容
+        pw.println(&quot;你好,我是客户端&quot;);
+
+        // 获取高效字符输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        // 获取服务器发送的消息
+        String s = br.readLine();
+        System.out.println(&quot;服务器说:&quot; + s);
+
+        // 关闭流
+        socket.close();
+    }
+
+}
+
+package homework.demo5;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * 服务端
+ *
+ * @author WZLOVE
+ * @create 2018-07-25 20:57
+ */
+public class ServerDemo {
+
+    public static void main(String[] args) throws IOException {
+        // 创建服务端网络对象,指定端口号
+        ServerSocket ss = new ServerSocket(8888);
+        // 获取Socket对象
+        Socket accept = ss.accept();
+        // 获取高效输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(accept.getInputStream()));
+        // 获取输入的信息
+        String s = br.readLine();
+        System.out.println(&quot;客户端说 : &quot; + s);
+
+        // 获取打印流
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true );
+        // 向客户端发送消息
+        pw.println(&quot;你好,我是服务端&quot;);
+        // 关闭资源
+        accept.close();
+        ss.close();
+    }
+}
+</code></pre><p>写个例子,实现客户端向服务器上传图片</p>
+<pre><code>package homework.demo7;
+
+import java.io.*;
+import java.net.Socket;
+
+/**
+ * 网络通信中的客户端
+ */
+public class Cilent {
+
+    public static void main(String[] args) throws IOException {
+        // 创建Socket客户端对象
+        Socket socket = new Socket(&quot;localhost&quot;,8888);
+        // 准备文件进行传输
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(&quot;yz.jpg&quot;));
+        // 使用socket对象获取字节输入流对象
+        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+        // 一边读文件,一边向服务器发送数据
+        byte[] arr = new byte[1024 * 5];
+        int len;
+        while((len = bis.read(arr)) != -1){
+            bos.write(arr,0,len);
+        }
+        // 数据上传完毕,刷新缓存区
+        bos.flush();
+        // 关闭不用的资源
+        bis.close();
+        // 关闭输出流套接字,这个步骤是必须的
+        socket.shutdownOutput();
+
+        // 读取反馈的数据
+        // 使用socket对象获取字节输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String line;
+        StringBuilder sb = new StringBuilder();
+        while((line = br.readLine()) != null){
+            sb.append(line);
+        }
+        System.out.println(sb);
+        // 关闭资源
+        socket.close();
+    }
+
+}
+
+
+package homework.demo7;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * 服务端
+ */
+public class Server {
+    public static void main(String[] args) throws IOException {
+        // 创建服务端的对象
+        ServerSocket ss = new ServerSocket(8888);
+        // 使用服务端对象获取Socket对象
+        Socket accept = ss.accept();
+        // 准备接受上传的文件并且写入服务器
+        // 创建高效字节输出流,用来指向文件
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(&quot;test.jpg&quot;));
+        // 使用socket对象获取文件字节输入流(转化为高效字节输入流)
+        BufferedInputStream bis = new BufferedInputStream(accept.getInputStream());
+        // 边读边写
+        byte[] arr = new byte[1024 * 5];
+        int len;
+        while((len = bis.read(arr)) != -1){
+            bos.write(arr,0,len);
+            // 进行刷新
+            bos.flush();
+        }
+        // 关闭不使用的资源
+        bos.close();
+        // 向客户端反馈信息
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true);
+        // 写信息
+        pw.println(&quot;上传成功&quot;);
+        // 关闭资源
+        accept.close();
+        ss.close();
+    }
+}
+</code></pre><blockquote>
+<p>有关网络的相关知识大家可以去订阅极客时间上的趣谈网络协议,那个讲的很清楚</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/24/day10-commonsio-FileUtiles/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1358,26 +1675,213 @@ public class Demo {
         br.close();
     }
 }
+</code></pre><h2 id="对象操作流-序列化流"><a href="#对象操作流-序列化流" class="headerlink" title="对象操作流(序列化流)"></a>对象操作流(序列化流)</h2><p>每次读取和写出的都是JavaBean对象.</p>
+<ul>
+<li><p>序列化:将对象写入到文件中的过程</p>
+</li>
+<li><p>反序列化:从文件中读取对象到程序的过程</p>
+</li>
+<li><p>transient: 标识瞬态,序列化的时候,该修饰符修饰的成员不能序列化</p>
+</li>
+</ul>
+<h4 id="ObjectOutputStream"><a href="#ObjectOutputStream" class="headerlink" title="ObjectOutputStream"></a>ObjectOutputStream</h4><ul>
+<li>构造方法:<ul>
+<li>public ObjectOutputStream(OutputStream out) ： 创建一个指定OutputStream的ObjectOutputStream。</li>
+</ul>
+</li>
+<li>特有方法:<ul>
+<li>public final void writeObject (Object obj) : 将指定的对象写出。</li>
+</ul>
+</li>
+</ul>
+<h4 id="ObjectInputStream"><a href="#ObjectInputStream" class="headerlink" title="ObjectInputStream"></a>ObjectInputStream</h4><ul>
+<li>构造方法:<ul>
+<li>public ObjectInputStream(InputStream in) ： 创建一个指定InputStream的ObjectInputStream。</li>
+</ul>
+</li>
+<li><p>特有方法:</p>
+<ul>
+<li>public final Object readObject () : 读取一个对象。</li>
+</ul>
+</li>
+<li><p>java.io.EOFException : 数据输出流到了末尾,继续读取会抛出此异常(读到文件的末尾)</p>
+<ul>
+<li>解决方案:使用集合存储要写出的对象,写数据的时候只需要写一个集合对象,下次使用的时候只需要读取了一次就可以.</li>
+</ul>
+</li>
+</ul>
+<p>举个例子:</p>
+<pre><code>package review.serializable;
+
+import lombok.*;
+
+import java.io.Serializable;
+import java.net.ServerSocket;
+
+/**
+ * 创建学生类
+ * 利用lombok可以使用注解来写get,set等方法,使实体类看起来很简单
+ * @author WZLOVE
+ * @create 2018-07-25 19:17
+ */
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class Student implements Serializable {
+
+    private static final long serialVersionUID = -1495868075552053159L;
+    private String name;
+    private int age;
+    private double score;
+
+}
+
+
+package review.serializable;
+
+import java.io.*;
+import java.util.ArrayList;
+
+/**
+ * 测试序列化流
+ *
+ * @author WZLOVE
+ * @create 2018-07-25 19:19
+ */
+public class SerializableDemo {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        // 创建对象输出流
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(&quot;stu1.txt&quot;));
+        // 向文件中输出数据(为了方便读取,所以存入集合,这样的话,读取的时候只用读取一次,查看源码也可以看出,集合也实现了Serializable接口)
+        ArrayList&lt;Student&gt; list = new ArrayList&lt;&gt;();
+        // 向集合中添加数据
+        list.add(new Student(&quot;stu1&quot;,23,100.0));
+        list.add(new Student(&quot;stu2&quot;,23,98.0));
+        list.add(new Student(&quot;stu3&quot;,24,96.0));
+        // 利用对象输入流向文件中写入内容
+        oos.writeObject(list);
+        oos.close();
+
+        // 创建对象输入流
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(&quot;stu1.txt&quot;));
+        // 利用对象输入流获取文件内容
+        Object object = ois.readObject();
+        // 强制类型转换,将Object转换为集合
+        ArrayList&lt;Student&gt; arrayList = (ArrayList&lt;Student&gt;)object;
+        // 进行遍历
+        for (int i = 0; i &lt; arrayList.size(); i++) {
+            System.out.println(arrayList.get(i));
+        }
+        // 关闭流
+        ois.close();
+
+    }
+}
+</code></pre><h2 id="打印流-只有输出流"><a href="#打印流-只有输出流" class="headerlink" title="打印流(只有输出流)"></a>打印流(只有输出流)</h2><ul>
+<li>字节打印流(了解)<ul>
+<li>PrintStream:</li>
+</ul>
+</li>
+<li><p>字符打印流(掌握)</p>
+<ul>
+<li><p>PrintWriter</p>
+<ul>
+<li><p>构造方法:</p>
+<ol>
+<li>public PrintStream(String fileName) ： 使用指定的文件名创建一个新的打印流。</li>
+<li>PrintWriter(File file) 使用指定的文件创建一个新的PrintWriter，而不需要自动的线路刷新。</li>
+<li>PrintWriter(OutputStream out) 从现有的OutputStream创建一个新的PrintWriter，而不需要自动线路刷新。</li>
+<li>PrintWriter(Writer out) 创建一个新的PrintWriter，没有自动线冲洗(追加内容考虑参数的变化)。  </li>
+<li>PrintWriter(Writer out, boolean autoFlush)创建一个新的PrintWriter。</li>
+<li>PrintWriter(OutputStream out, boolean autoFlush) 从现有的OutputStream创建一个新的PrintWriter。</li>
+</ol>
+</li>
+<li><p>特有方法(自动换行(实现自动换行,必须使用println方法)和自动刷新(在构造方法中启用并且要使用println()方法)功能):</p>
+<ol>
+<li>void println(Object x) 打印一个对象，然后终止该行。 </li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>注意:</p>
+<blockquote>
+<ol>
+<li>实现自动换行必须使用PrintWriter中特有的方法println</li>
+<li>实现自动刷新必须满足两个要求,第一个是在构造方法中启用自动刷新,第二个是使用PrintWriter中特有的方法println</li>
+</ol>
+</blockquote>
+</blockquote>
+<p>举个例子:</p>
+<pre><code>package review.print;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+/**
+ * 测试打印流的书写
+ * 打印流也是用写文件的,简单的是他能实现自动刷新和自动换行,其他的都简单,就不演示了
+ * 打印流分为打印字节流和打印字符流
+ * @author WZLOVE
+ * @create 2018-07-25 19:55
+ */
+public class PrintWriteDemo {
+
+    public static void main(String[] args) throws IOException {
+        // 打印流只有输出流
+        // 创建打印字符流对象(一个true表示追加,第二个true代表开启自动刷新)
+        PrintWriter pw = new PrintWriter(new FileWriter(&quot;pw.txt&quot;,true),true);
+        // 利用特有的方法进行输出(无论是自动刷新还是自动换行,都要利用这个特有的方法)
+        pw.println(&quot;qazxswedc,我爱你&quot;);
+        pw.println(&quot;qazxswedc,我爱你&quot;);
+        pw.println(&quot;qazxswedc,我爱你&quot;);
+        // 关闭流
+        pw.close();
+    }
+
+}
 </code></pre><p>回忆学过的IO流:</p>
 <pre><code>字节:
     InputStream
         |-- FileInputStream : 输入字节流
         |-- FilterInputStream (不用管,没学)
             |-- BufferedInputStream : 高效缓冲输入字节流
+        |-- ObjectInputStream : 对象输入字节流(反序列化流)
     OutputStream
         |-- FileOutputStream : 输出字符流
         |-- FilterOutputStream (不用管,没学)
             |-- BufferedOutputStream : 高效缓冲输出字节流
+        |-- ObjectOutputStream : 对象输出字节流(序列化流)
+        |-- PrintStream : 打印字节流
 字符:      
     Reader
-        |-- BufferedReader : 高效缓冲字符输入流
-        |-- InputStreamReader : 转换流,从字节流到字符流的桥
+        |-- BufferedReader : 高效缓冲字符输入流(读取字符串的时候使用,注意readLine读取一行数据,但不会读取换行符)
+        |-- InputStreamReader : 转换流,将字节流转化为字符流
             |-- FileReader : 字符输入流
     Writer
-        |-- BufferedWriter : 高效缓冲字符输出流
-        |-- OutputStreamWriter : 转换流,是字符的桥梁流以字节流
+        |-- BufferedWriter : 高效缓冲字符输出流(newLine方法是换行)
+        |-- OutputStreamWriter : 转换流,将字符流转化为字节流
             |-- FileWriter : 字符输出流
-</code></pre>
+        |-- PrintWriter : 打印字符流(方便使用,自动刷新和自动换行)
+</code></pre><blockquote>
+<p>转换流的使用场景:</p>
+<blockquote>
+<ol>
+<li>读取数据需要指定字符编码集或者就是本身的意义,将字节流转化为字符流</li>
+<li>写出数据需要指定字符编码集<br>注意字节流和字符流的使用场景</li>
+<li>对于文件的拷贝使用字节流</li>
+<li>文本文件的数据的读取的话,使用字符流</li>
+<li>文本文件的数据的写出的话,字符流和字节流都可以</li>
+</ol>
+</blockquote>
+</blockquote>
+
           
         
       
@@ -3841,256 +4345,6 @@ public class DDZDemoTest {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/20/day01_Object_API/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/20/day01_Object_API/" itemprop="url">Object类和常用的API</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-20T13:30:19+08:00">
-                2018-07-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Object类和常用的API"><a href="#Object类和常用的API" class="headerlink" title="Object类和常用的API"></a>Object类和常用的API</h1><p><strong><em>学习过程中的笔记,涉及到Objetc中的equals方法和toString方法,日期类Date,日历类Calendar,日期格式化类SimpleDateFormat以及基本数据类型和封装类的拆箱和装箱,还要String与基本数据类型的转换.有错误还望谅解</em></strong></p>
-<h2 id="Object类"><a href="#Object类" class="headerlink" title="Object类"></a>Object类</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>java.lang.Object 类是Java语言中的根类，即所有类的父类。它中描述的所有方法子类都可以使用。在对象实例化的时候，最终找的父类就是Object。如果一个类没有特别指定父类， 那么默认则继承自Object类。Object类当中包含的方法有11个,常用的有两个:  </p>
-<ul>
-<li>public String toString():返回该对象的字符串表示.</li>
-<li>public boolean equals(Object obj):指示其他对象是否与此对象相等.</li>
-</ul>
-<h3 id="toString方法"><a href="#toString方法" class="headerlink" title="toString方法"></a>toString方法</h3><p>toString方法返回该对象的字符串表示，其实该字符串内容就是对象的类型+@+内存地址值。 </p>
-<p>由于toString方法返回的结果是内存地址，而在开发中，经常需要按照对象的属性得到相应的字符串表现形式，因此也需要重写它。</p>
-<h5 id="重写toString方法"><a href="#重写toString方法" class="headerlink" title="重写toString方法"></a>重写toString方法</h5><pre><code>@Override
-public String toString() {
-    return &quot;Person{&quot; +
-            &quot;name=&apos;&quot; + name + &apos;\&apos;&apos; +
-            &quot;, age=&quot; + age +
-            &apos;}&apos;;
-}
-</code></pre><blockquote>
-<p>我们在使用输出语句输出对象名的时候默认调用toString()方法.</p>
-</blockquote>
-<h3 id="equlas-方法"><a href="#equlas-方法" class="headerlink" title="equlas()方法"></a>equlas()方法</h3><p>调用成员方法equals并指定参数为另一个对象，则可以判断这两个对象是否是相同的。这里的“相同”有默认和自定义两种方式。</p>
-<h5 id="默认地址比较"><a href="#默认地址比较" class="headerlink" title="默认地址比较"></a>默认地址比较</h5><p>如果没有覆盖重写equals方法，那么Object类中默认进行== 运算符的对象地址比较，只要不是同一个对象，结果必然为false。</p>
-<h5 id="对象内容比较"><a href="#对象内容比较" class="headerlink" title="对象内容比较"></a>对象内容比较</h5><p>如果希望进行对象的内容比较，即所有或指定的部分成员变量相同就判定两个对象相同，则可以覆盖重写equals方法。</p>
-<h5 id="重写equals-方法"><a href="#重写equals-方法" class="headerlink" title="重写equals()方法"></a>重写equals()方法</h5><pre><code>@Override
-    public boolean equals(Object o) {
-
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Person person = (Person) o;
-        return age == person.age &amp;&amp;
-                Objects.equals(name, person.name);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(name, age);
-    }
-</code></pre><p>这段代码充分考虑了对象为空、类型一致等问题，但方法内容并不唯一。</p>
-<h5 id="Objects类"><a href="#Objects类" class="headerlink" title="Objects类"></a>Objects类</h5><p>在JDK7添加了一个Objects工具类，它提供了一些方法来操作对象，它由一些静态的实用方法组成，这些方法是null-save（空指针安全的）或null-tolerant（容忍空指针的），用于计算对象的hashcode、返回对象的字符串表示形式、比较两个对象。在比较两个对象的时候，Object的equals方法容易抛出空指针异常，而Objects类中的equals方法就优化了这个问题。<br>源码如下:</p>
-<pre><code>public static boolean equals(Object a, Object b) {
-    return (a == b) || (a != null &amp;&amp; a.equals(b));
-}
-</code></pre><h2 id="日期时间类"><a href="#日期时间类" class="headerlink" title="日期时间类"></a>日期时间类</h2><p>Date类只需要注意三个方法:</p>
-<ul>
-<li>Date() 分配一个 Date对象，并初始化它，以便它代表它被分配的时间，测量到最近的毫秒。 new Date();来创建当前时间</li>
-<li>Date(long date) 分配一个 Date对象，并将其初始化为表示自称为“时代”的标准基准时间以后的指定毫秒数，即1970年1月1日00:00:00 GMT。中国是东八区,所以时间要加八个小时</li>
-<li>long getTime()  返回自1970年1月1日以来，由此 Date对象表示的00:00:00 GMT的毫秒 数 。 获取时间的毫秒数.</li>
-</ul>
-<p>SimpleDormatDate类也注意三个方法:</p>
-<ul>
-<li>SimpleDateFormat(String pattern)  使用给定模式 SimpleDateFormat并使用默认的 FORMAT语言环境的默认日期格式符号。模式一般为(“yyyy年MM月dd日 HH:mm:ss”)</li>
-<li>String format(Date date) 将日期格式化成日期/时间字符串。 将日期对象转化为构造方法中固定模式的字符串.</li>
-<li>Date parse(String source) 从给定字符串的开始解析文本以生成日期。  将String类型转化为构造方法中固定模式的Date类型.</li>
-</ul>
-<blockquote>
-<p>注意的是模式中的格式 : y代表年,M代表月,d代表天,H代表时,m代表分,s代表秒,S代表毫秒,严格区分大小写.</p>
-</blockquote>
-<h2 id="Calendar类"><a href="#Calendar类" class="headerlink" title="Calendar类"></a>Calendar类</h2><p>日历类是一个抽象类,使用如下:</p>
-<pre><code>// 计算某年某月有多少天,可以用来判断瑞年,设置月份的时候注意点
-// 使用方法获取对象
-Calendar calendar = Calendar.getInstance();
-// 设置时间
-Scanner in = new Scanner(System.in);
-System.out.println(&quot;请输入计算的时间的后一天(yyyy-MM-dd):&quot;);
-String date = in.nextLine();
-in.close();
-String[] arr = date.split(&quot;-&quot;);
-int year = Integer.valueOf(arr[0]);
-int month = Integer.valueOf(arr[1]);
-int day = Integer.valueOf(arr[2]);
-calendar.set(year,month,day);
-// 计算后一天
-calendar.add(Calendar.DAY_OF_MONTH,-1);
-System.out.println(calendar.get(Calendar.YEAR));
-System.out.println(calendar.get(Calendar.MONTH));
-System.out.println(calendar.get(Calendar.DAY_OF_MONTH));
-// 获取
-System.out.println(&quot;美国一周从周日开始,您输入的该天为周&quot; + calendar.get(Calendar.DAY_OF_WEEK) + &quot;在中国也就是周&quot; + (calendar.get(Calendar.DAY_OF_WEEK) - 1));
-</code></pre><blockquote>
-<p>注意的是美国的星期从周日开始,美国的月份从0月开始.常用的方法使get和set,还有getInstance.</p>
-</blockquote>
-<h2 id="System类"><a href="#System类" class="headerlink" title="System类"></a>System类</h2><p>常用的方法有两个:</p>
-<ul>
-<li>static void arraycopy(Object src, int srcPos, Object dest, int destPos, int length) 将指定源数组中的数组从指定位置复制到目标数组的指定位置。<blockquote>
-<p>src - 源数组。srcPos - 源数组中的起始位置。 dest - 目标数组。 destPos - 目的地数据中的起始位置。 length - 要复制的数组元素的数量。</p>
-</blockquote>
-</li>
-<li><p>static long currentTimeMillis() 返回当前时间（以毫秒为单位）。       </p>
-<blockquote>
-<p>这个方法一般用于程序的优化</p>
-</blockquote>
-<p>  // 现有一个字符数组{‘i’,’t’,’c’,’a’,’s’,’a’}，请使用System类中的arraycopy()方法在控制台输出“itcast”。<br>  // （提示：将[1]号数组元素复制到最后位置并覆盖原有元素。）<br>  // 创建字符数组<br>  char[] charArr = {‘i’,’t’,’c’,’a’,’s’,’a’};<br>  // 使用arraycopy方法<br>  System.arraycopy(charArr,1,charArr,charArr.length - 1, 1);<br>  System.out.println(charArr);</p>
-</li>
-</ul>
-<h2 id="StringBuilder类"><a href="#StringBuilder类" class="headerlink" title="StringBuilder类"></a>StringBuilder类</h2><p>常用的方法:</p>
-<ul>
-<li>StringBuilder() 构造一个没有字符的字符串构建器，初始容量为16个字符。</li>
-<li>StringBuilder(String str) 构造一个初始化为指定字符串内容的字符串构建器。</li>
-<li>StringBuilder append(….) 将任意数据类型到序列中。返回当前对象.</li>
-</ul>
-<pre><code>// 分析以下需求，并用代码实现：
-// 1.定义数字字符串数组{&quot;010&quot;,&quot;3223&quot;,&quot;666&quot;,&quot;7890987&quot;,&quot;123123&quot;}；
-// 2.判断该数字字符串数组中的数字字符串是否是对称(第一个数字和最后一个数字相等，第二个数字和倒数第二个数字是相等的，依次类推)的，并逐个输出；
-// 3.如：010 是对称的，3223 是对称的，123123 不是对称的；
-// 4.最终打印该数组中对称字符串的个数。
-// 定义个数
-int sum = 0;
-// 定义数字字符串数组
-String[] strArr = {&quot;010&quot;,&quot;3223&quot;,&quot;666&quot;,&quot;7890987&quot;,&quot;123123&quot;};
-for (int i = 0; i &lt; strArr.length; i++) {
-    StringBuilder sb = new StringBuilder(strArr[i]);
-    // 反转自己
-    sb.reverse();
-    System.out.println(sb + &quot;:&quot; +strArr[i]);
-    if(sb.toString().equals(strArr[i])){
-        sum ++;
-        System.out.println(strArr[i] + &quot;是对称的.&quot;);
-    }else{
-        System.out.println(strArr[i] + &quot;是不对称的.&quot;);
-    }
-}
-System.out.println(&quot;该数组中对称字符串的个数为:&quot; + sum);
-</code></pre><h2 id="装箱和拆箱"><a href="#装箱和拆箱" class="headerlink" title="装箱和拆箱"></a>装箱和拆箱</h2><p>基本数据类型和引用数据类型,基本数据类型是不能调用方法的,而引用数据类型可以创建对象调用方法.</p>
-<table><br>    <tr><br>        <th>基本数据类型</th><br>        <th>引用数据类型</th><br>        <th>常用的属性</th><br>        <th>常用的方法</th><br>    </tr><br>    <tr><br>        <td>byte</td><br>        <td>Byte</td><br>        <td><br>            static byte MAX_VALUE : Byte类型的最大值 <br><br>            static byte MIN_VALUE : Byte类型的最小值<br>        </td><br>        <td><br>            static byte parseByte(String s) 将字符串参数解析为带符号的十进制 byte 。  <br><br>            static String toString(byte b)  返回一个新的 String对象，代表指定的 byte 。<br>         </td><br>    </tr><br>    <tr><br>        <td>short</td><br>        <td>Short</td><br>        <td><br>            static short MAX_VALUE:short类型的最大值  <br><br>            static short MIN_VALUE:short类型的最小值<br>        </td><br>        <td><br>            static short parseShort(String s) 将字符串参数解析为带符号的十进制 short 。 <br><br>            static String toString(short s) 将字符串参数解析为带符号的十进制 short 。<br>        </td><br>    </tr><br>    <tr><br>        <td>int</td><br>        <td>Integer</td><br>        <td><br>            static int MAX_VALUE:int类型的最大值  <br><br>            static int MIN_VALUE:int类型的最小值<br>        </td><br>        <td><br>            static int parseInt(String s):将字符串参数解析为带符号的十进制整数。<br><br>            static String toString(int i):返回一个 String指定整数的 String对象。<br>        </td><br>    </tr><br>    <tr><br>        <td>long</td><br>        <td>Long</td><br>        <td><br>            static long MAX_VALUE:long类型的最大值  <br><br>            static long MIN_VALUE:long类型的最小值<br>        </td><br>        <td><br>            static long parseLong(String s):将字符串参数解析为带符号的十进制 long 。 <br><br>            static String toString(long i):返回 String表示指定对象 long 。<br>        </td><br>    </tr><br>    <tr><br>        <td>float</td><br>        <td>Float</td><br>        <td><br>            static float MAX_VALUE:long类型的最大值  <br><br>            static float MIN_VALUE:long类型的最小值<br>        </td><br>        <td><br>            static float parseFloat(String s) 返回一个新 float初始化为指定的代表的值 String ，如通过执行 valueOf类的方法 Float 。  <br><br>            static String toString(float f) 返回 float参数的字符串 float形式。<br>        </td><br>    </tr><br>    <tr><br>        <td>double</td><br>        <td>Double</td><br>         <td><br>             static double MAX_VALUE:double类型的最大值  <br><br>             static double MIN_VALUE:double类型的最小值<br>         </td><br>        <td><br>            static double parseDouble(String s) 返回一个新 double初始化为指定的代表的值 String ，如通过执行 valueOf类的方法 Double 。 <br><br>            static String toString(double d) 返回 double参数的字符串 double形式。<br>        </td><br>    </tr><br>    <tr><br>        <td>char</td><br>        <td>Charcter</td><br>        <td><br>            static char MIN_VALUE:该字段的常数值是 char ‘\u0000’ 。 <br><br>            static char MAX_VALUE:该字段的常数值是 char类型的 ‘\uFFFF’ 。<br>        </td><br>        <td><br>            可以使用String类中的方法char[] toCharArray()  将此字符串转换为新的字符数组。-&gt; 不属于本章内容 <br><br>            static String toString(char c) 返回一个 String对象，表示指定的 char 。<br>        </td><br>    </tr><br>    <tr><br>        <td>boolean</td><br>        <td>Boolean</td><br>        <td><br>            static Boolean FALSE : Boolean对象对应于原始值 false 。  <br><br>            static Boolean TRUE  : Boolean对象对应于原始值 true 。<br>        </td><br>        <td><br>            static boolean parseBoolean(String s) 将字符串参数解析为布尔值。如果s为true,true不区分大小写时,返回为true,其余全部返回false.  <br><br>            static String toString(boolean b)  返回一个 String指定布尔值的 String对象。<br>        </td><br>    </tr><br></table>  
-
-<blockquote>
-<p>基本数据类型和包装类型之间存在自动装箱和拆箱.</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4141,7 +4395,7 @@ System.out.println(&quot;该数组中对称字符串的个数为:&quot; + sum);
               
                 <a href="/WangZhi.github.io/archives">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4154,7 +4408,7 @@ System.out.println(&quot;该数组中对称字符串的个数为:&quot; + sum);
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

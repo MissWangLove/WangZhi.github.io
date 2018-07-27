@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="IT小白进阶">
 <meta property="og:description" content="IO流和PropertiesIO流IO流是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。在 Java 编程中，一直使用流的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，通过一个称为 Stream 的对象一次移动一个字节。流 I/O 用于与外部">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-24T10:09:52.939Z">
+<meta property="og:updated_time" content="2018-07-26T11:32:55.433Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="day09-io流">
 <meta name="twitter:description" content="IO流和PropertiesIO流IO流是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。在 Java 编程中，一直使用流的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，通过一个称为 Stream 的对象一次移动一个字节。流 I/O 用于与外部">
@@ -850,26 +850,213 @@ public class Demo {
         br.close();
     }
 }
+</code></pre><h2 id="对象操作流-序列化流"><a href="#对象操作流-序列化流" class="headerlink" title="对象操作流(序列化流)"></a>对象操作流(序列化流)</h2><p>每次读取和写出的都是JavaBean对象.</p>
+<ul>
+<li><p>序列化:将对象写入到文件中的过程</p>
+</li>
+<li><p>反序列化:从文件中读取对象到程序的过程</p>
+</li>
+<li><p>transient: 标识瞬态,序列化的时候,该修饰符修饰的成员不能序列化</p>
+</li>
+</ul>
+<h4 id="ObjectOutputStream"><a href="#ObjectOutputStream" class="headerlink" title="ObjectOutputStream"></a>ObjectOutputStream</h4><ul>
+<li>构造方法:<ul>
+<li>public ObjectOutputStream(OutputStream out) ： 创建一个指定OutputStream的ObjectOutputStream。</li>
+</ul>
+</li>
+<li>特有方法:<ul>
+<li>public final void writeObject (Object obj) : 将指定的对象写出。</li>
+</ul>
+</li>
+</ul>
+<h4 id="ObjectInputStream"><a href="#ObjectInputStream" class="headerlink" title="ObjectInputStream"></a>ObjectInputStream</h4><ul>
+<li>构造方法:<ul>
+<li>public ObjectInputStream(InputStream in) ： 创建一个指定InputStream的ObjectInputStream。</li>
+</ul>
+</li>
+<li><p>特有方法:</p>
+<ul>
+<li>public final Object readObject () : 读取一个对象。</li>
+</ul>
+</li>
+<li><p>java.io.EOFException : 数据输出流到了末尾,继续读取会抛出此异常(读到文件的末尾)</p>
+<ul>
+<li>解决方案:使用集合存储要写出的对象,写数据的时候只需要写一个集合对象,下次使用的时候只需要读取了一次就可以.</li>
+</ul>
+</li>
+</ul>
+<p>举个例子:</p>
+<pre><code>package review.serializable;
+
+import lombok.*;
+
+import java.io.Serializable;
+import java.net.ServerSocket;
+
+/**
+ * 创建学生类
+ * 利用lombok可以使用注解来写get,set等方法,使实体类看起来很简单
+ * @author WZLOVE
+ * @create 2018-07-25 19:17
+ */
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class Student implements Serializable {
+
+    private static final long serialVersionUID = -1495868075552053159L;
+    private String name;
+    private int age;
+    private double score;
+
+}
+
+
+package review.serializable;
+
+import java.io.*;
+import java.util.ArrayList;
+
+/**
+ * 测试序列化流
+ *
+ * @author WZLOVE
+ * @create 2018-07-25 19:19
+ */
+public class SerializableDemo {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        // 创建对象输出流
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(&quot;stu1.txt&quot;));
+        // 向文件中输出数据(为了方便读取,所以存入集合,这样的话,读取的时候只用读取一次,查看源码也可以看出,集合也实现了Serializable接口)
+        ArrayList&lt;Student&gt; list = new ArrayList&lt;&gt;();
+        // 向集合中添加数据
+        list.add(new Student(&quot;stu1&quot;,23,100.0));
+        list.add(new Student(&quot;stu2&quot;,23,98.0));
+        list.add(new Student(&quot;stu3&quot;,24,96.0));
+        // 利用对象输入流向文件中写入内容
+        oos.writeObject(list);
+        oos.close();
+
+        // 创建对象输入流
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(&quot;stu1.txt&quot;));
+        // 利用对象输入流获取文件内容
+        Object object = ois.readObject();
+        // 强制类型转换,将Object转换为集合
+        ArrayList&lt;Student&gt; arrayList = (ArrayList&lt;Student&gt;)object;
+        // 进行遍历
+        for (int i = 0; i &lt; arrayList.size(); i++) {
+            System.out.println(arrayList.get(i));
+        }
+        // 关闭流
+        ois.close();
+
+    }
+}
+</code></pre><h2 id="打印流-只有输出流"><a href="#打印流-只有输出流" class="headerlink" title="打印流(只有输出流)"></a>打印流(只有输出流)</h2><ul>
+<li>字节打印流(了解)<ul>
+<li>PrintStream:</li>
+</ul>
+</li>
+<li><p>字符打印流(掌握)</p>
+<ul>
+<li><p>PrintWriter</p>
+<ul>
+<li><p>构造方法:</p>
+<ol>
+<li>public PrintStream(String fileName) ： 使用指定的文件名创建一个新的打印流。</li>
+<li>PrintWriter(File file) 使用指定的文件创建一个新的PrintWriter，而不需要自动的线路刷新。</li>
+<li>PrintWriter(OutputStream out) 从现有的OutputStream创建一个新的PrintWriter，而不需要自动线路刷新。</li>
+<li>PrintWriter(Writer out) 创建一个新的PrintWriter，没有自动线冲洗(追加内容考虑参数的变化)。  </li>
+<li>PrintWriter(Writer out, boolean autoFlush)创建一个新的PrintWriter。</li>
+<li>PrintWriter(OutputStream out, boolean autoFlush) 从现有的OutputStream创建一个新的PrintWriter。</li>
+</ol>
+</li>
+<li><p>特有方法(自动换行(实现自动换行,必须使用println方法)和自动刷新(在构造方法中启用并且要使用println()方法)功能):</p>
+<ol>
+<li>void println(Object x) 打印一个对象，然后终止该行。 </li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>注意:</p>
+<blockquote>
+<ol>
+<li>实现自动换行必须使用PrintWriter中特有的方法println</li>
+<li>实现自动刷新必须满足两个要求,第一个是在构造方法中启用自动刷新,第二个是使用PrintWriter中特有的方法println</li>
+</ol>
+</blockquote>
+</blockquote>
+<p>举个例子:</p>
+<pre><code>package review.print;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+/**
+ * 测试打印流的书写
+ * 打印流也是用写文件的,简单的是他能实现自动刷新和自动换行,其他的都简单,就不演示了
+ * 打印流分为打印字节流和打印字符流
+ * @author WZLOVE
+ * @create 2018-07-25 19:55
+ */
+public class PrintWriteDemo {
+
+    public static void main(String[] args) throws IOException {
+        // 打印流只有输出流
+        // 创建打印字符流对象(一个true表示追加,第二个true代表开启自动刷新)
+        PrintWriter pw = new PrintWriter(new FileWriter(&quot;pw.txt&quot;,true),true);
+        // 利用特有的方法进行输出(无论是自动刷新还是自动换行,都要利用这个特有的方法)
+        pw.println(&quot;qazxswedc,我爱你&quot;);
+        pw.println(&quot;qazxswedc,我爱你&quot;);
+        pw.println(&quot;qazxswedc,我爱你&quot;);
+        // 关闭流
+        pw.close();
+    }
+
+}
 </code></pre><p>回忆学过的IO流:</p>
 <pre><code>字节:
     InputStream
         |-- FileInputStream : 输入字节流
         |-- FilterInputStream (不用管,没学)
             |-- BufferedInputStream : 高效缓冲输入字节流
+        |-- ObjectInputStream : 对象输入字节流(反序列化流)
     OutputStream
         |-- FileOutputStream : 输出字符流
         |-- FilterOutputStream (不用管,没学)
             |-- BufferedOutputStream : 高效缓冲输出字节流
+        |-- ObjectOutputStream : 对象输出字节流(序列化流)
+        |-- PrintStream : 打印字节流
 字符:      
     Reader
-        |-- BufferedReader : 高效缓冲字符输入流
-        |-- InputStreamReader : 转换流,从字节流到字符流的桥
+        |-- BufferedReader : 高效缓冲字符输入流(读取字符串的时候使用,注意readLine读取一行数据,但不会读取换行符)
+        |-- InputStreamReader : 转换流,将字节流转化为字符流
             |-- FileReader : 字符输入流
     Writer
-        |-- BufferedWriter : 高效缓冲字符输出流
-        |-- OutputStreamWriter : 转换流,是字符的桥梁流以字节流
+        |-- BufferedWriter : 高效缓冲字符输出流(newLine方法是换行)
+        |-- OutputStreamWriter : 转换流,将字符流转化为字节流
             |-- FileWriter : 字符输出流
-</code></pre>
+        |-- PrintWriter : 打印字符流(方便使用,自动刷新和自动换行)
+</code></pre><blockquote>
+<p>转换流的使用场景:</p>
+<blockquote>
+<ol>
+<li>读取数据需要指定字符编码集或者就是本身的意义,将字节流转化为字符流</li>
+<li>写出数据需要指定字符编码集<br>注意字节流和字符流的使用场景</li>
+<li>对于文件的拷贝使用字节流</li>
+<li>文本文件的数据的读取的话,使用字符流</li>
+<li>文本文件的数据的写出的话,字符流和字节流都可以</li>
+</ol>
+</blockquote>
+</blockquote>
+
       
     </div>
     
@@ -992,7 +1179,7 @@ public class Demo {
               
                 <a href="/WangZhi.github.io/archives">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1005,7 +1192,7 @@ public class Demo {
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -1038,7 +1225,7 @@ public class Demo {
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IO流和Properties"><span class="nav-number">1.</span> <span class="nav-text">IO流和Properties</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IO流"><span class="nav-number">1.1.</span> <span class="nav-text">IO流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO流的分类"><span class="nav-number">1.1.2.</span> <span class="nav-text">IO流的分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基类"><span class="nav-number">1.1.3.</span> <span class="nav-text">基类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FileOutputStream"><span class="nav-number">1.1.4.</span> <span class="nav-text">FileOutputStream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FileInputStream"><span class="nav-number">1.1.5.</span> <span class="nav-text">FileInputStream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符流"><span class="nav-number">1.1.6.</span> <span class="nav-text">字符流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FileReader"><span class="nav-number">1.1.7.</span> <span class="nav-text">FileReader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FileWriter"><span class="nav-number">1.1.8.</span> <span class="nav-text">FileWriter</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IO流-高级"><span class="nav-number">2.</span> <span class="nav-text">IO流(高级)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#释放资源的标准代码"><span class="nav-number">2.1.</span> <span class="nav-text">释放资源的标准代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Properties"><span class="nav-number">2.2.</span> <span class="nav-text">Properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高效流"><span class="nav-number">2.3.</span> <span class="nav-text">高效流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#高效字节流"><span class="nav-number">2.3.1.</span> <span class="nav-text">高效字节流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符高效流"><span class="nav-number">2.3.2.</span> <span class="nav-text">字符高效流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#转换流-字符流"><span class="nav-number">2.3.3.</span> <span class="nav-text">转换流(字符流)</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IO流和Properties"><span class="nav-number">1.</span> <span class="nav-text">IO流和Properties</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IO流"><span class="nav-number">1.1.</span> <span class="nav-text">IO流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO流的分类"><span class="nav-number">1.1.2.</span> <span class="nav-text">IO流的分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基类"><span class="nav-number">1.1.3.</span> <span class="nav-text">基类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FileOutputStream"><span class="nav-number">1.1.4.</span> <span class="nav-text">FileOutputStream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FileInputStream"><span class="nav-number">1.1.5.</span> <span class="nav-text">FileInputStream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符流"><span class="nav-number">1.1.6.</span> <span class="nav-text">字符流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FileReader"><span class="nav-number">1.1.7.</span> <span class="nav-text">FileReader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FileWriter"><span class="nav-number">1.1.8.</span> <span class="nav-text">FileWriter</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IO流-高级"><span class="nav-number">2.</span> <span class="nav-text">IO流(高级)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#释放资源的标准代码"><span class="nav-number">2.1.</span> <span class="nav-text">释放资源的标准代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Properties"><span class="nav-number">2.2.</span> <span class="nav-text">Properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高效流"><span class="nav-number">2.3.</span> <span class="nav-text">高效流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#高效字节流"><span class="nav-number">2.3.1.</span> <span class="nav-text">高效字节流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符高效流"><span class="nav-number">2.3.2.</span> <span class="nav-text">字符高效流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#转换流-字符流"><span class="nav-number">2.3.3.</span> <span class="nav-text">转换流(字符流)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象操作流-序列化流"><span class="nav-number">2.4.</span> <span class="nav-text">对象操作流(序列化流)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ObjectOutputStream"><span class="nav-number">2.4.0.1.</span> <span class="nav-text">ObjectOutputStream</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ObjectInputStream"><span class="nav-number">2.4.0.2.</span> <span class="nav-text">ObjectInputStream</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打印流-只有输出流"><span class="nav-number">2.5.</span> <span class="nav-text">打印流(只有输出流)</span></a></li></ol></li></ol></div>
             
 
           </div>
