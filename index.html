@@ -290,6 +290,764 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/31/day14-reflect/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/31/day14-reflect/" itemprop="url">day14-reflect</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-31T19:06:36+08:00">
+                2018-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Junit-反射"><a href="#Junit-反射" class="headerlink" title="Junit,反射"></a>Junit,反射</h1><h2 id="Junit"><a href="#Junit" class="headerlink" title="Junit"></a>Junit</h2><p>1.测试的分类:</p>
+<ul>
+<li>黑盒测试 : 不需要写代码，给输入值，看程序是否能够输出期望的值。</li>
+<li>白盒测试 : 需要进行代码的编写,关注的是程序的具体流程.</li>
+</ul>
+<p>2.使用步骤(方法类的命名可以参考阿里巴巴开发手册):</p>
+<pre><code>* 步骤：
+    1. 定义一个测试类(测试用例)
+        * 建议：
+            * 测试类名：被测试的类名Test        
+            * 包名：xxx.xxx.xx.test        
+
+    2. 定义测试方法：可以独立运行
+        * 建议：
+            * 方法名：test测试的方法名        testAdd()  
+            * 返回值：void
+            * 参数列表：空参
+
+    3. 给方法加@Test
+    4. 导入junit依赖环境
+
+* 判定结果：
+    * 红色：失败
+    * 绿色：成功
+    * 一般我们会使用断言操作来处理结果
+        * Assert.assertEquals(期望的结果,运算的结果);
+
+* 补充：
+    * @Before:
+        * 修饰的方法会在测试方法之前被自动执行
+    * @After:
+        * 修饰的方法会在测试方法执行之后自动被执行
+
+
+// 举个例子
+public class Calculator {
+
+    /**
+     * 加法运算
+     * @param a  加数
+     * @param b  被加数
+     * @return   和
+     */
+    public int add(int a,int b){
+        return a + b;
+    }
+
+    /**
+     * 减法运算
+     * @param a  减数
+     * @param b  被减数
+     * @return   差值
+     */
+    public int sub(int a,int b){
+        return a - b;
+    }
+}
+
+// 测试类的创建
+package com.wzlove.test;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * @author 王智
+ * @date 2018/7/31
+ * @描述 测试类
+ */
+
+public class CalculatorTest {
+
+    Calculator cal;
+
+    /**
+     * 初始化
+     */
+    @Before
+    public void init(){
+        // 初始化对象
+        cal = new Calculator();
+        System.out.println(&quot;init==================================================&quot;);
+    }
+
+    /**
+     * 测试加法运算
+     */
+    @Test
+    public void testAdd(){
+        // 调用方法
+        int result = cal.add(10, 10);
+        // 断言
+        Assert.assertEquals(20,result);
+    }
+
+    /**
+     * 测试减法运算
+     */
+    @Test
+    public void testSub(){
+        // 调用方法
+        int result = cal.sub(10, 10);
+        // 断言
+        Assert.assertEquals(0,result);
+    }
+
+    @After
+    public void end(){
+        System.out.printf(&quot;end========================================&quot;);
+    }   
+}
+</code></pre><h2 id="反射-框架的设计灵魂"><a href="#反射-框架的设计灵魂" class="headerlink" title="反射 : 框架的设计灵魂"></a>反射 : 框架的设计灵魂</h2><ul>
+<li>框架：半成品软件。可以在框架的基础上进行软件开发，简化编码</li>
+<li>反射：将类的各个组成部分封装为其他对象，这就是反射机制<ul>
+<li>好处：<ol>
+<li>可以在程序运行过程中，操作这些对象。</li>
+<li>可以解耦，提高程序的可扩展性。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>获取Class对象的方式：</p>
+<ol>
+<li>Class.forName(“全类名”)：将字节码文件加载进内存，返回Class对象<ul>
+<li>多用于配置文件，将类名定义在配置文件中。读取文件，加载类</li>
+</ul>
+</li>
+<li>类名.class：通过类名的属性class获取<ul>
+<li>多用于参数的传递</li>
+</ul>
+</li>
+<li>对象.getClass()：getClass()方法在Object类中定义着。<ul>
+<li>多用于对象的获取字节码的方式</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>结论：<br>  同一个字节码文件(*.class)在一次程序运行过程中，只会被加载一次，不论通过哪一种方式获取的Class对象都是同一个。</li>
+</ul>
+</li>
+</ul>
+<pre><code>package com.wzlove.reflect;
+
+    /**
+     * @author 王智
+     * @date 2018/7/31
+     * @描述  获取字节码对象的三种方式
+     */
+    public class GetClassObject {
+
+        public static void main(String[] args) throws Exception {
+            // 第一种: 使用全类名进行获取
+            Class&lt;?&gt; aClass = Class.forName(&quot;com.wzlove.reflect.GetClassObject&quot;);
+            System.out.println(aClass);
+            // 第二种: 使用类名的属性获取
+            Class aClass1 = GetClassObject.class;
+            System.out.println(aClass1);
+            // 第三种: 使用类的方法进行获取
+            Class&lt;?&gt; aClass2 = new GetClassObject().getClass();
+            System.out.println(aClass2);
+
+            System.out.println(aClass == aClass1);
+            System.out.println(aClass == aClass2);
+        }
+    }
+</code></pre><ul>
+<li>Class对象功能：<ul>
+<li>获取功能：</li>
+</ul>
+</li>
+</ul>
+<pre><code>1. 获取成员变量们
+    * Field[] getFields() ：获取所有public修饰的成员变量
+    * Field getField(String name)   获取指定名称的 public修饰的成员变量
+
+    * Field[] getDeclaredFields()  获取所有的成员变量，不考虑修饰符
+    * Field getDeclaredField(String name)  
+2. 获取构造方法们
+    * Constructor&lt;?&gt;[] getConstructors()  
+    * Constructor&lt;T&gt; getConstructor(Class&lt;?&gt;... parameterTypes)  
+
+    * Constructor&lt;T&gt; getDeclaredConstructor(Class&lt;?&gt;... parameterTypes)  
+    * Constructor&lt;?&gt;[] getDeclaredConstructors()  
+3. 获取成员方法们：
+    * Method[] getMethods()  
+    * Method getMethod(String name, Class&lt;?&gt;... parameterTypes)  
+
+    * Method[] getDeclaredMethods()  
+    * Method getDeclaredMethod(String name, Class&lt;?&gt;... parameterTypes)  
+
+4. 获取全类名    
+    * String getName()  
+</code></pre><ul>
+<li><p>Field：成员变量</p>
+<ul>
+<li><p>操作：</p>
+<ol>
+<li>设置值<ul>
+<li>void set(Object obj, Object value)  </li>
+</ul>
+</li>
+<li><p>获取值</p>
+<ul>
+<li>get(Object obj) </li>
+</ul>
+</li>
+<li><p>忽略访问权限修饰符的安全检查</p>
+<ul>
+<li>setAccessible(true):暴力反射</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>// 下面的例子全部使用Student类
+    package com.wzlove.reflect;
+
+    /**
+     * @author 王智
+     * @date 2018/7/31
+     * @描述
+     */
+    public class Student {
+
+        private String name;
+
+        private int age;
+
+        public String sex;
+
+        @Override
+        public String toString() {
+            return &quot;Student{&quot; +
+                    &quot;name=&apos;&quot; + name + &apos;\&apos;&apos; +
+                    &quot;, age=&quot; + age +
+                    &quot;, sex=&apos;&quot; + sex + &apos;\&apos;&apos; +
+                    &apos;}&apos;;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
+        }
+
+        public String getSex() {
+            return sex;
+        }
+
+        public void setSex(String sex) {
+            this.sex = sex;
+        }
+
+        public Student(String name, int age, String sex) {
+            this.name = name;
+            this.age = age;
+            this.sex = sex;
+        }
+
+        public Student() {
+        }
+    }
+
+
+    package com.wzlove.reflect;
+
+    import java.lang.reflect.Field;
+
+    /**
+     * @author 王智
+     * @date 2018/7/31
+     * @描述 利用反射获取对象的成员变量
+     */
+    public class GetFieldDemo {
+
+        public static void main(String[] args) throws Exception {
+            // 利用反射获取公有成员变量的步骤
+            // 1. 获取反射对象(3种方法)
+            Class aClass = Student.class;
+            // 2. 获取成员变量
+            Field sex =  aClass.getField(&quot;sex&quot;);
+            // 3. 使用Field的方法设置值(需要创建对象)
+            Student stu = new Student();
+            sex.set(stu,&quot;男&quot;);
+            // 4. 使用Field的方法获取值
+            System.out.println(sex.get(stu));
+
+
+
+            // 获取所有成员变量
+            // 1. 获取反射对象(3种方法)
+            Class aClass1 = Student.class;
+            // 2. 获取成员变量
+            Field name =  aClass1.getDeclaredField(&quot;name&quot;);
+            // 3. 使用Field的方法设置值(需要创建对象)
+            Student stu1 = new Student();
+            // 4. 再使用私有变量的时候会报错,所以要跳过检测,也成为暴力反射
+            name.setAccessible(true);
+            name.set(stu1,&quot;王智&quot;);
+            // 6. 使用Field的方法获取值
+            System.out.println(name.get(stu1));
+        }
+
+    }
+</code></pre><ul>
+<li><p>Constructor:构造方法</p>
+<ul>
+<li><p>创建对象：</p>
+<ol>
+<li><p>T newInstance(Object… initargs)  </p>
+</li>
+<li><p>如果使用空参数构造方法创建对象，操作可以简化：Class对象的newInstance方法</p>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>package com.wzlove.reflect;
+
+    import java.lang.reflect.Constructor;
+
+    /**
+     * @author
+     * @date 2018/7/31
+     * @描述 利用反射获取对象的构造方法
+     */
+    public class GetConstructDemo {
+
+        public static void main(String[] args) throws Exception {
+            // 利用反射获取公有成员变量的步骤
+            // 1. 获取反射对象(3种方法)
+            Class aClass = Student.class;
+            // 2. 使用方法获取构造方法的对象
+            Constructor constructor = aClass.getConstructor(String.class, int.class, String.class);
+            // 3. 使用Constructor对象初始化对象
+            Object obj = constructor.newInstance(&quot;张三&quot;, 23, &quot;男&quot;);
+            // 测试输出结果
+            System.out.println(obj);
+            System.out.println(&quot;===================================&quot;);
+
+            // 无参构造的方法
+            // 1. 获取反射对象(3种方法)
+            Class aClass1 = Student.class;
+            // 2. 使用方法获取构造方法的对象
+            Constructor constructor1 = aClass1.getConstructor();
+            // 3. 使用Constructor初始化对象
+            Object obj1 = constructor1.newInstance();
+            // 测试输出结果
+            System.out.println(obj1);
+
+            // 还有个简化写法,仅仅适用于无参构造,但是我使用JDK10已经不推荐使用了
+            Object obj2 = aClass1.newInstance();
+            System.out.println(obj2);
+
+            // getDeclaredConstructor方法也是获取私有的构造方法,就不演示了
+        }
+
+    }
+</code></pre><ul>
+<li><p>Method：方法对象</p>
+<ul>
+<li><p>执行方法：</p>
+<ul>
+<li>Object invoke(Object obj, Object… args)  </li>
+</ul>
+</li>
+<li><p>获取方法名称：</p>
+<ul>
+<li>String getName:获取方法名    </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>首先在Student中添加两个方法  </p>
+<pre><code>public void eat(){
+    System.out.println(&quot;eat..............&quot;);
+}
+
+public int add(int a, int b){
+   return a + b;
+}
+
+package com.wzlove.reflect;
+
+import java.lang.reflect.Method;
+
+/**
+ * @author 王智
+ * @date 2018/7/31
+ * @描述 反射执行方法
+ */
+public class GetMethodDemo {
+
+    public static void main(String[] args) throws Exception {
+        // 无参无返回值的方法
+        // 1. 创建字节码对象
+        Class aClass = Student.class;
+        // 2. 创建方法的对象
+        Method eat = aClass.getMethod(&quot;eat&quot;);
+        // 3. 执行方法
+        Student stu = new Student();
+        eat.invoke(stu);
+
+        // 有参有返回值的方法
+        // 1. 创建字节码对象
+        Class aClass1 = Student.class;
+        // 2. 创建方法的对象
+        Method add = aClass1.getMethod(&quot;add&quot;, int.class,int.class);
+        // 3. 执行方法
+        Student stu1 = new Student();
+        Object sum = add.invoke(stu1, 10, 10);
+        System.out.println(&quot;和为&quot; + sum);
+        System.out.println(&quot;======================================================&quot;);
+        // 获取该类所有的方法(这里获取的不仅仅是自己定义的方法,还有从父类继承来的方法)
+        Method[] methods = aClass1.getMethods();
+        for (Method method : methods) {
+            System.out.println(method);
+            System.out.println(method.getName());
+        }
+        System.out.println(&quot;======================================================&quot;);
+
+        // 获取类名
+        System.out.println(aClass1.getName());
+        // getDeclaredMethod也是同样的道理
+    }
+}
+</code></pre><p>以上就是反射的简单使用了.举个简单例子,当然这个例子并不完善,将就看</p>
+<pre><code>package com.wzlove.reflect;
+
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Properties;
+
+/**
+ * @author 
+ * @date 2018/7/31
+ * @描述
+ * * 案例：
+ *     * 需求：写一个&quot;框架&quot;，不能改变该类的任何代码的前提下，可以帮我们创建任意类的对象，
+ *     并且执行其中任意方法
+ *         * 实现：
+ *             1. 配置文件
+ *             2. 反射
+ *         * 步骤：
+ *             1. 将需要创建的对象的全类名和需要执行的方法定义在配置文件中
+ *             2. 在程序中加载读取配置文件
+ *             3. 使用反射技术来加载类文件进内存
+ *             4. 创建对象
+ *             5. 执行方法
+ */
+public class ReflectDemo {
+
+    public static void main(String[] args) throws Exception {
+        // 创建本类的字节码对象
+        Class aClass = ReflectDemo.class;
+        // 获取类加载器对象
+        ClassLoader classLoader = aClass.getClassLoader();
+        // 加载配置文件,返回字节流对象
+        InputStream resourceAsStream = classLoader.getResourceAsStream(&quot;pro.properties&quot;);
+
+        // 读取配置文件
+        // 创建Properties对象
+        Properties properties = new Properties();
+        properties.load(resourceAsStream);
+
+        // 反射的使用
+        Object className = properties.getProperty(&quot;className&quot;);
+        Object methodName = properties.getProperty(&quot;methodName&quot;);
+        // 使用反射创建对象
+        Class aClass1 = Class.forName((String) className);
+        Constructor constructor = aClass1.getConstructor();
+        Object obj = constructor.newInstance();
+        // 利用反射获取方法
+        Method method = aClass1.getMethod((String) methodName);
+        // 使用反射执行方法
+        method.invoke(obj);
+
+    }
+
+}
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/30/01_Java如何运行的/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/30/01_Java如何运行的/" itemprop="url">Java是怎么运行的</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-30T18:40:21+08:00">
+                2018-07-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Java为什么要在虚拟机中运行"><a href="#Java为什么要在虚拟机中运行" class="headerlink" title="Java为什么要在虚拟机中运行"></a>Java为什么要在虚拟机中运行</h2><ol>
+<li>简单的来说,Java作为一门高级程序语言,语法复杂,抽象度高,不能直接翻译为机器码在机器上运行,所以设计者就设计了虚拟机,通过编译器将Java程序转换成虚拟机所能识别的指令码,也就是Java字节码,Java字节码会被虚拟机翻译为可以被机器识别的机器码.这也实现了Java的跨平台</li>
+<li>虚拟机的第二个好处就是带来了一个托管环境,托管环境能够代替我们处理代码中冗余并且容易出错的部分,比如自动内存管理,垃圾回收. 还有诸如数组越界、动态类型、安全权限等等动态监测.</li>
+</ol>
+<h2 id="Java如何在虚拟机中运行的"><a href="#Java如何在虚拟机中运行的" class="headerlink" title="Java如何在虚拟机中运行的"></a>Java如何在虚拟机中运行的</h2><ol>
+<li>从虚拟机角度来看,执行Java代码首先需要将它编译而成的class文件加载到虚拟机中.加载后的Java类会被存放与方法区(Method Area)中,运行时,虚拟机执行方法区内的代码</li>
+</ol>
+<h4 id="Java虚拟机如何存储运行时的数据"><a href="#Java虚拟机如何存储运行时的数据" class="headerlink" title="Java虚拟机如何存储运行时的数据"></a>Java虚拟机如何存储运行时的数据</h4><p>Java虚拟机在内存中划分出堆和栈来存储运行时数据.并且将栈细分为面向Java方法的Java方法栈,面向本地方法的本地方法栈,以及存放各个线程执行位置的PC寄存器.</p>
+<p>运行的过程中,每当调用一个方法,Java虚拟机会在当前线程的Java方法栈中生成一个栈帧,存放局部变量以及字节码操作数.这个栈帧大小提前计算好,而且Java虚拟机不要求栈帧在内存空间中连续分步.退出执行方法时,Java虚拟机会弹出当前线程的当前栈帧,并舍弃.</p>
+<p>前面说到Java字节码会被虚拟机翻译成机器码,那是如何翻译的呢?有两种形式:第一种是解释执行,也就是逐条将字节码翻译成机器码并执行,优势是无需等待编译.第二种是即时编译(JIT),也就是将一个方法中包含的所有字节码编译成机器码后再执行,优势在于实际运行速度很快.而我们常用的HotSpot虚拟机默认采用混合模式,综合了解释执行和即时编译两者的优点,先解释执行字节码,而后将反复执行的热点代码,以方法为单位进行即时编译.</p>
+<h2 id="运行效率如何"><a href="#运行效率如何" class="headerlink" title="运行效率如何"></a>运行效率如何</h2><p>前面说的极是编译就是用来提升性能以及峰值性能,它是建立在程序符合二八定律的假设上,也就是百分之二十的代码占据百分之八十的计算资源.</p>
+<p>如何理解?对于占据大部分不常用的代码,无需耗费时间将其编译成机器码,而是采取解释执行的方式运行;另一方面,对于占据小部分的热点代码,将其编译器成机器码,提高运行速度.</p>
+<p>HotSpot 内置了多个即时编译器：C1、C2 和 Graal。Graal 是<br>Java 10 正式引入的实验性即时编译器,InfoQ上有个介绍(<a href="http://www.infoq.com/cn/articles/Graal-Java-JIT-Compiler?utm_source=articles_about_java&amp;utm_medium=link&amp;utm_campaign=java),有兴趣的可以了解下" target="_blank" rel="noopener">http://www.infoq.com/cn/articles/Graal-Java-JIT-Compiler?utm_source=articles_about_java&amp;utm_medium=link&amp;utm_campaign=java),有兴趣的可以了解下</a>.</p>
+<p>C1 又叫做 Client 编译器，面向的是对启动性能有要求的客户端 GUI 程序，采用的优化手段相对简单，因此编译时间较短。</p>
+<p>C2 又叫做 Server 编译器，面向的是对峰值性能有要求的服务器端程序，采用的优化手段相对复杂，因此编译时间较长，但同时生成代码的执行效率较高。</p>
+<p>Java7开始,HotSpot默认采取分层编译:热点方法首先被C1编译,而后热点方法中的热点会进一步被C2编译.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>之所以要在虚拟机中运行，是因为它提供了可移植性。一旦 Java 代码被编译为 Java 字节码，便可以在不同平台上的 Java 虚拟机实现上运行。此外，虚拟机还提供了一个代码托管的环境，<br>代替我们处理部分冗长而且容易出错的事务，例如内存管理。</p>
+<p>Java 虚拟机将运行时内存区域划分为五个部分，分别为方法区、堆、PC 寄存器、Java 方法栈和本地方法栈。Java 程序编译而成的 class 文件，需要先加载至方法区中，方能在 Java 虚拟机<br>中运行。</p>
+<p>为了提高运行效率，标准 JDK 中的 HotSpot 虚拟机采用的是一种混合执行的策略。</p>
+<p>它会解释执行 Java 字节码，然后会将其中反复执行的热点代码，以方法为单位进行即时编译，翻译成机器码后直接运行在底层硬件之上。</p>
+<p>HotSpot 装载了多个不同的即时编译器，以便在编译时间和生成代码的执行效率之间做取舍。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/28/day13-Stream流/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2026,7 +2784,7 @@ public class FileUtilsDemo {
       
         
           
-            <h1 id="IO流和Properties"><a href="#IO流和Properties" class="headerlink" title="IO流和Properties"></a>IO流和Properties</h1><h2 id="IO流"><a href="#IO流" class="headerlink" title="IO流"></a>IO流</h2><p>IO流是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，<br>因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。<br>在 Java 编程中，一直使用流的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，<br>通过一个称为 Stream 的对象一次移动一个字节。流 I/O 用于与外部世界接触。它也在内部使用，<br>用于将对象转换为字节，然后再转换回对象。输入也叫做读取数据，输出也叫做作写出数据。</p>
+            <h1 id="IO流和Properties"><a href="#IO流和Properties" class="headerlink" title="IO流和Properties"></a>IO流和Properties</h1><h2 id="IO流"><a href="#IO流" class="headerlink" title="IO流"></a>IO流</h2><p>IO流是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。  在 Java 编程中，一直使用流的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，通过一个称为 Stream 的对象一次移动一个字节。流 I/O 用于与外部世界接触。它也在内部使用，用于将对象转换为字节，然后再转换回对象。输入也叫做读取数据，输出也叫做作写出数据。</p>
 <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><ul>
 <li>IO流是设备间的数据的传输.  </li>
 <li>IO流的输入和输出(基于程序的角度,而不是基于文件的角度)</li>
@@ -2044,17 +2802,21 @@ public class FileUtilsDemo {
 <p>几个字节表示一个字符?  不一定.</p>
 <h3 id="基类"><a href="#基类" class="headerlink" title="基类"></a>基类</h3><p>数据流向:</p>
 <ul>
-<li>输入流:</li>
-<li>输出流: </li>
+<li>输入流(InputStream): 将内存中的数据输如入到指定的设备上</li>
+<li>输出流(OutputStream):将设备上的数据输出到设备上</li>
 </ul>
 <p>数据类型:</p>
 <ul>
 <li>字节流: <ol>
-<li>字节输入流(InputStream):将内存中的数据输如入到指定的设备上</li>
-<li>字符输出流(OutputStream):将设备上的数据输出到设备上</li>
+<li>字节输入流(FileInputStream):将内存中的数据输如入到指定的设备上</li>
+<li>字符输出流(FileOutputStream):将设备上的数据输出到设备上</li>
 </ol>
 </li>
-<li>字符流: </li>
+<li>字符流: <ol>
+<li>字符输入流(FileReader)</li>
+<li>字符输出流(FileWriter)</li>
+</ol>
+</li>
 </ul>
 <h3 id="FileOutputStream"><a href="#FileOutputStream" class="headerlink" title="FileOutputStream"></a>FileOutputStream</h3><p>构造方法(如果指定的文件不存在,则创建对象;存在,会清空文件中的数据(除非使用后两个构造方法,字符流同理)):</p>
 <ul>
@@ -2131,10 +2893,10 @@ public static void main(String[] args) throws IOException {
     /*System.out.println(System.currentTimeMillis() - end);*/
     fos.close();
     fis.close();
+}
 </code></pre></li>
 </ul>
-<pre><code>}
-</code></pre><h3 id="字符流"><a href="#字符流" class="headerlink" title="字符流"></a>字符流</h3><p>使用字节流去读中文(一个中文占据3个字节)可能出现乱码.</p>
+<h3 id="字符流"><a href="#字符流" class="headerlink" title="字符流"></a>字符流</h3><p>使用字节流去读中文(一个中文占据3个字节)可能出现乱码.</p>
 <ul>
 <li>Writer: 写数据的流<ol>
 <li>FileWriter</li>
@@ -2188,8 +2950,6 @@ public static void main(String[] args) throws IOException {
         sb.append(arr);
     }
     fw.write(sb.toString());
-
-
     // 关闭流
     fw.close();
     fr.close();
@@ -2215,71 +2975,58 @@ public class StandardIO {
         // 初始赋值为null
         FileReader fr = null;
         FileWriter fw = null;
-
-
+</code></pre><p>​<br>            try {<br>                // 创建字符流对象<br>                fr = new FileReader(“student.txt”);<br>                fw = new FileWriter(“student.txt”);</p>
+<pre><code>        // 操作资源(边读编写,耗资源,仅作为示例)
+        int len;
+        while((len = fr.read()) != -1){
+            fw.write((char) len);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
         try {
-            // 创建字符流对象
-            fr = new FileReader(&quot;student.txt&quot;);
-            fw = new FileWriter(&quot;student.txt&quot;);
-
-            // 操作资源(边读编写,耗资源,仅作为示例)
-            int len;
-            while((len = fr.read()) != -1){
-                fw.write((char) len);
+            // 判断输入流是否为null
+            if(fr != null){
+                // 关闭资源
+                fr.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+
             try {
                 // 判断输入流是否为null
-                if(fr != null){
+                if(fw != null) {
                     // 关闭资源
-                    fr.close();
+                    fw.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-
-                try {
-                    // 判断输入流是否为null
-                    if(fw != null) {
-                        // 关闭资源
-                        fw.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
-
         }
+
     }
+}
 
-    // jdk7之后
+// jdk7之后
 
-    /**
-     * try(创建IO流对象的代码){
-     *     其他代码
-     * }catch(可能出现的异常){
-     *      打印异常信息
-     * }
-     * 上面的代码会自动调用close方法(也就是IO流对象都实现了Closeable接口(Closeable实现了AutoCloseable接口),
-     * 重写close方法).有兴趣的可以查看源码
-     */
-    public static void main(String[] args) {
-        try (
-                // 创建字符流对象
-                FileReader fr = new FileReader(&quot;student.txt&quot;);
-                FileWriter fw = new FileWriter(&quot;student.txt&quot;);
-                ){
-
-
-                // 操作资源(边读编写,耗资源,仅作为示例)
-                int len;
-                while((len = fr.read()) != -1){
-                    fw.write((char) len);
-                }
-
-        } catch (IOException e) {
+/**
+ * try(创建IO流对象的代码){
+ *     其他代码
+ * }catch(可能出现的异常){
+ *      打印异常信息
+ * }
+ * 上面的代码会自动调用close方法(也就是IO流对象都实现了Closeable接口(Closeable实现了AutoCloseable接口),
+ * 重写close方法).有兴趣的可以查看源码
+ */
+public static void main(String[] args) {
+    try (
+            // 创建字符流对象
+            FileReader fr = new FileReader(&quot;student.txt&quot;);
+            FileWriter fw = new FileWriter(&quot;student.txt&quot;);
+            ){
+</code></pre><p>​<br>                    // 操作资源(边读编写,耗资源,仅作为示例)<br>                    int len;<br>                    while((len = fr.read()) != -1){<br>                        fw.write((char) len);<br>                    }</p>
+<pre><code>        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -2331,10 +3078,8 @@ public class StandardIO {
            System.out.println(map.getKey() + &quot;=&quot; + map.getValue());
 
        }
-
-
-   }
-</code></pre><h2 id="高效流"><a href="#高效流" class="headerlink" title="高效流"></a>高效流</h2><ul>
+</code></pre><p>​<br>        }</p>
+<h2 id="高效流"><a href="#高效流" class="headerlink" title="高效流"></a>高效流</h2><ul>
 <li>高效字节流:<ol>
 <li>高效字节输入流(BufferedInputStream)</li>
 <li>高效字节输出流(BufferedOutStream)</li>
@@ -2474,9 +3219,8 @@ public class Demo1 {
 </li>
 </ul>
 <p>什么时候使用?如果需要以指定的字符集进行数据的读写操作.</p>
-<pre><code>package com.wzlove.demo1;
-
-import java.io.*;
+<p>​<br>        package com.wzlove.demo1;</p>
+<pre><code>import java.io.*;
 import java.util.Scanner;
 
 /**
@@ -2577,11 +3321,8 @@ public class Student implements Serializable {
     private double score;
 
 }
-
-
-package review.serializable;
-
-import java.io.*;
+</code></pre><p>​<br>    package review.serializable;</p>
+<pre><code>import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -2714,13 +3455,14 @@ public class PrintWriteDemo {
 <blockquote>
 <ol>
 <li>读取数据需要指定字符编码集或者就是本身的意义,将字节流转化为字符流</li>
-<li>写出数据需要指定字符编码集<br>注意字节流和字符流的使用场景</li>
+<li>写出数据需要指定字符编码集,注意字节流和字符流的使用场景</li>
 <li>对于文件的拷贝使用字节流</li>
 <li>文本文件的数据的读取的话,使用字符流</li>
 <li>文本文件的数据的写出的话,字符流和字节流都可以</li>
 </ol>
 </blockquote>
 </blockquote>
+<p>​        </p>
 
           
         
@@ -3830,601 +4572,6 @@ synchronized(同步对象){
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day05-exception-thread/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day05-exception-thread/" itemprop="url">day05_exception_thread</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:35:18+08:00">
-                2018-07-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><p><strong><em>学习异常的笔记记录</em></strong></p>
-<h2 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h2><h4 id="异常的概念"><a href="#异常的概念" class="headerlink" title="异常的概念"></a>异常的概念</h4><p>指的是程序在执行过程中，出现的非正常的情况，最终会导致JVM的非正常停止。</p>
-<blockquote>
-<p>异常指的并不是语法错误,语法错了,编译不通过,不会产生字节码文件,根本不能运行.</p>
-</blockquote>
-<h4 id="异常的体系"><a href="#异常的体系" class="headerlink" title="异常的体系"></a>异常的体系</h4><p><img src="./image/throwable.jpg" alt="异常体系"></p>
-<p>简单划分下 : </p>
-<pre><code>Throwable : java语言中所有异常和错误的超类
-    |-- Exception : 编译期异常(日期格式化,日期解析,需要try-catch/throws抛出)
-        |--RuntimeException : 运行期异常(数组越界异常)
-    |--Error : 错误(数组创建长度过大)
-</code></pre><h4 id="异常-Exception-的分类"><a href="#异常-Exception-的分类" class="headerlink" title="异常(Exception)的分类"></a>异常(Exception)的分类</h4><ul>
-<li>编译期异常 :在编译时期就要处理(IO流的文件不存在,日期解析格式化),不处理便已不能通过</li>
-<li>运行期异常 : 在运行时出现的异常(/by zero,索引越界等等)</li>
-</ul>
-<p>举个例子(异常是怎么产生的和产生后如何处理) :<br><img src="./image/exception.jpg" alt="异常"></p>
-<h4 id="异常的处理"><a href="#异常的处理" class="headerlink" title="异常的处理"></a>异常的处理</h4><p><strong>throw 关键字:</strong>  </p>
-<ul>
-<li>作用 : 可以使用throw关键字在指定的方法中抛出异常</li>
-<li>使用格式 : throw new xxxException(“异常产生的原因””);<blockquote>
-<p>1.throw new 必须写在方法的内部<br>2.throw new 后面的对象必须是Exception类或者是Exception的子类对象<br>3.throw抛出RuntimeException或者它的子类,可以不处理,交给JVM处理.<br>  抛出编译异常,就必须处理该异常,try{}catch{}或者throws</p>
-</blockquote>
-</li>
-</ul>
-<p><strong>throws 关键字:</strong>  </p>
-<ul>
-<li>作用 : 当方法内部抛出异常对象的时候,处理时可以使用throws抛出给调用者,让调用者处理.</li>
-<li><p>使用格式 : 在方法声明时在最后使用throws抛出</p>
-<pre><code>修饰符 返回值类型 方法名(参数列表) throws xxxException{}
-</code></pre><blockquote>
-<p>1.throws关键字必须写在方法声明处<br>2.throws关键字后边声明的异常必须是Exception或者是他的子类<br>3.方法内部如果抛出多个异常,throws也必须写多个异常,存在父子关系的,可以直接写父类,如果都写子类必须在父类的前面<br>4.调用方法处理时,可以继续使用throws,也可以try{}catch{}</p>
-</blockquote>
-</li>
-</ul>
-<p>throw与throws的区别 : </p>
-<ul>
-<li>位置不同,前者方法中,后者方法声明处</li>
-<li>含义不同,前者制造异常,后者是处理异常</li>
-<li>格式不同,throw + 异常对象,throws + 异常名称(多个异常,使用逗号隔开就好)</li>
-</ul>
-<p><strong>try..catch..:</strong></p>
-<ul>
-<li><p>格式 : </p>
-<pre><code>try{
-    可能出现问题的代码
-}catch(异常类型 变量名){  // 声明异常变量
-    处理异常的代码  // 尽量不要只用printStackTrace() 处理
-}
-</code></pre></li>
-<li>执行流程 : try内代码出现异常,catch会捕获异常(使用catch中的类型进行匹配,匹配成功之后就会执行catch内的代码<br>如果匹配失败,则继续向上抛出,交给调用者去处理,最后都没有处理时会交给JVM进行处理),try出现异常的地方后面的代码<br>停止执行,执行catch内的代码,如果try内没有出现异常代码正确执行,不会执行catch的代码.</li>
-</ul>
-<p><strong>try…catch..finally :</strong> </p>
-<ul>
-<li>当程序出现一种需求,无论程序是否出现异常,都需要执行某个代码块(比如流的关闭,sql连接关闭等等),这个时候就需要finally了</li>
-<li><p>格式 : </p>
-<pre><code>try{
-    可能出现异常的代码
-} catch(异常类型 变量名){
-    异常处理
-} finally{
-    无论是否出现异常都需要执行的代码
-}
-</code></pre></li>
-<li><p>执行流程 : 在try..catch的基础上,catch执行完毕或者JVM处理完异常之后,执行finally代码块,除非使用System.exit(0)强行停止代码.</p>
-<blockquote>
-<p>不要再finally中使用return语句,虽然语法上无错误,但尽量避免,finally语句一般用于回收资源,<br>如果在try或catch中进行一个返回值.这个时候这个返回通道的值已经确定,在finally语句中修改值,这个<br>时候返回值并不会被修改.</p>
-</blockquote>
-</li>
-</ul>
-<p>举个例子,用来说明上面那个返回通道的问题:</p>
-<p><strong>Throwable类定义了处理异常的三个方法:</strong></p>
-<ul>
-<li>public String getMessage() :获取异常的描述信息,原因(提示给用户的时候,就提示错误原因。</li>
-<li>public String toString() :获取异常的类型和异常描述信息(不用)。</li>
-<li>public void printStackTrace() :打印异常的跟踪栈信息并输出到控制台。</li>
-</ul>
-<p><strong>多个异常如何处理:</strong>  </p>
-<ul>
-<li>多次捕获,多次处理(也就是每个可能出现异常的代码都使用一个try..catch进行捕获处理)</li>
-<li>一次捕获,多次处理(也就是一个try,多个catch,注意的是catch中有子父类关系,子类异常必须在父类异常的前面)</li>
-<li>一次捕获,一次处理(也就是catch中使用具有较高父类的Exception对象)(建议使用)</li>
-</ul>
-<p>举个例子:</p>
-<pre><code>public class TryCatchDemo {
-
-    public static void main(String[] args) {
-
-        // 多个异常多个处理
-        try {
-            // 产生空指针异常(创建对象赋值为null,使用对象调用方法可以产生空指针异常)
-            Integer integer = null;
-            System.out.println(integer.toString());
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        // 出现的顺序很奇怪,正好体现的是多线程
-        try {
-            // 产生字符串越界异常,访问字符串的索引查过字符串的长度就可以产生
-            String s = &quot;dilireba&quot;;
-            for(int i = 0; i &lt;= s.length(); i++){
-                System.out.println(s.charAt(i));
-            }
-        } catch (StringIndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
-
-        // 多个异常一次捕获,多次处理
-        try {
-            // 产生空指针异常(创建对象赋值为null,使用对象调用方法可以产生空指针异常)
-            Integer integer = null;
-            System.out.println(integer.toString());
-            // 产生字符串越界异常,访问字符串的索引查过字符串的长度就可以产生
-            String s = &quot;dilireba&quot;;
-            for(int i = 0; i &lt;= s.length(); i++){
-                System.out.println(s.charAt(i));
-            }
-            // 会出现NullPointerException,因为第一次异常之后后面的代码停止执行
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }catch (StringIndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
-
-        // 多个异常一次捕获,一次处理,建议使用这种
-        try {
-            // 产生空指针异常(创建对象赋值为null,使用对象调用方法可以产生空指针异常)
-            Integer integer = null;
-            System.out.println(integer.toString());
-            // 产生字符串越界异常,访问字符串的索引查过字符串的长度就可以产生
-            String s = &quot;dilireba&quot;;
-            for(int i = 0; i &lt;= s.length(); i++){
-                System.out.println(s.charAt(i));
-            }
-        } catch (Exception e) { // 实际上是使用了多态
-            // 会出现NullPointerException,因为第一次异常之后后面的代码停止执行
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre><blockquote>
-<p>异常的注意事项:</p>
-<blockquote>
-<p>1.如果父类抛出了多个异常,子类覆盖父类方法时,只能抛出相同的异常或者是他的子集。<br>2.父类方法没有抛出异常，子类覆盖父类该方法时也不可抛出异常。此时子类产生该异常，只能捕获处理，不<br>     能声明抛出<br>3.运行时异常被抛出可以不处理。即不捕获也不声明抛出。<br>4.在try/catch后可以追加finally代码块，其中的代码一定会被执行，通常用于资源回收。<br>5.如果finally有return语句,永远返回finally中的结果,避免该情况.  </p>
-</blockquote>
-</blockquote>
-<h4 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h4><p>Java提供的异常类,有时候对于我们来说不够用,做不到见名知意,这个时候需要自定义异常类</p>
-<ul>
-<li><p>格式 : </p>
-<pre><code>public class XXXException extends Exception | RuntimeException{
-    添加一个空参数构造方法
-    添加一个带异常信息的构造方法
-}
-</code></pre></li>
-<li><p>注意 :<br>  1.自定义异常一般都是以Exception结尾的,说明该类是一个异常类  </p>
-<pre><code>2.自定义异常类,必须继承Exception或者是RuntimeException,前者用于自定义编译期异常,后者用于自定义运行期异常(可以不处理,交给JVM处理).
-</code></pre><p>  如下所示,自定义异常类:</p>
-<pre><code>/**
- * 自定义异常类,在进行开发的时候一定要做到见名知意
- *
- * @author WZLOVE
- * @create 2018-07-16 15:53
- */
-public class MyException extends Exception{  // 自定义编译期异常类,继承Exception类,重写两个构造方法
-</code></pre></li>
-</ul>
-<pre><code>    public MyException() {
-    }
-
-    public MyException(String message) {
-        super(message);
-    }
-}
-</code></pre><blockquote>
-<p>可以尝试着自己写一个注册的异常类,尝试一下.</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day04-map/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day04-map/" itemprop="url">day04_map</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:34:41+08:00">
-                2018-07-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Map的初次学习"><a href="#Map的初次学习" class="headerlink" title="Map的初次学习"></a>Map的初次学习</h1><p><strong><em>首次学习map的学习笔记,有错误还请谅解</em></strong></p>
-<h2 id="map的层次结构"><a href="#map的层次结构" class="headerlink" title="map的层次结构"></a>map的层次结构</h2><p><img src="./image/Map的实现.jpg" alt="Map的层次结构"></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>java.util.Map&lt;Key,Value&gt;的特点:</p>
-<ul>
-<li>Map集合是一个双列集合,存放的是键值对</li>
-<li>Map的键不可以重复,但是值可以重复.</li>
-<li>Map中的key和value的类型不一定相同</li>
-<li>key和value一一对应</li>
-</ul>
-<h2 id="子类"><a href="#子类" class="headerlink" title="子类"></a>子类</h2><p>HashMap集合的特点:</p>
-<ul>
-<li>底层是哈希表 : 查询速度很快.<blockquote>
-<p>JDK1.8之前是数组 + 单向链表,JDK1.8之后是数组 + 单向链表/红黑树</p>
-</blockquote>
-</li>
-<li>hashMap的集合是一个无序的集合,存取顺序可能不一致</li>
-</ul>
-<p>LinkedHashMap的特点:</p>
-<ul>
-<li>底层是哈希表 + 链表(保证元素有序,迭代顺序一致)</li>
-<li>存取的顺序是一直的.</li>
-</ul>
-<p>常用的方法:</p>
-<ul>
-<li>public V put(K key, V value) : 把指定的键与指定的值添加到Map集合中。<blockquote>
-<p>存储时,key不存在的时候,返回值为null,key存在时,使用新的value替换旧的value.,返回旧的value<br>所以该方法可以看做增加,也可以看做修改</p>
-</blockquote>
-</li>
-<li>public V remove(Object key) : 把指定的键 所对应的键值对元素 在Map集合中删除，返回被删除元素的<br>值。<blockquote>
-<p>key存在,返回被删除的value,key不存在,返回null</p>
-</blockquote>
-</li>
-<li>public V get(Object key) 根据指定的键，在Map集合中获取对应的值。<blockquote>
-<p>key存在,返回对应的value值,key不存在,返回null</p>
-</blockquote>
-</li>
-<li>boolean containsKey(Object key)  如果此映射包含指定键的映射，则返回 true 。  <blockquote>
-<p>包含指定的key,返回true,不包含返回false</p>
-</blockquote>
-</li>
-<li>boolean containsValue(Object value) 如果此map包含指定的值，则返回 true 。 </li>
-<li>public Set<k> keySet() : 获取Map集合中所有的键，存储到Set集合中。<blockquote>
-<p>map集合不能直接使用迭代器进行遍历,所以可以使用keySet方法和get方法可以来进行遍历.</p>
-</blockquote>
-</k></li>
-<li>Collection<v> values() 返回此结合中包含的值的Collection视图。 </v></li>
-<li>public Set&lt;Map.Entry&lt;K,V&gt;&gt; entrySet() : 获取到Map集合中所有的键值对对象的集合(Set集合)。</li>
-</ul>
-<p>在Map接口中有一个内部接口Entry,entry的作用是 :<br>当Map集合一创建,那么就会在Map集合中创建一个Entry对象,用来记录键与值(键值对对象/键与值的映射关系).</p>
-<p>Entry中常用方法 : </p>
-<ul>
-<li>K getKey() 返回与此条目相对应的键。  </li>
-<li>V getValue() 返回与此条目相对应的值。    </li>
-<li>V setValue(V value) 用指定的值替换与该条目相对应的值（可选操作）。  </li>
-</ul>
-<h4 id="Map如何保证key值唯一呢"><a href="#Map如何保证key值唯一呢" class="headerlink" title="Map如何保证key值唯一呢?"></a>Map如何保证key值唯一呢?</h4><p>可以参考前面的HashSet,底层相同,所以原理也差不多,都是依赖于hashCode方法和equals方法.</p>
-<h4 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h4><p>底层原理是 : 哈希表 + 链表(记录顺序),参考LinkedHashSet.<br>特点:</p>
-<ul>
-<li>不能存取重复的key</li>
-<li>存取有序</li>
-</ul>
-<p>案例(斗地主将牌进行排序输出):</p>
-<pre><code>import java.util.*;
-
-/**
- * 斗地主案例
- *  1. 组装54张扑克牌将
- * 2. 54张牌顺序打乱
- * 3. 三个玩家参与游戏，三人交替摸牌，每人17张牌，最后三张留作底牌。
- * 4. 查看三人各自手中的牌（按照牌的大小排序）、底牌
- *
- * 1. 准备牌：
- *      完成数字与纸牌的映射关系：
- *      使用双列Map(HashMap)集合，完成一个数字与字符串纸牌的对应关系(相当于一个字典)。
- * 2. 洗牌：
- *      通过数字完成洗牌发牌
- * 3. 发牌：
- *      将每个人以及底牌设计为ArrayList,将最后3张牌直接存放于底牌，剩余牌通过对3取模依次发牌。
- *      存放的过程中要求数字大小与斗地主规则的大小对应。
- *      将代表不同纸牌的数字分配给不同的玩家与底牌。
- * 4. 看牌：
- *      通过Map集合找到对应字符展示。
- * @author WZLOVE
- * @create 2018-07-14 14:34
- */
-public class LinkedHashMapDemo {
-
-    public static void main(String[] args) {
-        // 准备牌
-        String[] arr1 = {&quot;♠&quot;,&quot;♥&quot;,&quot;♣&quot;,&quot;♦&quot;};
-        String[] arr2 = {&quot;2&quot;,&quot;A&quot;,&quot;K&quot;,&quot;Q&quot;,&quot;J&quot;,&quot;10&quot;,&quot;9&quot;,&quot;8&quot;,&quot;7&quot;,&quot;6&quot;,&quot;5&quot;,&quot;4&quot;,&quot;3&quot;};
-        HashMap&lt;Integer,String&gt; hashMap = new HashMap&lt;&gt;();
-        int k = 0;
-        hashMap.put(k++,&quot;大王&quot;);
-        hashMap.put(k++,&quot;小王&quot;);
-        for (int i = 0; i &lt; arr2.length; i++) {
-            for (int i1 = 0; i1 &lt; arr1.length; i1++) {
-                hashMap.put(k++,arr1[i1] + arr2[i]);
-            }
-        }
-
-        /*for (Map.Entry&lt;Integer, String&gt; entry : hashMap.entrySet()) {
-            System.out.println(entry.getKey() + &quot;=&quot; + entry.getValue());
-        }*/
-
-        // 洗牌,将键洗牌,值跟随键排列
-
-        Set&lt;Integer&gt; set = hashMap.keySet();
-        ArrayList&lt;Integer&gt; intList = new ArrayList&lt;&gt;();
-        for (Integer integer : set) {
-            intList.add(integer);
-        }
-        Collections.shuffle(intList);
-
-        // 发牌
-        ArrayList&lt;Integer&gt; list1 = new ArrayList&lt;&gt;();
-        ArrayList&lt;Integer&gt; list2 = new ArrayList&lt;&gt;();
-        ArrayList&lt;Integer&gt; list3 = new ArrayList&lt;&gt;();
-        ArrayList&lt;Integer&gt; list4 = new ArrayList&lt;&gt;();
-
-        for (int i = 0; i &lt; intList.size(); i++) {
-            if(i &gt;= 51){
-                list4.add(intList.get(i));
-            } else if(i % 3 == 0){
-                list1.add(intList.get(i));
-
-            }else if(i % 3 == 1){
-
-                list2.add(intList.get(i));
-            }else if(i % 3 == 2){
-
-                list3.add(intList.get(i));
-            }
-        }
-
-        list1 = sortList(list1);
-        list2 = sortList(list2);
-        list3 = sortList(list3);
-        list4 = sortList(list4);
-
-        print(list1,hashMap);
-        print(list2,hashMap);
-        print(list3,hashMap);
-        print(list4,hashMap);
-
-    }
-
-    /**
-     * 进行排序
-     * @param list  需要排序的集合
-     * @return      排好序的集合
-     */
-    public static ArrayList&lt;Integer&gt; sortList(ArrayList&lt;Integer&gt; list){
-        Collections.sort(list, new Comparator&lt;Integer&gt;() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o1- o2;
-            }
-        });
-
-        return list;
-    }
-
-    /**
-     * 格式化输出
-     * @param list      键的集合
-     * @param hashMap   map集合
-     */
-    public static void print(ArrayList&lt;Integer&gt; list,HashMap&lt;Integer,String&gt; hashMap){
-        for (int i = 0; i &lt; list.size(); i++) {
-            if( i == 0 ){
-                System.out.print(&quot;[&quot; + hashMap.get(list.get(i)) + &quot;,&quot;);
-            } else if(i == list.size() - 1){
-                System.out.println(hashMap.get(list.get(i)) + &quot;]&quot;);
-            } else{
-                System.out.print(hashMap.get(list.get(i)) + &quot;,&quot;);
-
-            }
-        }
-    }
-
-}
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4475,7 +4622,7 @@ public class LinkedHashMapDemo {
               
                 <a href="/WangZhi.github.io/archives">
               
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -4488,7 +4635,7 @@ public class LinkedHashMapDemo {
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

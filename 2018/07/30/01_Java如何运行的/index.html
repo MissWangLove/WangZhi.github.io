@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java,socket,serverSocket," />
+  <meta name="keywords" content="java,虚拟机," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="网络编程概述 网络编程 : 通过编程实现不同计算机间数据的共享 C/S : 客户端/服务器模式 好处:部分代码放在客户端,访问服务器只需要传输有效的数据. 弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.   B/S : 浏览器/服务器模式 好处:不需要安装客户端,不需要考虑服务器升级问题. 弊端:所有的数据都在服务器,网络不好,反应慢,不友好.    网络编程三要素 协议 : 计算机">
-<meta name="keywords" content="java,socket,serverSocket">
+<meta name="description" content="Java为什么要在虚拟机中运行 简单的来说,Java作为一门高级程序语言,语法复杂,抽象度高,不能直接翻译为机器码在机器上运行,所以设计者就设计了虚拟机,通过编译器将Java程序转换成虚拟机所能识别的指令码,也就是Java字节码,Java字节码会被虚拟机翻译为可以被机器识别的机器码.这也实现了Java的跨平台 虚拟机的第二个好处就是带来了一个托管环境,托管环境能够代替我们处理代码中冗余并且容易出错">
+<meta name="keywords" content="java,虚拟机">
 <meta property="og:type" content="article">
-<meta property="og:title" content="day10-网络编程">
-<meta property="og:url" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/26/day11-网络编程/index.html">
+<meta property="og:title" content="Java是怎么运行的">
+<meta property="og:url" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/30/01_Java如何运行的/index.html">
 <meta property="og:site_name" content="IT小白进阶">
-<meta property="og:description" content="网络编程概述 网络编程 : 通过编程实现不同计算机间数据的共享 C/S : 客户端/服务器模式 好处:部分代码放在客户端,访问服务器只需要传输有效的数据. 弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.   B/S : 浏览器/服务器模式 好处:不需要安装客户端,不需要考虑服务器升级问题. 弊端:所有的数据都在服务器,网络不好,反应慢,不友好.    网络编程三要素 协议 : 计算机">
+<meta property="og:description" content="Java为什么要在虚拟机中运行 简单的来说,Java作为一门高级程序语言,语法复杂,抽象度高,不能直接翻译为机器码在机器上运行,所以设计者就设计了虚拟机,通过编译器将Java程序转换成虚拟机所能识别的指令码,也就是Java字节码,Java字节码会被虚拟机翻译为可以被机器识别的机器码.这也实现了Java的跨平台 虚拟机的第二个好处就是带来了一个托管环境,托管环境能够代替我们处理代码中冗余并且容易出错">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-26T11:35:10.923Z">
+<meta property="og:updated_time" content="2018-07-30T10:26:45.153Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="day10-网络编程">
-<meta name="twitter:description" content="网络编程概述 网络编程 : 通过编程实现不同计算机间数据的共享 C/S : 客户端/服务器模式 好处:部分代码放在客户端,访问服务器只需要传输有效的数据. 弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.   B/S : 浏览器/服务器模式 好处:不需要安装客户端,不需要考虑服务器升级问题. 弊端:所有的数据都在服务器,网络不好,反应慢,不友好.    网络编程三要素 协议 : 计算机">
+<meta name="twitter:title" content="Java是怎么运行的">
+<meta name="twitter:description" content="Java为什么要在虚拟机中运行 简单的来说,Java作为一门高级程序语言,语法复杂,抽象度高,不能直接翻译为机器码在机器上运行,所以设计者就设计了虚拟机,通过编译器将Java程序转换成虚拟机所能识别的指令码,也就是Java字节码,Java字节码会被虚拟机翻译为可以被机器识别的机器码.这也实现了Java的跨平台 虚拟机的第二个好处就是带来了一个托管环境,托管环境能够代替我们处理代码中冗余并且容易出错">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://misswanglove.github.io/WangZhi.github.io/2018/07/26/day11-网络编程/"/>
+  <link rel="canonical" href="https://misswanglove.github.io/WangZhi.github.io/2018/07/30/01_Java如何运行的/"/>
 
 
 
 
 
-  <title>day10-网络编程 | IT小白进阶</title>
+  <title>Java是怎么运行的 | IT小白进阶</title>
   
 
 
@@ -294,7 +294,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/26/day11-网络编程/">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/30/01_Java如何运行的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="王智家园">
@@ -311,7 +311,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">day10-网络编程</h1>
+          <h1 class="post-title" itemprop="name headline">Java是怎么运行的</h1>
         
 
         <div class="post-meta">
@@ -323,8 +323,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-26T19:31:48+08:00">
-                2018-07-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-30T18:40:21+08:00">
+                2018-07-30
               </time>
             
 
@@ -361,204 +361,27 @@
       
 
       
-        <h1 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
-<li>网络编程 : 通过编程实现不同计算机间数据的共享</li>
-<li>C/S : 客户端/服务器模式<ol>
-<li>好处:部分代码放在客户端,访问服务器只需要传输有效的数据.</li>
-<li>弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.</li>
+        <h2 id="Java为什么要在虚拟机中运行"><a href="#Java为什么要在虚拟机中运行" class="headerlink" title="Java为什么要在虚拟机中运行"></a>Java为什么要在虚拟机中运行</h2><ol>
+<li>简单的来说,Java作为一门高级程序语言,语法复杂,抽象度高,不能直接翻译为机器码在机器上运行,所以设计者就设计了虚拟机,通过编译器将Java程序转换成虚拟机所能识别的指令码,也就是Java字节码,Java字节码会被虚拟机翻译为可以被机器识别的机器码.这也实现了Java的跨平台</li>
+<li>虚拟机的第二个好处就是带来了一个托管环境,托管环境能够代替我们处理代码中冗余并且容易出错的部分,比如自动内存管理,垃圾回收. 还有诸如数组越界、动态类型、安全权限等等动态监测.</li>
 </ol>
-</li>
-<li>B/S : 浏览器/服务器模式<ol>
-<li>好处:不需要安装客户端,不需要考虑服务器升级问题.</li>
-<li>弊端:所有的数据都在服务器,网络不好,反应慢,不友好.</li>
+<h2 id="Java如何在虚拟机中运行的"><a href="#Java如何在虚拟机中运行的" class="headerlink" title="Java如何在虚拟机中运行的"></a>Java如何在虚拟机中运行的</h2><ol>
+<li>从虚拟机角度来看,执行Java代码首先需要将它编译而成的class文件加载到虚拟机中.加载后的Java类会被存放与方法区(Method Area)中,运行时,虚拟机执行方法区内的代码</li>
 </ol>
-</li>
-</ul>
-<h2 id="网络编程三要素"><a href="#网络编程三要素" class="headerlink" title="网络编程三要素"></a>网络编程三要素</h2><ol>
-<li>协议 : 计算机与计算机之间传输的规则(协议的三要素如下)<ol>
-<li>语法，就是这一段内容要符合一定的规则和格式。例如，括号要成对，结束要使用分号等。</li>
-<li>语义，就是这一段内容要代表某种意义。例如数字减去数字是有意义的，数字减去文本一般来说就没有意义。</li>
-<li>顺序，就是先干啥，后干啥。例如，可以先加上某个数值，然后再减去某个数值。</li>
-</ol>
-</li>
-<li>IP地址 : 在网络中,ip地址是唯一标识</li>
-<li>端口号 : 计算机中应用程序的唯一标识</li>
-</ol>
-<h4 id="客户端的代码步骤"><a href="#客户端的代码步骤" class="headerlink" title="客户端的代码步骤"></a>客户端的代码步骤</h4><ol>
-<li>创建Socket的对象,指定ip地址和端口号</li>
-<li>利用socket获取文件字节输出流对象(可以使用转换流将字节流转化为打印流)</li>
-<li>利用字节流向服务端发送消息</li>
-<li>关闭socket资源</li>
-</ol>
-<h4 id="服务端的代码步骤"><a href="#服务端的代码步骤" class="headerlink" title="服务端的代码步骤"></a>服务端的代码步骤</h4><ol>
-<li>创建ServerSocket对象,设置端口号</li>
-<li>利用创建的ServerSocket对象使用sccept方法获取Socket对象</li>
-<li>利用第二步获取的socket获取字节输入流对象(可以只用转换流将字节流转化为字符高效流)</li>
-<li>使用第三步的流读取客户端发送的信息</li>
-<li>关闭资源</li>
-</ol>
-<blockquote>
-<p>在整个过程中,需要注意的是随时刷新缓冲区和关闭流,所以推荐使用打印流,会自动刷新和自动换行.</p>
-</blockquote>
-<p>写个小例子,实现客户端和服务端的单次通信</p>
-<pre><code>package homework.demo5;
-
-import java.io.*;
-import java.net.Socket;
-
-/**
- * 创建客户端
- *
- * @author WZLOVE
- * @create 2018-07-25 20:47
- */
-public class ClientDemo {
-
-    public static void main(String[] args) throws IOException {
-        // 创建Socket对象
-        Socket socket = new Socket(&quot;localhost&quot;,8888);
-
-        // 利用转换流转换成打印流
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
-
-        // 向服务器写内容
-        pw.println(&quot;你好,我是客户端&quot;);
-
-        // 获取高效字符输入流
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        // 获取服务器发送的消息
-        String s = br.readLine();
-        System.out.println(&quot;服务器说:&quot; + s);
-
-        // 关闭流
-        socket.close();
-    }
-
-}
-
-package homework.demo5;
-
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-/**
- * 服务端
- *
- * @author WZLOVE
- * @create 2018-07-25 20:57
- */
-public class ServerDemo {
-
-    public static void main(String[] args) throws IOException {
-        // 创建服务端网络对象,指定端口号
-        ServerSocket ss = new ServerSocket(8888);
-        // 获取Socket对象
-        Socket accept = ss.accept();
-        // 获取高效输入流
-        BufferedReader br = new BufferedReader(new InputStreamReader(accept.getInputStream()));
-        // 获取输入的信息
-        String s = br.readLine();
-        System.out.println(&quot;客户端说 : &quot; + s);
-
-        // 获取打印流
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true );
-        // 向客户端发送消息
-        pw.println(&quot;你好,我是服务端&quot;);
-        // 关闭资源
-        accept.close();
-        ss.close();
-    }
-}
-</code></pre><p>写个例子,实现客户端向服务器上传图片</p>
-<pre><code>package homework.demo7;
-
-import java.io.*;
-import java.net.Socket;
-
-/**
- * 网络通信中的客户端
- */
-public class Cilent {
-
-    public static void main(String[] args) throws IOException {
-        // 创建Socket客户端对象
-        Socket socket = new Socket(&quot;localhost&quot;,8888);
-        // 准备文件进行传输
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(&quot;yz.jpg&quot;));
-        // 使用socket对象获取字节输入流对象
-        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-        // 一边读文件,一边向服务器发送数据
-        byte[] arr = new byte[1024 * 5];
-        int len;
-        while((len = bis.read(arr)) != -1){
-            bos.write(arr,0,len);
-        }
-        // 数据上传完毕,刷新缓存区
-        bos.flush();
-        // 关闭不用的资源
-        bis.close();
-        // 关闭输出流套接字,这个步骤是必须的
-        socket.shutdownOutput();
-
-        // 读取反馈的数据
-        // 使用socket对象获取字节输入流
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        String line;
-        StringBuilder sb = new StringBuilder();
-        while((line = br.readLine()) != null){
-            sb.append(line);
-        }
-        System.out.println(sb);
-        // 关闭资源
-        socket.close();
-    }
-
-}
-
-
-package homework.demo7;
-
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-/**
- * 服务端
- */
-public class Server {
-    public static void main(String[] args) throws IOException {
-        // 创建服务端的对象
-        ServerSocket ss = new ServerSocket(8888);
-        // 使用服务端对象获取Socket对象
-        Socket accept = ss.accept();
-        // 准备接受上传的文件并且写入服务器
-        // 创建高效字节输出流,用来指向文件
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(&quot;test.jpg&quot;));
-        // 使用socket对象获取文件字节输入流(转化为高效字节输入流)
-        BufferedInputStream bis = new BufferedInputStream(accept.getInputStream());
-        // 边读边写
-        byte[] arr = new byte[1024 * 5];
-        int len;
-        while((len = bis.read(arr)) != -1){
-            bos.write(arr,0,len);
-            // 进行刷新
-            bos.flush();
-        }
-        // 关闭不使用的资源
-        bos.close();
-        // 向客户端反馈信息
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true);
-        // 写信息
-        pw.println(&quot;上传成功&quot;);
-        // 关闭资源
-        accept.close();
-        ss.close();
-    }
-}
-</code></pre><blockquote>
-<p>有关网络的相关知识大家可以去订阅极客时间上的趣谈网络协议,那个讲的很清楚</p>
-</blockquote>
+<h4 id="Java虚拟机如何存储运行时的数据"><a href="#Java虚拟机如何存储运行时的数据" class="headerlink" title="Java虚拟机如何存储运行时的数据"></a>Java虚拟机如何存储运行时的数据</h4><p>Java虚拟机在内存中划分出堆和栈来存储运行时数据.并且将栈细分为面向Java方法的Java方法栈,面向本地方法的本地方法栈,以及存放各个线程执行位置的PC寄存器.</p>
+<p>运行的过程中,每当调用一个方法,Java虚拟机会在当前线程的Java方法栈中生成一个栈帧,存放局部变量以及字节码操作数.这个栈帧大小提前计算好,而且Java虚拟机不要求栈帧在内存空间中连续分步.退出执行方法时,Java虚拟机会弹出当前线程的当前栈帧,并舍弃.</p>
+<p>前面说到Java字节码会被虚拟机翻译成机器码,那是如何翻译的呢?有两种形式:第一种是解释执行,也就是逐条将字节码翻译成机器码并执行,优势是无需等待编译.第二种是即时编译(JIT),也就是将一个方法中包含的所有字节码编译成机器码后再执行,优势在于实际运行速度很快.而我们常用的HotSpot虚拟机默认采用混合模式,综合了解释执行和即时编译两者的优点,先解释执行字节码,而后将反复执行的热点代码,以方法为单位进行即时编译.</p>
+<h2 id="运行效率如何"><a href="#运行效率如何" class="headerlink" title="运行效率如何"></a>运行效率如何</h2><p>前面说的极是编译就是用来提升性能以及峰值性能,它是建立在程序符合二八定律的假设上,也就是百分之二十的代码占据百分之八十的计算资源.</p>
+<p>如何理解?对于占据大部分不常用的代码,无需耗费时间将其编译成机器码,而是采取解释执行的方式运行;另一方面,对于占据小部分的热点代码,将其编译器成机器码,提高运行速度.</p>
+<p>HotSpot 内置了多个即时编译器：C1、C2 和 Graal。Graal 是<br>Java 10 正式引入的实验性即时编译器,InfoQ上有个介绍(<a href="http://www.infoq.com/cn/articles/Graal-Java-JIT-Compiler?utm_source=articles_about_java&amp;utm_medium=link&amp;utm_campaign=java),有兴趣的可以了解下" target="_blank" rel="noopener">http://www.infoq.com/cn/articles/Graal-Java-JIT-Compiler?utm_source=articles_about_java&amp;utm_medium=link&amp;utm_campaign=java),有兴趣的可以了解下</a>.</p>
+<p>C1 又叫做 Client 编译器，面向的是对启动性能有要求的客户端 GUI 程序，采用的优化手段相对简单，因此编译时间较短。</p>
+<p>C2 又叫做 Server 编译器，面向的是对峰值性能有要求的服务器端程序，采用的优化手段相对复杂，因此编译时间较长，但同时生成代码的执行效率较高。</p>
+<p>Java7开始,HotSpot默认采取分层编译:热点方法首先被C1编译,而后热点方法中的热点会进一步被C2编译.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>之所以要在虚拟机中运行，是因为它提供了可移植性。一旦 Java 代码被编译为 Java 字节码，便可以在不同平台上的 Java 虚拟机实现上运行。此外，虚拟机还提供了一个代码托管的环境，<br>代替我们处理部分冗长而且容易出错的事务，例如内存管理。</p>
+<p>Java 虚拟机将运行时内存区域划分为五个部分，分别为方法区、堆、PC 寄存器、Java 方法栈和本地方法栈。Java 程序编译而成的 class 文件，需要先加载至方法区中，方能在 Java 虚拟机<br>中运行。</p>
+<p>为了提高运行效率，标准 JDK 中的 HotSpot 虚拟机采用的是一种混合执行的策略。</p>
+<p>它会解释执行 Java 字节码，然后会将其中反复执行的热点代码，以方法为单位进行即时编译，翻译成机器码后直接运行在底层硬件之上。</p>
+<p>HotSpot 装载了多个不同的即时编译器，以便在编译时间和生成代码的执行效率之间做取舍。</p>
 
       
     </div>
@@ -578,9 +401,7 @@ public class Server {
           
             <a href="/WangZhi.github.io/tags/java/" rel="tag"># java</a>
           
-            <a href="/WangZhi.github.io/tags/socket/" rel="tag"># socket</a>
-          
-            <a href="/WangZhi.github.io/tags/serverSocket/" rel="tag"># serverSocket</a>
+            <a href="/WangZhi.github.io/tags/虚拟机/" rel="tag"># 虚拟机</a>
           
         </div>
       
@@ -593,8 +414,8 @@ public class Server {
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/WangZhi.github.io/2018/07/24/day10-commonsio-FileUtiles/" rel="next" title="day10-commonsio-FileUtiles">
-                <i class="fa fa-chevron-left"></i> day10-commonsio-FileUtiles
+              <a href="/WangZhi.github.io/2018/07/28/day13-Stream流/" rel="next" title="day13-Stream流">
+                <i class="fa fa-chevron-left"></i> day13-Stream流
               </a>
             
           </div>
@@ -603,8 +424,8 @@ public class Server {
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/WangZhi.github.io/2018/07/28/day12-函数式接口/" rel="prev" title="day12-函数式接口">
-                day12-函数式接口 <i class="fa fa-chevron-right"></i>
+              <a href="/WangZhi.github.io/2018/07/31/day14-reflect/" rel="prev" title="day14-reflect">
+                day14-reflect <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -728,7 +549,7 @@ public class Server {
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#网络编程"><span class="nav-number">1.</span> <span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络编程三要素"><span class="nav-number">1.2.</span> <span class="nav-text">网络编程三要素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端的代码步骤"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">客户端的代码步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务端的代码步骤"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">服务端的代码步骤</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java为什么要在虚拟机中运行"><span class="nav-number">1.</span> <span class="nav-text">Java为什么要在虚拟机中运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java如何在虚拟机中运行的"><span class="nav-number">2.</span> <span class="nav-text">Java如何在虚拟机中运行的</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Java虚拟机如何存储运行时的数据"><span class="nav-number">2.0.1.</span> <span class="nav-text">Java虚拟机如何存储运行时的数据</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行效率如何"><span class="nav-number">3.</span> <span class="nav-text">运行效率如何</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
