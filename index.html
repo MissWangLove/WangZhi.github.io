@@ -944,151 +944,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/01/Java学习笔记/02-Java的基本数据类型/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/08/01/Java学习笔记/02-Java的基本数据类型/" itemprop="url">day02_Java的基本数据类型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-01T20:21:29+08:00">
-                2018-08-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="基本数据类型的加载和存储"><a href="#基本数据类型的加载和存储" class="headerlink" title="基本数据类型的加载和存储"></a>基本数据类型的加载和存储</h2><h3 id="虚拟机中的Boolean类型"><a href="#虚拟机中的Boolean类型" class="headerlink" title="虚拟机中的Boolean类型"></a>虚拟机中的Boolean类型</h3><p>在Java语言规范中,boolean类型的值只有两种可能,那就是”true”和”false”. 但是这两个符号是不能被Java虚拟机直接使用的.</p>
-<p>在Java虚拟机规范中,boolean类型则被映射成int类型. 也就是说,”true”被映射为整数1,”false”被映射为整数0.这个编码规则约束了Java字节码的具体实现.</p>
-<h3 id="Java中的基本类型"><a href="#Java中的基本类型" class="headerlink" title="Java中的基本类型"></a>Java中的基本类型</h3><p>Java中的基本类型有8个,上面的boolean类型, 整数类型的byte、short、char、int和 long，以及浮点类型 float 和 double.</p>
-<p><img src="./image/java01.jpg" alt="基本数据类型"></p>
-<p>java的基本类型都有对应的值域和默认值,如图,从上到下的值域一次增大,后面的值域包含前面的值域,意味着上面的数据类型转换为下面的数据类型不需要进行强制转换。还有注意默认值看起来不一样，实际在内存中都是0。</p>
-<p>8个基本数据类型中，只有char和boolean是无符号数。并且boolean类型的取值范围为0或者1，char类型的取值范围为[0,65535]。通常我们认为char类型的值为非负数。</p>
-<p>Java 的浮点类型采用 IEEE 754 浮点数格式。以 float 为例，浮点类型通常有两个 0，+0.0F 以及 -0.0F。前者在 Java 里是 0，后者是符号位为 1、其他位均为 0 的浮点数，在内存中等同于十六进制整数 0x8000000（即 -0.0F 可通过Float.intBitsToFloat(0x8000000) 求得）。尽管它们的内存</p>
-<p>数值不同，但是在 Java 中 +0.0F == -0.0F 会返回真。</p>
-<p>有了+0.0F和-0.0F后，那么浮点数中的正无穷和负无穷就可以定义了。正无穷就是任意正浮点数（不包括 +0.0F）除以 +0.0F 得到的值，而负无穷是任意正浮点数除以 -0.0F得到的值。在 Java 中，正无穷和负无穷是有确切的值，在内存中分别等同于十六进制整数0x7F800000 和 0xFF800000。</p>
-<p>那超出范围的数字呢？ 对应的是NaN（Not-a-Number）,0x7FC00000为标准的NaN，其他的称之为不标准的NaN。并且NaN有一个特性，任何数 ！= NaN 永远返回true。</p>
-<h3 id="Java基本类型的大小"><a href="#Java基本类型的大小" class="headerlink" title="Java基本类型的大小"></a>Java基本类型的大小</h3><h5 id="存储时的大小"><a href="#存储时的大小" class="headerlink" title="存储时的大小"></a>存储时的大小</h5><p>Java 虚拟机每调用一个 Java 方法，便会创建一个栈帧。暂时理解为解释器使用的解释栈帧。包括两个组成部分，局部变量区和字节码操作数栈。</p>
-<p>在Java虚拟机规范中，局部变量区等价于一个数组，并且可以用正整数索引。除了long、double值需要用两个数组单元来存储之外，其他的基本类型以及引用类型的值均占用一个数组单元。</p>
-<p>也就是说，boolean、byte、char、short这四种类型，在栈上占用的空间和int是一样的，和引用类型也是一样的。也就是32位的HotSpot上，栈上占用4个字节；64位的HotSpot上，占用8个字节。</p>
-<p>当然，这种情况仅存在于局部变量，而并不会出现在存储于堆上的字段和数组元素伤。对于byte、char以及short这三种类型的字段或者数组单元，他们在堆上占用的空间分别为一字节、两字节以及两字节，与值域是相吻合的。</p>
-<p>因此，当我们将一个 int 类型的值，存储到这些类型的字段或数组时，相当于做了一次隐式的掩码操作。举例来说，当我们把0xFFFFFFFF（-1）存储到一个声明为 char 类型的字段里时，由</p>
-<p>于该字段仅占两字节，所以高两位的字节便会被截取掉，最终存入“\uFFFF”。</p>
-<p>boolean 字段和 boolean 数组则比较特殊。在 HotSpot 中，boolean 字段占用一字节，而boolean 数组则直接用 byte 数组来实现。为了保证堆中的 boolean 值是合法的，HotSpot 在存储时显式地进行掩码操作，也就是说，只取最后一位的值存入boolean 字段或数组中。</p>
-<h5 id="加载时的大小"><a href="#加载时的大小" class="headerlink" title="加载时的大小"></a>加载时的大小</h5><p>Java 虚拟机的算数运算几乎全部依赖于操作数栈。也就是说，我们需要将堆中的 boolean、byte、char 以及 short 加载到操作数栈上，而后将栈上的值当成 int 类型来运算。</p>
-<p>对于 boolean、char 这两个无符号类型来说，加载伴随着零扩展。举个例子，char 的大小为两个字节。在加载时 char 的值会被复制到 int 类型的低二字节，而高二字节则会用 0 来填充。</p>
-<p>对于 byte、short 这两个类型来说，加载伴随着符号扩展。举个例子，short 的大小为两个字节。在加载时 short 的值同样会被复制到 int 类型的低二字节。如果该 short 值为非负数，即最</p>
-<p>高位为 0，那么该 int 类型的值的高二字节会用 0 来填充，否则用 1 来填充。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>其中，boolean 类型在 Java 虚拟机中被映射为整数类型：“true”被映射为 1，而“false”被映射为 0。Java 代码中的逻辑运算以及条件跳转，都是用整数相关的字节码来实现的。</p>
-<p>除 boolean 类型之外，Java 还有另外 7 个基本类型。它们拥有不同的值域，但默认值在内存中均为 0。这些基本类型之中，浮点类型比较特殊。基于它的运算或比较，需要考虑+0.0F、-0.0F 以及 NaN 的情况。</p>
-<p>除 long 和 double 外，其他基本类型与引用类型在解释执行的方法栈帧中占用的大小是一致的，但它们在堆中占用的大小确不同。在将 boolean、byte、char 以及 short 的值存入字段或</p>
-<p>者数组单元时，Java 虚拟机会进行掩码操作。在读取时，Java 虚拟机则会将其扩展为 int 类型。</p>
-<h5 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h5><p>从这个中，可以学到，8种基本数据的大小，还有虚拟机对于基本数据类型的规范是什么，堆上和解释执行的方法栈帧上的byte、short、char、boolean类型的存储的大小是不一样的，加载（读取）的时候，会进行掩码的操作。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/01/深入理解Java虚拟机/02-Java的基本数据类型/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1874,146 +1729,6 @@ public class ReflectDemo {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/30/Java学习笔记/01_Java如何运行的/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/30/Java学习笔记/01_Java如何运行的/" itemprop="url">Java是怎么运行的</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-30T18:40:21+08:00">
-                2018-07-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Java为什么要在虚拟机中运行"><a href="#Java为什么要在虚拟机中运行" class="headerlink" title="Java为什么要在虚拟机中运行"></a>Java为什么要在虚拟机中运行</h2><ol>
-<li>简单的来说,Java作为一门高级程序语言,语法复杂,抽象度高,不能直接翻译为机器码在机器上运行,所以设计者就设计了虚拟机,通过编译器将Java程序转换成虚拟机所能识别的指令码,也就是Java字节码,Java字节码会被虚拟机翻译为可以被机器识别的机器码.这也实现了Java的跨平台</li>
-<li>虚拟机的第二个好处就是带来了一个托管环境,托管环境能够代替我们处理代码中冗余并且容易出错的部分,比如自动内存管理,垃圾回收. 还有诸如数组越界、动态类型、安全权限等等动态监测.</li>
-</ol>
-<h2 id="Java如何在虚拟机中运行的"><a href="#Java如何在虚拟机中运行的" class="headerlink" title="Java如何在虚拟机中运行的"></a>Java如何在虚拟机中运行的</h2><ol>
-<li>从虚拟机角度来看,执行Java代码首先需要将它编译而成的class文件加载到虚拟机中.加载后的Java类会被存放与方法区(Method Area)中,运行时,虚拟机执行方法区内的代码</li>
-</ol>
-<h4 id="Java虚拟机如何存储运行时的数据"><a href="#Java虚拟机如何存储运行时的数据" class="headerlink" title="Java虚拟机如何存储运行时的数据"></a>Java虚拟机如何存储运行时的数据</h4><p>Java虚拟机在内存中划分出堆和栈来存储运行时数据.并且将栈细分为面向Java方法的Java方法栈,面向本地方法的本地方法栈,以及存放各个线程执行位置的PC寄存器.</p>
-<p>运行的过程中,每当调用一个方法,Java虚拟机会在当前线程的Java方法栈中生成一个栈帧,存放局部变量以及字节码操作数.这个栈帧大小提前计算好,而且Java虚拟机不要求栈帧在内存空间中连续分步.退出执行方法时,Java虚拟机会弹出当前线程的当前栈帧,并舍弃.</p>
-<p>前面说到Java字节码会被虚拟机翻译成机器码,那是如何翻译的呢?有两种形式:第一种是解释执行,也就是逐条将字节码翻译成机器码并执行,优势是无需等待编译.第二种是即时编译(JIT),也就是将一个方法中包含的所有字节码编译成机器码后再执行,优势在于实际运行速度很快.而我们常用的HotSpot虚拟机默认采用混合模式,综合了解释执行和即时编译两者的优点,先解释执行字节码,而后将反复执行的热点代码,以方法为单位进行即时编译.</p>
-<h2 id="运行效率如何"><a href="#运行效率如何" class="headerlink" title="运行效率如何"></a>运行效率如何</h2><p>前面说的极是编译就是用来提升性能以及峰值性能,它是建立在程序符合二八定律的假设上,也就是百分之二十的代码占据百分之八十的计算资源.</p>
-<p>如何理解?对于占据大部分不常用的代码,无需耗费时间将其编译成机器码,而是采取解释执行的方式运行;另一方面,对于占据小部分的热点代码,将其编译器成机器码,提高运行速度.</p>
-<p>HotSpot 内置了多个即时编译器：C1、C2 和 Graal。Graal 是<br>Java 10 正式引入的实验性即时编译器,InfoQ上有个介绍(<a href="http://www.infoq.com/cn/articles/Graal-Java-JIT-Compiler?utm_source=articles_about_java&amp;utm_medium=link&amp;utm_campaign=java),有兴趣的可以了解下" target="_blank" rel="noopener">http://www.infoq.com/cn/articles/Graal-Java-JIT-Compiler?utm_source=articles_about_java&amp;utm_medium=link&amp;utm_campaign=java),有兴趣的可以了解下</a>.</p>
-<p>C1 又叫做 Client 编译器，面向的是对启动性能有要求的客户端 GUI 程序，采用的优化手段相对简单，因此编译时间较短。</p>
-<p>C2 又叫做 Server 编译器，面向的是对峰值性能有要求的服务器端程序，采用的优化手段相对复杂，因此编译时间较长，但同时生成代码的执行效率较高。</p>
-<p>Java7开始,HotSpot默认采取分层编译:热点方法首先被C1编译,而后热点方法中的热点会进一步被C2编译.</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>之所以要在虚拟机中运行，是因为它提供了可移植性。一旦 Java 代码被编译为 Java 字节码，便可以在不同平台上的 Java 虚拟机实现上运行。此外，虚拟机还提供了一个代码托管的环境，<br>代替我们处理部分冗长而且容易出错的事务，例如内存管理。</p>
-<p>Java 虚拟机将运行时内存区域划分为五个部分，分别为方法区、堆、PC 寄存器、Java 方法栈和本地方法栈。Java 程序编译而成的 class 文件，需要先加载至方法区中，方能在 Java 虚拟机<br>中运行。</p>
-<p>为了提高运行效率，标准 JDK 中的 HotSpot 虚拟机采用的是一种混合执行的策略。</p>
-<p>它会解释执行 Java 字节码，然后会将其中反复执行的热点代码，以方法为单位进行即时编译，翻译成机器码后直接运行在底层硬件之上。</p>
-<p>HotSpot 装载了多个不同的即时编译器，以便在编译时间和生成代码的执行效率之间做取舍。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/30/深入理解Java虚拟机/01_Java如何运行的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2692,6 +2407,634 @@ public class Demo4 {
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/28/Java学习笔记/day12-函数式接口/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/28/Java学习笔记/day12-函数式接口/" itemprop="url">day12-函数式接口</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-28T20:04:35+08:00">
+                2018-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h1><h4 id="概述-接口中只有一个抽象方法"><a href="#概述-接口中只有一个抽象方法" class="headerlink" title="概述:接口中只有一个抽象方法"></a>概述:接口中只有一个抽象方法</h4><p><strong>下面介绍的可能很抽象,理解不了,至少在我看来单独的这几个借口是没有用的,跟最下面说的 Stream流一起用才会有效果</strong></p>
+<ul>
+<li><p>函数式接口，即适用于函数式编程场景的接口。而Java中的函数式编程体现就是Lambda，所以函数式接口就是可<br>以适用于Lambda使用的接口。只有确保接口中有且仅有一个抽象方法，Java中的Lambda才能顺利地进行推导。</p>
+<blockquote>
+<p>备注：“语法糖”是指使用更加方便，但是原理不变的代码语法。例如在遍历集合时使用的for-each语法，其实</p>
+<pre><code>底层的实现原理仍然是迭代器，这便是“语法糖”。从应用层面来讲，Java中的Lambda可以被当做是匿名内部
+类的“语法糖”，但是二者在原理上是不同的。
+</code></pre></blockquote>
+</li>
+<li><p>格式:</p>
+<ol>
+<li><p>只要确保接口中有且仅有一个抽象方法即可：</p>
+<pre><code>修饰符 interface 接口名称 {
+   public abstract 返回值类型 方法名称(可选参数信息);
+   // 其他非抽象方法内容
+}
+</code></pre></li>
+<li><p>@FunctionalInterface注解</p>
+<p> 与@Override 注解的作用类似，Java 8中专门为函数式接口引入了一个新的注解： @FunctionalInterface 。该注<br>解可用于一个接口的定义上,一旦使用该注解来定义接口，编译器将会强制检查该接口是否确实有且仅有一个抽象方法，否则将会报错。需要注<br>意的是，即使不使用该注解，只要满足函数式接口的定义，这仍然是一个函数式接口，使用起来都一样。</p>
+</li>
+<li><p>自定义函数式接口(前面已经写过,这就不重复写了)</p>
+</li>
+</ol>
+</li>
+</ul>
+<pre><code>package com.wzlove.function;
+
+/**
+ * 自定义函数式接口
+ *
+ * 使用@FunctionalInterface可以说明该接口是函数式接口,但是不加,如果接口中只有一个抽象方法,这个接口也是函数式接口
+ *
+ * 也就是说函数式接口不以注解的存在而存在
+ */
+@FunctionalInterface
+public interface MyFunctionalInterface {
+
+    public abstract void show();
+}
+</code></pre><h4 id="lambda表达式-参数列表-gt-代码"><a href="#lambda表达式-参数列表-gt-代码" class="headerlink" title="lambda表达式: (参数列表)-&gt;{代码}"></a>lambda表达式: (参数列表)-&gt;{代码}</h4><h2 id="lambda表达式-前面有篇文章说过-不详细说明"><a href="#lambda表达式-前面有篇文章说过-不详细说明" class="headerlink" title="lambda表达式(前面有篇文章说过,不详细说明)"></a>lambda表达式(前面有篇文章说过,不详细说明)</h2><p>有参数,有返回值的自定义函数式接口</p>
+<pre><code>@FunctionalInterface
+public interface Sumable {
+    int sum(int a, int b);
+}
+</code></pre><h2 id="JDK1-8之后的某些函数式接口"><a href="#JDK1-8之后的某些函数式接口" class="headerlink" title="JDK1.8之后的某些函数式接口"></a>JDK1.8之后的某些函数式接口</h2><h4 id="supplier生产数据函数式接口"><a href="#supplier生产数据函数式接口" class="headerlink" title="supplier生产数据函数式接口"></a>supplier生产数据函数式接口</h4><p>目的是生产数据.  </p>
+<p>目前好像看不出来有什么用,但是好像和jdk8的Stream流有关.,举个小例子</p>
+<pre><code>package com.wzlove.supplier;
+
+import java.util.function.Supplier;
+
+/**
+ * 使用supplier函数式接口求数组的最大值
+ */
+public class ArrMaxValue {
+
+    public static int getMaxValue(Supplier&lt;Integer&gt; sup){
+        return sup.get();
+    }
+
+    public static void main(String[] args) {
+        // 创建数组
+        int[] arr = {100,20,50,30,99,101,-50};
+
+        int maxValue = getMaxValue(()-&gt;{
+            int max = arr[0];
+            for (int i : arr) {
+                if(i &gt; max){
+                    max = i;
+                }
+            }
+            return max;
+        });
+
+        System.out.println(&quot;数组中的最大值为:&quot; + maxValue);
+    }
+
+}
+</code></pre><h4 id="Consumer消费数据函数式接口"><a href="#Consumer消费数据函数式接口" class="headerlink" title="Consumer消费数据函数式接口"></a>Consumer消费数据函数式接口</h4><p>这个方法是用来消费数据的,如何消费,消费规则自己定义.</p>
+<p>java.util.function.Supplier<t> 接口仅包含一个无参的方法： T get() 。用来获取一个泛型参数指定类型的对<br>象数据。由于这是一个函数式接口，这也就意味着对应的Lambda表达式需要“对外提供”一个符合泛型类型的对象<br>数据。</t></p>
+<pre><code>package com.wzlove.comsumer;
+
+import java.util.function.Consumer;
+
+/**
+ * 使用Consumer函数式接口实现格式化输出
+ */
+public class ConsumerDemo2 {
+
+    public static void printInfo(String[] strArr, Consumer&lt;String&gt; con1, Consumer&lt;String&gt; con2){
+
+        for (int i = 0; i &lt; strArr.length; i++) {
+            con1.andThen(con2).accept(strArr[i]);
+        }
+
+    }
+
+    public static void main(String[] args) {
+        String[] strArr = {&quot;迪丽热巴,女&quot;,&quot;郑爽,女&quot;,&quot;杨紫,女&quot;};
+        printInfo(strArr,(message)-&gt;{
+            System.out.print(&quot;姓名:&quot; + message.split(&quot;,&quot;)[0] + &quot;。  &quot;);
+        },(message)-&gt;{
+            System.out.println(&quot;性别:&quot; + message.split(&quot;,&quot;)[1] + &quot;。&quot;);
+
+        });
+    }
+}
+</code></pre><h4 id="Predicate判断函数式接口"><a href="#Predicate判断函数式接口" class="headerlink" title="Predicate判断函数式接口"></a>Predicate判断函数式接口</h4><p>Predicate 接口中包含一个抽象方法： boolean test(T t) 。用于条件判断的场景</p>
+<p>默认方法:</p>
+<ul>
+<li>default Predicate<t> and(Predicate&lt;? super T&gt; other)  : 将两个Predicate 条件使用“与”逻辑连接起来实现“并且”的效果</t></li>
+<li>default Predicate<t> or(Predicate&lt;? super T&gt; other)  : or 实现逻辑关系中的“或”</t></li>
+<li><p>default Predicate<t> negate()  : 取反</t></p>
+<p>  package com.wzlove.functionalinterface.predicate;</p>
+<p>  import java.util.ArrayList;<br>  import java.util.function.Predicate;</p>
+<p>  /*<em>
+   </em><br>   */<br>  public class PredicateDemo2 {</p>
+<pre><code>/**
+ * 检查数组中的元素是否符合要求,满足要求加入List中并返回
+ * @param arr      需要判断的数组
+ * @param pre1     判断接口1,判断性别是否为女
+ * @param pre2     判断接口2,判断姓名长度是否大于2
+ * @return         集合
+ */
+public static ArrayList&lt;String&gt; checkStar(String[] arr, Predicate&lt;String&gt; pre1, Predicate&lt;String&gt; pre2){
+    // 创建集合
+    ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();
+    for (String s : arr) {
+       if( pre1.and(pre2).test(s)){
+           list.add(s);
+       }
+    }
+    return list;
+}
+
+public static void main(String[] args) {
+    // 创建数组
+    String[] arr = {&quot;迪丽热巴,女&quot;,&quot;杨洋,男&quot;,&quot;李溪芮,女&quot;,&quot;郑爽,女&quot;};
+
+    // 调用方法(Lambda表达式可以简化)
+    ArrayList&lt;String&gt; list = checkStar(arr,(str)-&gt;{
+        return str.split(&quot;,&quot;)[1].equals(&quot;女&quot;);
+    },(str)-&gt;{
+        return str.split(&quot;,&quot;)[0].length() &gt; 2;
+    });
+
+    // 遍历集合
+    for (String elem : list) {
+        System.out.print(elem + &quot;   &quot;);
+    }
+}
+</code></pre><p>  }</p>
+</li>
+</ul>
+<h4 id="Function类型转换函数式接口"><a href="#Function类型转换函数式接口" class="headerlink" title="Function类型转换函数式接口"></a>Function类型转换函数式接口</h4><p>Function 接口中最主要的抽象方法为： R apply(T t) ，根据类型T的参数获取类型R的结果。</p>
+<p>Function 接口中有一个默认的andThen 方法，用来进行组合操作。</p>
+<pre><code>package com.wzlove.functionalinterface.function;
+
+import java.util.function.Function;
+
+/**
+ *
+ */
+public class FunctionDemo2 {
+
+    /**
+     * 将String分割,获得第二个元素,将数据转化为int,int数据加100,再将int转化为String
+     * @param str    转化的数据
+     * @param fun1   String -&gt; String
+     * @param fun2   String -&gt; Integer
+     * @param fun3   Integer -&gt; String
+     * @return       最后的String
+     */
+    public static String convert(String str,
+                              Function&lt;String,String&gt; fun1,
+                              Function&lt;String, Integer&gt; fun2,
+                              Function&lt;Integer,String&gt; fun3){
+
+        return fun1.andThen(fun2).andThen(fun3).apply(str);
+
+    }
+
+    public static void main(String[] args) {
+        String str = convert(&quot;迪丽热巴,23&quot;,(s)-&gt;{
+            return s.split(&quot;,&quot;)[1];
+        },(s)-&gt;{
+            return Integer.parseInt(s) + 100;
+        },(s)-&gt;{
+            return String.valueOf(s);
+        });
+        System.out.println(str);
+    }
+}
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/26/Java学习笔记/day11-网络编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/26/Java学习笔记/day11-网络编程/" itemprop="url">day10-网络编程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-26T19:31:48+08:00">
+                2018-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>网络编程 : 通过编程实现不同计算机间数据的共享</li>
+<li>C/S : 客户端/服务器模式<ol>
+<li>好处:部分代码放在客户端,访问服务器只需要传输有效的数据.</li>
+<li>弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.</li>
+</ol>
+</li>
+<li>B/S : 浏览器/服务器模式<ol>
+<li>好处:不需要安装客户端,不需要考虑服务器升级问题.</li>
+<li>弊端:所有的数据都在服务器,网络不好,反应慢,不友好.</li>
+</ol>
+</li>
+</ul>
+<h2 id="网络编程三要素"><a href="#网络编程三要素" class="headerlink" title="网络编程三要素"></a>网络编程三要素</h2><ol>
+<li>协议 : 计算机与计算机之间传输的规则(协议的三要素如下)<ol>
+<li>语法，就是这一段内容要符合一定的规则和格式。例如，括号要成对，结束要使用分号等。</li>
+<li>语义，就是这一段内容要代表某种意义。例如数字减去数字是有意义的，数字减去文本一般来说就没有意义。</li>
+<li>顺序，就是先干啥，后干啥。例如，可以先加上某个数值，然后再减去某个数值。</li>
+</ol>
+</li>
+<li>IP地址 : 在网络中,ip地址是唯一标识</li>
+<li>端口号 : 计算机中应用程序的唯一标识</li>
+</ol>
+<h4 id="客户端的代码步骤"><a href="#客户端的代码步骤" class="headerlink" title="客户端的代码步骤"></a>客户端的代码步骤</h4><ol>
+<li>创建Socket的对象,指定ip地址和端口号</li>
+<li>利用socket获取文件字节输出流对象(可以使用转换流将字节流转化为打印流)</li>
+<li>利用字节流向服务端发送消息</li>
+<li>关闭socket资源</li>
+</ol>
+<h4 id="服务端的代码步骤"><a href="#服务端的代码步骤" class="headerlink" title="服务端的代码步骤"></a>服务端的代码步骤</h4><ol>
+<li>创建ServerSocket对象,设置端口号</li>
+<li>利用创建的ServerSocket对象使用sccept方法获取Socket对象</li>
+<li>利用第二步获取的socket获取字节输入流对象(可以只用转换流将字节流转化为字符高效流)</li>
+<li>使用第三步的流读取客户端发送的信息</li>
+<li>关闭资源</li>
+</ol>
+<blockquote>
+<p>在整个过程中,需要注意的是随时刷新缓冲区和关闭流,所以推荐使用打印流,会自动刷新和自动换行.</p>
+</blockquote>
+<p>写个小例子,实现客户端和服务端的单次通信</p>
+<pre><code>package homework.demo5;
+
+import java.io.*;
+import java.net.Socket;
+
+/**
+ * 创建客户端
+ *
+ * @author WZLOVE
+ * @create 2018-07-25 20:47
+ */
+public class ClientDemo {
+
+    public static void main(String[] args) throws IOException {
+        // 创建Socket对象
+        Socket socket = new Socket(&quot;localhost&quot;,8888);
+
+        // 利用转换流转换成打印流
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
+
+        // 向服务器写内容
+        pw.println(&quot;你好,我是客户端&quot;);
+
+        // 获取高效字符输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        // 获取服务器发送的消息
+        String s = br.readLine();
+        System.out.println(&quot;服务器说:&quot; + s);
+
+        // 关闭流
+        socket.close();
+    }
+
+}
+
+package homework.demo5;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * 服务端
+ *
+ * @author WZLOVE
+ * @create 2018-07-25 20:57
+ */
+public class ServerDemo {
+
+    public static void main(String[] args) throws IOException {
+        // 创建服务端网络对象,指定端口号
+        ServerSocket ss = new ServerSocket(8888);
+        // 获取Socket对象
+        Socket accept = ss.accept();
+        // 获取高效输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(accept.getInputStream()));
+        // 获取输入的信息
+        String s = br.readLine();
+        System.out.println(&quot;客户端说 : &quot; + s);
+
+        // 获取打印流
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true );
+        // 向客户端发送消息
+        pw.println(&quot;你好,我是服务端&quot;);
+        // 关闭资源
+        accept.close();
+        ss.close();
+    }
+}
+</code></pre><p>写个例子,实现客户端向服务器上传图片</p>
+<pre><code>package homework.demo7;
+
+import java.io.*;
+import java.net.Socket;
+
+/**
+ * 网络通信中的客户端
+ */
+public class Cilent {
+
+    public static void main(String[] args) throws IOException {
+        // 创建Socket客户端对象
+        Socket socket = new Socket(&quot;localhost&quot;,8888);
+        // 准备文件进行传输
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(&quot;yz.jpg&quot;));
+        // 使用socket对象获取字节输入流对象
+        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+        // 一边读文件,一边向服务器发送数据
+        byte[] arr = new byte[1024 * 5];
+        int len;
+        while((len = bis.read(arr)) != -1){
+            bos.write(arr,0,len);
+        }
+        // 数据上传完毕,刷新缓存区
+        bos.flush();
+        // 关闭不用的资源
+        bis.close();
+        // 关闭输出流套接字,这个步骤是必须的
+        socket.shutdownOutput();
+
+        // 读取反馈的数据
+        // 使用socket对象获取字节输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String line;
+        StringBuilder sb = new StringBuilder();
+        while((line = br.readLine()) != null){
+            sb.append(line);
+        }
+        System.out.println(sb);
+        // 关闭资源
+        socket.close();
+    }
+
+}
+
+
+package homework.demo7;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * 服务端
+ */
+public class Server {
+    public static void main(String[] args) throws IOException {
+        // 创建服务端的对象
+        ServerSocket ss = new ServerSocket(8888);
+        // 使用服务端对象获取Socket对象
+        Socket accept = ss.accept();
+        // 准备接受上传的文件并且写入服务器
+        // 创建高效字节输出流,用来指向文件
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(&quot;test.jpg&quot;));
+        // 使用socket对象获取文件字节输入流(转化为高效字节输入流)
+        BufferedInputStream bis = new BufferedInputStream(accept.getInputStream());
+        // 边读边写
+        byte[] arr = new byte[1024 * 5];
+        int len;
+        while((len = bis.read(arr)) != -1){
+            bos.write(arr,0,len);
+            // 进行刷新
+            bos.flush();
+        }
+        // 关闭不使用的资源
+        bos.close();
+        // 向客户端反馈信息
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true);
+        // 写信息
+        pw.println(&quot;上传成功&quot;);
+        // 关闭资源
+        accept.close();
+        ss.close();
+    }
+}
+</code></pre><blockquote>
+<p>有关网络的相关知识大家可以去订阅极客时间上的趣谈网络协议,那个讲的很清楚</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2742,7 +3085,7 @@ public class Demo4 {
               
                 <a href="/WangZhi.github.io/archives">
               
-                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
