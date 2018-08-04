@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/WangZhi.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/WangZhi.github.io/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/WangZhi.github.io/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/WangZhi.github.io/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/WangZhi.github.io/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/WangZhi.github.io/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java，NIO，BIO，AIO," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Hollis知识星球的一些学习笔记,有兴趣的朋友可以微信搜一下 什么是NIO什么是IO? 它是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。  在 Java 编程中，直到最近一直使用 流 的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，通过一">
+<meta name="keywords" content="java，NIO，BIO，AIO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="直面Java01-AIO-NIO-BIO">
+<meta property="og:url" content="https://misswanglove.github.io/WangZhi.github.io/2018/08/02/直面Java/直面Java01-AIO-NIO-BIO/index.html">
+<meta property="og:site_name" content="IT小白进阶">
+<meta property="og:description" content="Hollis知识星球的一些学习笔记,有兴趣的朋友可以微信搜一下 什么是NIO什么是IO? 它是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。  在 Java 编程中，直到最近一直使用 流 的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，通过一">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-08-04T12:41:57.048Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="直面Java01-AIO-NIO-BIO">
+<meta name="twitter:description" content="Hollis知识星球的一些学习笔记,有兴趣的朋友可以微信搜一下 什么是NIO什么是IO? 它是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。  在 Java 编程中，直到最近一直使用 流 的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，通过一">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/WangZhi.github.io/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://misswanglove.github.io/WangZhi.github.io/2018/08/02/直面Java/直面Java01-AIO-NIO-BIO/"/>
+
+
+
+
+
+  <title>直面Java01-AIO-NIO-BIO | IT小白进阶</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/MissWangLove"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/WangZhi.github.io/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IT小白进阶</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/WangZhi.github.io/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/WangZhi.github.io/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/WangZhi.github.io/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/WangZhi.github.io/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/WangZhi.github.io/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-search">
+          <a href="/WangZhi.github.io/search" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/WangZhi.github.io/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-something">
+          <a href="/WangZhi.github.io/something" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            something
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/02/直面Java/直面Java01-AIO-NIO-BIO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">直面Java01-AIO-NIO-BIO</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-02T16:39:31+08:00">
+                2018-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/WangZhi.github.io/categories/直面Java/" itemprop="url" rel="index">
+                    <span itemprop="name">直面Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong><em>Hollis知识星球的一些学习笔记,有兴趣的朋友可以微信搜一下</em></strong></p>
+<h2 id="什么是NIO"><a href="#什么是NIO" class="headerlink" title="什么是NIO"></a>什么是NIO</h2><p>什么是IO? 它是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。  在 Java 编程中，直到最近一直使用 流 的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，通过一个称为 Stream 的对象一次移动一个字节。流 I/O 用于与外部世界接触。它也在内部使用，用于将对象转换为字节，然后再转换回对象。 </p>
+<p>什么是NIO? NIO 与原来的 I/O 有同样的作用和目的, 他们之间最重要的区别是数据打包和传输的方式。原来的 I/O 以流的方式处理数据，而 NIO 以块的方式处理数据。  面向流 的 I/O 系统一次一个字节地处理数据。一个输入流产生一个字节的数据，一个输出流消费一个字节的数据。为流式数据创建过滤器非常容易。链接几个过滤器，以便每个过滤器只负责单个复杂处理机制的一部分，这样也是相对简单的。不利的一面是，面向流的 I/O 通常相当慢。  一个 面向块 的 I/O 系统以块的形式处理数据。每一个操作都在一步中产生或者消费一个数据块。按块处理数据比按(流式的)字节处理数据要快得多。但是面向块的 I/O 缺少一些面向流的 I/O 所具有的优雅性和简单性。 </p>
+<h2 id="什么是AIO"><a href="#什么是AIO" class="headerlink" title="什么是AIO"></a>什么是AIO</h2><p>Java AIO即Async非阻塞，是异步非阻塞的IO。 </p>
+<h2 id="什么是BIO"><a href="#什么是BIO" class="headerlink" title="什么是BIO"></a>什么是BIO</h2><p>Java BIO即Block I/O ， 同步并阻塞的IO。  BIO就是传统的java.io包下面的代码实现。 </p>
+<h2 id="AIO-BIO-NIO的联系和区别"><a href="#AIO-BIO-NIO的联系和区别" class="headerlink" title="AIO,BIO,NIO的联系和区别"></a>AIO,BIO,NIO的联系和区别</h2><p>BIO （Blocking I/O）：同步阻塞I/O模式，数据的读取写入必须阻塞在一个线程内等待其完成。这里假设一个烧开水的场景，有一排水壶在烧开水，BIO的工作模式就是， 叫一个线程停留在一个水壶那，直到这个水壶烧开，才去处理下一个水壶。但是实际上线程在等待水壶烧开的时间段什么都没有做。 </p>
+<p>NIO （New I/O）：同时支持阻塞与非阻塞模式，但这里我们以其同步非阻塞I/O模式来说明，那么什么叫做同步非阻塞？如果还拿烧开水来说，NIO的做法是叫一个线程不断的轮询每个水壶的状态，看看是否有水壶的状态发生了改变，从而进行下一步的操作。   </p>
+<p>AIO （ Asynchronous I/O）：异步非阻塞I/O模型。异步非阻塞与同步非阻塞的区别在哪里？异步非阻塞无需一个线程去轮询所有IO操作的状态改变，在相应的状态改变后，系统会通知对应的线程来处理。对应到烧开水中就是，为每个水壶上面装了一个开关，水烧开之后，水壶会自动通知我水烧开了。 </p>
+<h2 id="BIO实现文件读写"><a href="#BIO实现文件读写" class="headerlink" title="BIO实现文件读写"></a>BIO实现文件读写</h2><p>直接代码实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">package com.wzlove.bio;</span><br><span class="line"></span><br><span class="line">import java.io.Serializable;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author 王智</span><br><span class="line"> * @date 2018/7/31</span><br><span class="line"> * @描述 用户实体类</span><br><span class="line"> */</span><br><span class="line">public class User implements Serializable &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    private static final long serialVersionUID = -7521946815608679573L;</span><br><span class="line">    private  String name;</span><br><span class="line"></span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    public User() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;User&#123;&quot; +</span><br><span class="line">                &quot;name=&apos;&quot; + name + &apos;\&apos;&apos; +</span><br><span class="line">                &quot;, age=&quot; + age +</span><br><span class="line">                &apos;&#125;&apos;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getAge() &#123;</span><br><span class="line">        return age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setAge(int age) &#123;</span><br><span class="line">        this.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public User(String name, int age) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">package com.wzlove.bio;</span><br><span class="line"></span><br><span class="line">import java.io.*;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author 王智</span><br><span class="line"> * @date 2018/7/31</span><br><span class="line"> * @描述 用来测试BIO</span><br><span class="line"> * BIO : Java BIO即Block I/O ， 同步并阻塞的IO。 测试BIO</span><br><span class="line"> * 其实BIO 也就是我们时常说的序列化流和反序列化流</span><br><span class="line"> */</span><br><span class="line">public class BIODemo &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line"></span><br><span class="line">        // 使用输出流进行写入到文件中</span><br><span class="line">        User user = new User(&quot;王智&quot;,23);</span><br><span class="line">        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(&quot;test.txt&quot;))) &#123;</span><br><span class="line">            // 写入</span><br><span class="line">            oos.writeObject(user);</span><br><span class="line"></span><br><span class="line">        &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 使用输入流进行读取</span><br><span class="line">        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(&quot;test.txt&quot;))) &#123;</span><br><span class="line">            // 进行信息的读取</span><br><span class="line">            User user1 = (User)ois.readObject();</span><br><span class="line">            System.out.println(user1);</span><br><span class="line">        &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>需要注意的是,写入的读取的对象必须实现Serializable接口,生成serialVersionUID,还有无参构造,都要存在.</p>
+</blockquote>
+<h2 id="NIO实现文件的读写"><a href="#NIO实现文件的读写" class="headerlink" title="NIO实现文件的读写"></a>NIO实现文件的读写</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line">package com.wzlove.nio;</span><br><span class="line"></span><br><span class="line">import java.io.FileInputStream;</span><br><span class="line">import java.io.FileNotFoundException;</span><br><span class="line">import java.io.FileOutputStream;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.nio.ByteBuffer;</span><br><span class="line">import java.nio.channels.FileChannel;</span><br><span class="line">import java.nio.charset.Charset;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author 王智</span><br><span class="line"> * @date 2018/7/31</span><br><span class="line"> * @描述 NIO 以块的方式处理数据</span><br><span class="line"> * 使用的方法有:</span><br><span class="line"> *    ByteBuffer的常用方法:</span><br><span class="line">     *   static ByteBuffer allocate(int capacity) 分配一个新的字节缓冲区。</span><br><span class="line">     *   int capacity() 返回此缓冲区的容量。</span><br><span class="line">     * 	 int position() 返回此缓冲区的位置。</span><br><span class="line">     * 	 int read(ByteBuffer dst) 从该通道读取到给定缓冲区的字节序列。</span><br><span class="line"> *    Charset的常用方法:</span><br><span class="line">     * 	  Charset forName(String charsetName) 返回名为charset的charset对象。</span><br><span class="line">     * 	  ByteBuffer encode(String str) 在此字符集中将字符串编码为字节的便捷方法。</span><br><span class="line"> */</span><br><span class="line">public class NIODemo &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        writeNIO();</span><br><span class="line">        System.out.println(&quot;===========================================/&quot;);</span><br><span class="line">        readNIO();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 步骤 :</span><br><span class="line">     *  1.使用输入流创建文件通道</span><br><span class="line">     *  2. 创建字节缓冲区</span><br><span class="line">     *  3. 开始读取内容</span><br><span class="line">     *  4. 将读取的内容转化为字节数组,使用System.out的write方法输出</span><br><span class="line">     */</span><br><span class="line">    public static void readNIO()&#123;</span><br><span class="line">        try (</span><br><span class="line">                // c创建文件通道</span><br><span class="line">                FileChannel fc = new FileInputStream(&quot;nio.txt&quot;).getChannel()</span><br><span class="line">        ) &#123;</span><br><span class="line">            // 创建字节缓冲区(static ByteBuffer allocate(int capacity)分配一个新的字节缓冲区。指定缓冲区的大小  )</span><br><span class="line">            ByteBuffer bb = ByteBuffer.allocate(100);</span><br><span class="line">            // 输出缓冲区的大小</span><br><span class="line">            System.out.println(&quot;输入缓冲区的大小为 : &quot; + bb.capacity());</span><br><span class="line">            // 输出缓冲区的限制大小</span><br><span class="line">            System.out.println(&quot;输入缓冲区的限制大小为 : &quot;  + bb.limit());</span><br><span class="line">            // 输出缓冲区的位置</span><br><span class="line">            System.out.println(&quot;输入缓冲区的位置 : &quot; + bb.position());</span><br><span class="line">            // 进行文件的读取</span><br><span class="line">            int length = -1;</span><br><span class="line">            while((length = fc.read(bb)) != -1)&#123;</span><br><span class="line">                /*</span><br><span class="line">                 * 注意，读取后，将位置置为0，将limit置为容量, 以备下次读入到字节缓冲中，从0开始存储</span><br><span class="line">                 */</span><br><span class="line">                bb.clear();</span><br><span class="line">                byte[] bytes = bb.array();</span><br><span class="line">                System.out.write(bytes,0,length);</span><br><span class="line">                System.out.println();</span><br><span class="line">                // 输出缓冲区的大小</span><br><span class="line">                System.out.println(&quot;输入缓冲区的大小为 : &quot; + bb.capacity());</span><br><span class="line">                // 输出缓冲区的限制大小</span><br><span class="line">                System.out.println(&quot;输入缓冲区的限制大小为 : &quot;  + bb.limit());</span><br><span class="line">                // 输出缓冲区的位置</span><br><span class="line">                System.out.println(&quot;输入缓冲区的位置 : &quot; + bb.position());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 步骤:</span><br><span class="line">     *  1. 使用输出流创建文件通道</span><br><span class="line">     *  2. 创建字节缓冲区</span><br><span class="line">     *  3. 开始进行写入</span><br><span class="line">     */</span><br><span class="line">    public static void writeNIO()&#123;</span><br><span class="line"></span><br><span class="line">        try (</span><br><span class="line">                // 创建FileChannel通道(使用try-with-resouce的形式)</span><br><span class="line">                FileChannel fc = new FileOutputStream(&quot;nio.txt&quot;).getChannel()</span><br><span class="line"></span><br><span class="line">        ) &#123;</span><br><span class="line">            // 按照指定的编码和内容创建字节缓冲区</span><br><span class="line">            ByteBuffer  bb = Charset.forName(&quot;UTF-8&quot;).encode(&quot;你好啊,世界,我爱你,世界&quot;);</span><br><span class="line">            // 输出初始化容量</span><br><span class="line">            System.out.println(&quot;初始化容量 : &quot; + bb.capacity());</span><br><span class="line">            // 输出缓冲区的限制大小</span><br><span class="line">            System.out.println(&quot;缓冲区的限制为 : &quot; + bb.limit());</span><br><span class="line">            int len = 0;</span><br><span class="line">            // 标准的写入文件的代码</span><br><span class="line">            while((len = fc.write(bb)) != 0)&#123;</span><br><span class="line">                /*</span><br><span class="line">                 * 注意，这里不需要clear，将缓冲中的数据写入到通道中后 第二次接着上一次的顺序往下读</span><br><span class="line">                 */</span><br><span class="line">                System.out.println(&quot;写入的长度为 : &quot; + len);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="AIO实现文件的读写-不是特别理解"><a href="#AIO实现文件的读写-不是特别理解" class="headerlink" title="AIO实现文件的读写(不是特别理解)"></a>AIO实现文件的读写(不是特别理解)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line">public class AioWrite &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        // AsynchronousFileChannel用于读取，写入和操作文件的异步通道。当通过调用此类定义的open方法之一来打开文件时，将创建异步文件通道。</span><br><span class="line">        // static AsynchronousFileChannel open(Path file, OpenOption... options) 打开或创建用于读取和/或写入的文件，返回异步文件通道以访问该文件。</span><br><span class="line">        /*</span><br><span class="line">        StandardOpenOption枚举类:</span><br><span class="line">            APPEND 如果文件打开 WRITE访问，则字节将被写入文件的末尾而不是开头。</span><br><span class="line">            CREATE  创建一个新文件（如果不存在）。</span><br><span class="line">            CREATE_NEW 创建一个新的文件，如果该文件已经存在失败。</span><br><span class="line">            DELETE_ON_CLOSE 关闭时删除。</span><br><span class="line">            DSYNC 要求将文件内容的每次更新都与底层存储设备同步写入。</span><br><span class="line">            READ 打开阅读权限。</span><br><span class="line">            SPARSE 稀疏文件</span><br><span class="line">            SYNC 要求将文件内容或元数据的每次更新都同步写入底层存储设备。</span><br><span class="line">            TRUNCATE_EXISTING 如果文件已经存在，并且打开 WRITE访问，则其长度将截断为0。</span><br><span class="line">            WRITE 打开以进行写入。</span><br><span class="line">         */</span><br><span class="line">        AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(</span><br><span class="line">                Paths.get(&quot;asynchronous.txt&quot;), StandardOpenOption.READ,</span><br><span class="line">                StandardOpenOption.WRITE, StandardOpenOption.CREATE);</span><br><span class="line">        /*</span><br><span class="line">            CompletionHandler 用于消除异步I / O操作结果的处理程序。</span><br><span class="line">            在此包中定义的异步通道允许指定完成处理程序以消耗异步操作的结果。 当I / O操作成功完成时，</span><br><span class="line">            将调用completed方法。 如果I / O操作失败，则调用failed方法。 这些方法的实现应该及时完成，</span><br><span class="line">            以避免将调用线程调度到其他完成处理程序。</span><br><span class="line">        */</span><br><span class="line">        CompletionHandler&lt;Integer, Object&gt; handler = new CompletionHandler&lt;&gt;() &#123;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void completed(Integer result, Object attachment) &#123;</span><br><span class="line">                System.out.println(&quot;Attachment: &quot; + attachment + &quot; &quot; + result</span><br><span class="line">                        + &quot; bytes written&quot;);</span><br><span class="line">                System.out.println(&quot;CompletionHandler Thread ID: &quot;</span><br><span class="line">                        + Thread.currentThread().getId());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void failed(Throwable e, Object attachment) &#123;</span><br><span class="line">                System.err.println(&quot;Attachment: &quot; + attachment + &quot; failed with:&quot;);</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;Main Thread ID: &quot; + Thread.currentThread().getId());</span><br><span class="line">        // abstract &lt;A&gt; void write(ByteBuffer src, long position, A attachment, CompletionHandler&lt;Integer,? super A&gt; handler)</span><br><span class="line">        // 从给定的缓冲区向给定的文件位置开始，向该通道写入一个字节序列。</span><br><span class="line">        // static ByteBuffer wrap(byte[] array) 将一个字节数组包装到缓冲区中。</span><br><span class="line">        fileChannel.write(ByteBuffer.wrap(&quot;Sample&quot;.getBytes()), 0, &quot;First Write&quot;,</span><br><span class="line">                handler);</span><br><span class="line">        // 第一次写入Sample,第二次写入也是从索引0位置开始的,所以讲Sam覆盖掉了,变为Box,所以结果为Boxple</span><br><span class="line">        fileChannel.write(ByteBuffer.wrap(&quot;Box&quot;.getBytes()), 0, &quot;Second Write&quot;,</span><br><span class="line">                handler);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class AioReader &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        // Path可用于在文件系统中定位文件的对象。 它通常表示系统相关的文件路径</span><br><span class="line">        Path file = Paths.get(&quot;asynchronous.txt&quot;);</span><br><span class="line">        // AsynchronousFileChannel是用于读取，写入和操作文件的异步通道。</span><br><span class="line">        AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);</span><br><span class="line">        // 创建字节缓冲区,指定缓冲区的大小</span><br><span class="line">        ByteBuffer buffer = ByteBuffer.allocate(100_000);</span><br><span class="line">        // Future接口,A Future计算的结果。 提供方法来检查计算是否完成，等待其完成，并检索计算结果</span><br><span class="line">        Future&lt;Integer&gt; result = channel.read(buffer, 0);</span><br><span class="line">        // boolean isDone() 返回 true如果任务已完成</span><br><span class="line">        while (!result.isDone()) &#123;</span><br><span class="line">            // 暂时不了解</span><br><span class="line">            ProfitCalculator.calculateTax();</span><br><span class="line">        &#125;</span><br><span class="line">        // V get() 等待计算完成，然后检索其结果。</span><br><span class="line">        Integer bytesRead = result.get();</span><br><span class="line">        // 输出文件内容的字节长度</span><br><span class="line">        System.out.println(&quot;Bytes read [&quot; + bytesRead + &quot;]&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class ProfitCalculator &#123;</span><br><span class="line">    public ProfitCalculator() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public static void calculateTax() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="BIO-NIO-AIO适用的场景"><a href="#BIO-NIO-AIO适用的场景" class="headerlink" title="BIO,NIO,AIO适用的场景"></a>BIO,NIO,AIO适用的场景</h2><p>BIO方式适用于连接数目比较小且固定的架构，这种方式对服务器资源要求比较高，并发局限于应用中，JDK1.4以前的唯一选择，但程序直观简单易理解。</p>
+<p>NIO方式适用于连接数目多且连接比较短（轻操作）的架构，比如聊天服务器，并发局限于应用中，编程比较复杂，JDK1.4开始支持。</p>
+<p>AIO方式适用于连接数目多且连接比较长（重操作）的架构，比如相册服务器，充分调用OS参与并发操作，编程比较复杂，JDK7开始支持。  </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/WangZhi.github.io/tags/java，NIO，BIO，AIO/" rel="tag"># java，NIO，BIO，AIO</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/08/01/深入理解Java虚拟机/02-Java的基本数据类型/" rel="next" title="day02_Java的基本数据类型">
+                <i class="fa fa-chevron-left"></i> day02_Java的基本数据类型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/08/02/直面Java/直面Java02-异常汇总/" rel="prev" title="直面Java02-异常汇总">
+                直面Java02-异常汇总 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王智家园</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/WangZhi.github.io/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/WangZhi.github.io/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是NIO"><span class="nav-number">1.</span> <span class="nav-text">什么是NIO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是AIO"><span class="nav-number">2.</span> <span class="nav-text">什么是AIO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是BIO"><span class="nav-number">3.</span> <span class="nav-text">什么是BIO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AIO-BIO-NIO的联系和区别"><span class="nav-number">4.</span> <span class="nav-text">AIO,BIO,NIO的联系和区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BIO实现文件读写"><span class="nav-number">5.</span> <span class="nav-text">BIO实现文件读写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NIO实现文件的读写"><span class="nav-number">6.</span> <span class="nav-text">NIO实现文件的读写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AIO实现文件的读写-不是特别理解"><span class="nav-number">7.</span> <span class="nav-text">AIO实现文件的读写(不是特别理解)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BIO-NIO-AIO适用的场景"><span class="nav-number">8.</span> <span class="nav-text">BIO,NIO,AIO适用的场景</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王智家园</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/WangZhi.github.io/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>

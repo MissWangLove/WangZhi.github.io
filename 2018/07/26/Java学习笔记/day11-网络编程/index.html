@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/WangZhi.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/WangZhi.github.io/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/WangZhi.github.io/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/WangZhi.github.io/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/WangZhi.github.io/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/WangZhi.github.io/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,socket,serverSocket," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="网络编程概述 网络编程 : 通过编程实现不同计算机间数据的共享 C/S : 客户端/服务器模式 好处:部分代码放在客户端,访问服务器只需要传输有效的数据. 弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.   B/S : 浏览器/服务器模式 好处:不需要安装客户端,不需要考虑服务器升级问题. 弊端:所有的数据都在服务器,网络不好,反应慢,不友好.    网络编程三要素 协议 : 计算机">
+<meta name="keywords" content="java,socket,serverSocket">
+<meta property="og:type" content="article">
+<meta property="og:title" content="day10-网络编程">
+<meta property="og:url" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/26/Java学习笔记/day11-网络编程/index.html">
+<meta property="og:site_name" content="IT小白进阶">
+<meta property="og:description" content="网络编程概述 网络编程 : 通过编程实现不同计算机间数据的共享 C/S : 客户端/服务器模式 好处:部分代码放在客户端,访问服务器只需要传输有效的数据. 弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.   B/S : 浏览器/服务器模式 好处:不需要安装客户端,不需要考虑服务器升级问题. 弊端:所有的数据都在服务器,网络不好,反应慢,不友好.    网络编程三要素 协议 : 计算机">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-26T11:35:10.923Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="day10-网络编程">
+<meta name="twitter:description" content="网络编程概述 网络编程 : 通过编程实现不同计算机间数据的共享 C/S : 客户端/服务器模式 好处:部分代码放在客户端,访问服务器只需要传输有效的数据. 弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.   B/S : 浏览器/服务器模式 好处:不需要安装客户端,不需要考虑服务器升级问题. 弊端:所有的数据都在服务器,网络不好,反应慢,不友好.    网络编程三要素 协议 : 计算机">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/WangZhi.github.io/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://misswanglove.github.io/WangZhi.github.io/2018/07/26/Java学习笔记/day11-网络编程/"/>
+
+
+
+
+
+  <title>day10-网络编程 | IT小白进阶</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/MissWangLove"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/WangZhi.github.io/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IT小白进阶</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/WangZhi.github.io/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/WangZhi.github.io/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/WangZhi.github.io/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/WangZhi.github.io/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/WangZhi.github.io/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-search">
+          <a href="/WangZhi.github.io/search" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/WangZhi.github.io/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-something">
+          <a href="/WangZhi.github.io/something" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            something
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/26/Java学习笔记/day11-网络编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">day10-网络编程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-26T19:31:48+08:00">
+                2018-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>网络编程 : 通过编程实现不同计算机间数据的共享</li>
+<li>C/S : 客户端/服务器模式<ol>
+<li>好处:部分代码放在客户端,访问服务器只需要传输有效的数据.</li>
+<li>弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.</li>
+</ol>
+</li>
+<li>B/S : 浏览器/服务器模式<ol>
+<li>好处:不需要安装客户端,不需要考虑服务器升级问题.</li>
+<li>弊端:所有的数据都在服务器,网络不好,反应慢,不友好.</li>
+</ol>
+</li>
+</ul>
+<h2 id="网络编程三要素"><a href="#网络编程三要素" class="headerlink" title="网络编程三要素"></a>网络编程三要素</h2><ol>
+<li>协议 : 计算机与计算机之间传输的规则(协议的三要素如下)<ol>
+<li>语法，就是这一段内容要符合一定的规则和格式。例如，括号要成对，结束要使用分号等。</li>
+<li>语义，就是这一段内容要代表某种意义。例如数字减去数字是有意义的，数字减去文本一般来说就没有意义。</li>
+<li>顺序，就是先干啥，后干啥。例如，可以先加上某个数值，然后再减去某个数值。</li>
+</ol>
+</li>
+<li>IP地址 : 在网络中,ip地址是唯一标识</li>
+<li>端口号 : 计算机中应用程序的唯一标识</li>
+</ol>
+<h4 id="客户端的代码步骤"><a href="#客户端的代码步骤" class="headerlink" title="客户端的代码步骤"></a>客户端的代码步骤</h4><ol>
+<li>创建Socket的对象,指定ip地址和端口号</li>
+<li>利用socket获取文件字节输出流对象(可以使用转换流将字节流转化为打印流)</li>
+<li>利用字节流向服务端发送消息</li>
+<li>关闭socket资源</li>
+</ol>
+<h4 id="服务端的代码步骤"><a href="#服务端的代码步骤" class="headerlink" title="服务端的代码步骤"></a>服务端的代码步骤</h4><ol>
+<li>创建ServerSocket对象,设置端口号</li>
+<li>利用创建的ServerSocket对象使用sccept方法获取Socket对象</li>
+<li>利用第二步获取的socket获取字节输入流对象(可以只用转换流将字节流转化为字符高效流)</li>
+<li>使用第三步的流读取客户端发送的信息</li>
+<li>关闭资源</li>
+</ol>
+<blockquote>
+<p>在整个过程中,需要注意的是随时刷新缓冲区和关闭流,所以推荐使用打印流,会自动刷新和自动换行.</p>
+</blockquote>
+<p>写个小例子,实现客户端和服务端的单次通信</p>
+<pre><code>package homework.demo5;
+
+import java.io.*;
+import java.net.Socket;
+
+/**
+ * 创建客户端
+ *
+ * @author WZLOVE
+ * @create 2018-07-25 20:47
+ */
+public class ClientDemo {
+
+    public static void main(String[] args) throws IOException {
+        // 创建Socket对象
+        Socket socket = new Socket(&quot;localhost&quot;,8888);
+
+        // 利用转换流转换成打印流
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
+
+        // 向服务器写内容
+        pw.println(&quot;你好,我是客户端&quot;);
+
+        // 获取高效字符输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        // 获取服务器发送的消息
+        String s = br.readLine();
+        System.out.println(&quot;服务器说:&quot; + s);
+
+        // 关闭流
+        socket.close();
+    }
+
+}
+
+package homework.demo5;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * 服务端
+ *
+ * @author WZLOVE
+ * @create 2018-07-25 20:57
+ */
+public class ServerDemo {
+
+    public static void main(String[] args) throws IOException {
+        // 创建服务端网络对象,指定端口号
+        ServerSocket ss = new ServerSocket(8888);
+        // 获取Socket对象
+        Socket accept = ss.accept();
+        // 获取高效输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(accept.getInputStream()));
+        // 获取输入的信息
+        String s = br.readLine();
+        System.out.println(&quot;客户端说 : &quot; + s);
+
+        // 获取打印流
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true );
+        // 向客户端发送消息
+        pw.println(&quot;你好,我是服务端&quot;);
+        // 关闭资源
+        accept.close();
+        ss.close();
+    }
+}
+</code></pre><p>写个例子,实现客户端向服务器上传图片</p>
+<pre><code>package homework.demo7;
+
+import java.io.*;
+import java.net.Socket;
+
+/**
+ * 网络通信中的客户端
+ */
+public class Cilent {
+
+    public static void main(String[] args) throws IOException {
+        // 创建Socket客户端对象
+        Socket socket = new Socket(&quot;localhost&quot;,8888);
+        // 准备文件进行传输
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(&quot;yz.jpg&quot;));
+        // 使用socket对象获取字节输入流对象
+        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+        // 一边读文件,一边向服务器发送数据
+        byte[] arr = new byte[1024 * 5];
+        int len;
+        while((len = bis.read(arr)) != -1){
+            bos.write(arr,0,len);
+        }
+        // 数据上传完毕,刷新缓存区
+        bos.flush();
+        // 关闭不用的资源
+        bis.close();
+        // 关闭输出流套接字,这个步骤是必须的
+        socket.shutdownOutput();
+
+        // 读取反馈的数据
+        // 使用socket对象获取字节输入流
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String line;
+        StringBuilder sb = new StringBuilder();
+        while((line = br.readLine()) != null){
+            sb.append(line);
+        }
+        System.out.println(sb);
+        // 关闭资源
+        socket.close();
+    }
+
+}
+
+
+package homework.demo7;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * 服务端
+ */
+public class Server {
+    public static void main(String[] args) throws IOException {
+        // 创建服务端的对象
+        ServerSocket ss = new ServerSocket(8888);
+        // 使用服务端对象获取Socket对象
+        Socket accept = ss.accept();
+        // 准备接受上传的文件并且写入服务器
+        // 创建高效字节输出流,用来指向文件
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(&quot;test.jpg&quot;));
+        // 使用socket对象获取文件字节输入流(转化为高效字节输入流)
+        BufferedInputStream bis = new BufferedInputStream(accept.getInputStream());
+        // 边读边写
+        byte[] arr = new byte[1024 * 5];
+        int len;
+        while((len = bis.read(arr)) != -1){
+            bos.write(arr,0,len);
+            // 进行刷新
+            bos.flush();
+        }
+        // 关闭不使用的资源
+        bos.close();
+        // 向客户端反馈信息
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true);
+        // 写信息
+        pw.println(&quot;上传成功&quot;);
+        // 关闭资源
+        accept.close();
+        ss.close();
+    }
+}
+</code></pre><blockquote>
+<p>有关网络的相关知识大家可以去订阅极客时间上的趣谈网络协议,那个讲的很清楚</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/WangZhi.github.io/tags/java/" rel="tag"># java</a>
+          
+            <a href="/WangZhi.github.io/tags/socket/" rel="tag"># socket</a>
+          
+            <a href="/WangZhi.github.io/tags/serverSocket/" rel="tag"># serverSocket</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/07/24/Java学习笔记/day10-commonsio-FileUtiles/" rel="next" title="day10-commonsio-FileUtiles">
+                <i class="fa fa-chevron-left"></i> day10-commonsio-FileUtiles
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/07/28/Java学习笔记/day12-函数式接口/" rel="prev" title="day12-函数式接口">
+                day12-函数式接口 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王智家园</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/WangZhi.github.io/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/WangZhi.github.io/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#网络编程"><span class="nav-number">1.</span> <span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络编程三要素"><span class="nav-number">1.2.</span> <span class="nav-text">网络编程三要素</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端的代码步骤"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">客户端的代码步骤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务端的代码步骤"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">服务端的代码步骤</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王智家园</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/WangZhi.github.io/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>

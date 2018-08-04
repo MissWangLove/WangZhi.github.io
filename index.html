@@ -290,7 +290,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/31/day14-reflect/">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/04/成神之路/02-Java中的内存模型/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="王智家园">
@@ -309,7 +309,929 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/31/day14-reflect/" itemprop="url">day14-reflect</a></h1>
+                <a class="post-title-link" href="/WangZhi.github.io/2018/08/04/成神之路/02-Java中的内存模型/" itemprop="url">02 Java中的内存模型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-04T20:36:50+08:00">
+                2018-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Java的内存模型"><a href="#Java的内存模型" class="headerlink" title="Java的内存模型"></a>Java的内存模型</h2><h4 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h4><p>Java内存模型的主要目标是定义程序中各个变量的访问规则，即在虚拟机中将变量存储到内存中取出变量（这的变量包括实例字段。静态字段和构成数组对象的元素）这样的底层细节。 </p>
+<p>为了获得较好的执行效能。Java内存模型没有限制执行引擎使用处理器的特定寄存器或缓存来和主内存进行交互，也没有限制即时编译器进行调整代码执行顺序这类优化措施。 </p>
+<p>Java内存模型规定了所有的变量（前面的变量）都存储在主内存（Main Memory）中，每条线程还有自己的工作内存（Working Memory），线程的工作内存中保存了被该线程使用到的变量的主内存副本拷贝，线程对变量的所有操作（读取，赋值等等）都必须在工作内存中进行，而不能直接读写主内存中的变量，不同的线程之间也无法直接访问对方工作内存中的变量，线程间变量的传递都依靠内存完成。线程、主内存、工作内存的关系如图： <img src="F:\desktop\Desktop\markdown\Java\成神之路\image\memory2.jpg" alt="memory2"></p>
+<p>主内存和工作内存之间的交互协议（变量拷贝到工作内存，再从工作内存同步回主内存），Java内存模型定义了8种操作来完成，虚拟机实现必须保证每一个操作都是原子性、不可再分的（double和long例外）。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">* lock（锁定）:作用于主内存的变量，它把一个变量标识为一条线程独占的状态。</span><br><span class="line">* unlock（解锁）:作用于主内存的变量，它把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。</span><br><span class="line">* read（读取）:作用于主内存的变量，它把一个变量的值从主内存传输到线程的工作内存中，以便随后的load动作使用。</span><br><span class="line">* load（载入）:作用于工作内存的变量，它把read操作从主内存中得到的变量值放入工作内存的变量副本中。</span><br><span class="line">* use（使用）:作用于工作内存的变量，它把工作内存中一个变量的值传递给执行引擎，每当虚拟机遇到一个需要使用到变量的值的字节码指令时将会执行这个操作。</span><br><span class="line">* assign（赋值）:作用于工作内存的变量，它把一个从执行引擎接收到的值赋给工作内存的变量，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。</span><br><span class="line">* store（存储）:作用于工作内存的变量，它把工作内存中一个变量的值传送到主内存中，以便随后的 write操作使用。</span><br><span class="line">* wirte（写入）:作用于主内存的变量，他把store操作从工作内存中得到的变量的值放入主内存的变量中。</span><br></pre></td></tr></table></figure>
+<p>变量从主内存到工作内存，必须经过read和load，从 工作内存同步回主内存，需要经过store和write操作，这两个操作必须按顺序执行，但不一定是连续执行。也就是在两个操作之间可以有其他的操作。 在使用上面的8中操作的时候需要满足的规则 ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">* 不允许read和load、 store和 write操作之一单独出现，即不允许一个变量从主内存读取了但工作内存不接受，或者从工作存发起回写了但主内存不接受的情况出现。</span><br><span class="line">* 不允许一个线程丢弃它的最近的 assign操作，即变量在工作内存中改变了之后必须把该变化同步回主内存。</span><br><span class="line">* 不允许一个线程无原因地（没有发生过任何 assign操作）把数据从线程的工作内存同步回主内存中。</span><br><span class="line">* 一个新的变量只能在主内存中“诞生”，不允许在工作内存中直接使用一个未被初始化（load或 assign）的变量，换句话说，就是对一个变量实施use、 store操作之前必须先执行过了 assign和load操作。</span><br><span class="line">* 一个变量在同一个时刻只允许一条线程其进行1ock操作，但lock操作可以被同一条线程重复执行多次，多次执行lock后，只有执行相同次数的 unlock操作，变量被解锁。</span><br><span class="line">* 如果对一个变量执行lock操作，那将会清空工作内存中此变量的值，在执行引擎使用这个变量前，需要重新执行load或 assign操作初始化变量的值。</span><br><span class="line">* 如果一个变量事先没有被lock操作锁定，那就不允许对它执行unlock操作，也不允许去 unlock一个被其他线程锁定住的变量。</span><br><span class="line">* 对一个变量执行 unlock操作之前，必须先把此变量同步回主内存中（执行stre、wite操作）。</span><br></pre></td></tr></table></figure>
+<p>Java内存模型要求的8个操作都具有原子性，但是对于64位的数据类型（long和double），定义了宽松的规定：允许虚拟机将没有被volitale修饰的64位数据的读写操作划分为两次32位的操作来进行，也就是虚拟机实现选择可以不保证64位数据类型的load、store、read和write这四个操作的原子性，这个就是所谓的long和double的非原子性协定。 </p>
+<h4 id="内存模型的介绍"><a href="#内存模型的介绍" class="headerlink" title="内存模型的介绍"></a>内存模型的介绍</h4><h6 id="重排序"><a href="#重排序" class="headerlink" title="重排序"></a>重排序</h6><p>如果两个操作访问同一个变量，且这两个操作中有一个为写操作，此时这两个操作之间就存在数据依赖性。编译器和处理器可能会对操作做重排序，但是不会改变存在数据依赖关系的两个操作的执行顺序。遵循as-if-serial语义：即不管程序怎么重排序（编译器和处理器为了提高并行度），（单线程）程序的执行结果不能被改变，但在多线程中，对存在控制依赖的操作重排序，可能会改变程序的执行结果。 </p>
+<h6 id="volatile型变量的规则"><a href="#volatile型变量的规则" class="headerlink" title="volatile型变量的规则"></a>volatile型变量的规则</h6><p>volatile是Java虚拟机提供的最轻量级的同步机制。当一个变量被定义为volatile类型后具备两种特性 ：第一是保证此变量对所有线程的可见性，这里的“可见性”是指当一条线程改了这个变量的值，新值对于其他线程来说是可以立即得知的。而普通变量不能做到这一点，普通变量的值在线程间传递均需要通过主内存来完成，例如，线程A修改一个普通变量的值，然后向主内存进行回写。 第二是一条线程B在线程A回写完成了之后再从主内存进行读取操作，新变量值才会对线程B可见。 </p>
+<p>使用volatile变量的第一个语义是只保证可见性，有些场景下不适用，这个时候仍然需要通过加锁来保证原子性。不符合的运算场景：一是运算结果并不依赖变量的当前值，或者能够确保只有单一的线程修改变量的值。二是变量不需要与其他的状态变量共同参与不变约束。 </p>
+<p> 第二个语义是禁止指令重排序优化，前面的重排序优化说过，编译器和处理器为了提高并行度，会对程序进行重排序，不能保证变量赋值的操作顺序与程序代码中的执行顺序一致。在使用volatile之后，在进行对volatile修饰的变量进行赋值后，会多执行一个lock操作，这个操作相当于一个内存屏障（Memory Barrier或Memory Fence，指重排序时不能把后面的指令重排序到内存屏障之前的位置），只有一个CPU访问是不需要这个内存屏障的，但是多个CPU 访问同一块内存，且其中一个在观测另一个，就需要内存屏障来保证一致性了。 </p>
+<p>Java内存模型中对 volatile变量定义的特殊规则。假定T表示一个线程，V和W分别表示两个 volatile型变量，那么在进行read、load、use、 assign store和 write操作时需要满足如下规则: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* 只有当线程T对变量V执行的前一个作是load的时候，线程T才能对变量V执行use动作；并且，只有当线程T对变量V执行的后一个动作是use的时候，线程T才能对变量V执行load动作。线程T对变量V的use动作可以认为是和线程T对变量V的load、read动作相关联，必须连续一起出现（这条规则要求在工作内存中，每次使用v前都必须先从主内存刷新最新的值，用于保证能看见其他线程对变量V所做的修改后的值）。</span><br><span class="line">* 只有当线程T对变量V执行的前一个动作是assign的时候，线程T才能对变量V执行store动作；并且，只有当线程T对变量V执行的后一个动作是store的时候，线程T才能对变量V执行assign动作。线程T对变量V的assign动作可以认为是和线程T对变量V的store、 write动作相关联，必须连续一起出现（这条规则要求在工作内存中每次修改V后都必须立刻同步回主内存中，用于保证其他线程可以看到自己对变量v所做的修改）。</span><br><span class="line">* 假定动作A是线程T对变量V实施的use或assign动作，假定动作F是和动作A相关联的load或 store动作，假定动作P是和动作F相应的对变量V的read或 wrte动作；类似的，假定动作B是线程T对变量W实施的use或 assign动作，假定动作是和动作B相关联的load或 store动作，假定动作Q是和动作G相应的对变量WErad或 write a动作。如果A先于B，那么P先于Q（这条规则要求 volatile 修饰的变量不会被指令重排序优化，保证代码的执行顺序与程序的顺序相同）。</span><br></pre></td></tr></table></figure>
+<h6 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h6><p>Java内存模型来直接保证的原子性变量操作包括read、load、assign， use、 store和 wrte，我们大致可以认为基本数据类型的访问读写是具备原子性的（例外就是long和 double的非原子性协定），如果应用场景需要一个更大范围的原子性保证，Java内存模型还提供lock和 unlock操作来满足这种需求，尽管虚拟机未把lock和 unlock操作直接开放给用户使用，但是却提供了更高层次的字节码指令 monitorenter和 monitorexit来隐式地使用这两个操作，这两个字节码指令反映到Java代码中就是同步块— synchronized关键字，因此在synchronized块之间的操作也具备原子性。 </p>
+<h6 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h6><p>可见性是指当一个线程修改了共享变量的值，其他线程能够立即得知这个修改。前面说 volatile变量的时候说过这一点。Java内存模型是通过在变量修改后将新值同步回主内存，在变量读取前从主内存刷新变量值。这种依赖主内存作为传递媒介的方式来实现可见性，无论是普通变量还是 volatile变量都是如此，普通变量与volatile变量的区别是， volatile的特殊规则保证了新值能立即同步到主内存，以及每次使用前立即从主内存刷新。因此，可以说 volatile保证了多线程操作时变量的可见性，而普通变量则不能保证这一点。 </p>
+<p>除了 volatile之外，Java还有两个关键字能实现可见性，即 synchronized和 final。同步块的可见性是由“对一个变量执行 unlock作之前，必须先把此变量同步回主内存中（执行store、 write操作）”这条规则获得的，而final关键字的可见性是指:被 final修饰的字段在构造器中一旦初始化完成，并且构造器没有把“this”的引用传递出去（this引用逃逸是一件很危险的事情，其他线程有可能通过这个引用访问到“初始化了一半”的对象），那在其他线程中就能看见 final字段的值。 </p>
+<h6 id="有序性"><a href="#有序性" class="headerlink" title="有序性"></a>有序性</h6><p>Java内存模型的有序性在前面说volatile时也说过了，Java程序中天然的有序性可以总结为一句话:如果在本线程内观察，所有的操作都是有序的；如果在一个线程中观察另一个线程，所有的操作都是无序的。前半句是指“线程内表现为串行的语义”（ Within- Thread As-If- Serial Semantics），后半句是指“指令重排序”现象和“工作内存与主内存同步延迟”现象。 </p>
+<p>Java语言提供了 volatile和 synchronized 两个关键字来保证线程之间操作的有序性 ，volatile关键字本身就包含了禁止指令重排序的语义，而 synchronized则是由“一个变量在同个时刻只允许一条线程对其进行lock操作”这条规则获得的，这条规则决定了持有同一个锁的两个同步块只能串行地进入。 </p>
+<h6 id="先行发生原则"><a href="#先行发生原则" class="headerlink" title="先行发生原则"></a>先行发生原则</h6><p>先行发生是Java内存模型中定义的两项操作之间的偏序关系，如果说操作A先行发生于操作B，其实就是说在发生操作B之前，操作A产生的影响能被操作B观察到，“影响”包括修改了内存中共享变量的值、发送了消息、调用了方法等。 </p>
+<p>下面是Java内存模型下一些“天然的”先行发生关系，这些先行发生关系无须任何同步协助就已经存在，可以在编码中直接使用。如果两个操作之间的关系不在此列，并且无法下列规则推导出来的话，它们就没有顺序性保障，虚拟机可以对它们随意地进行重排序 ：</p>
+<ul>
+<li>程序次序规则（ Program Order Rule）：在一个线程内，按照程序代码顺序，书写在前面的操作先行发生于书写在后面的操作。准确地说，应该是控制流顺序而不是程序代码顺序，因为要考虑分支、循环等结构。</li>
+<li>管程锁定规则（ Monitor Lock Rule）:一个 unlock操作先行发生于后面对同一个锁的lock操作。这里必须强调的是同一个锁，而“后面”是指时间上的先后顺序。</li>
+<li>volatile变量规则（ Volatile Variable Rul）:对一个 volatile变量的写操作先行发生于后面对这个变量的读操作，这里的“后面”同样是指时间上的先后顺序。</li>
+<li>线程启动规则（ Thread Start Rule）: Thread对象的 start（）方法先行发生于此线程的每一个动作。</li>
+<li>线程终止规则（ Thread Termination Rul）:线程中的所有操作都先行发生于对此线程的终止检测，我们可以通过 Thread.join()方法结束、 Thread.isAlive()的返回值等手段检测到线程已经终止执行。</li>
+<li>线程中断规则（ Thread Interruption Rul）:对线程 interrupt（）方法的调用先行发生于被中断线程的代码检测到中断事件的发生，可以通过 Thread.interrupted()方法检测到是否有中断发生。</li>
+<li>对象终结规则（ Finalizer Rule）:一个对象的初始化完成（构造函数执行结束）先行发生于它的 finalize（）方法的开始。</li>
+<li>传递性（Transitivity）:如果操作A先行发生于操作B，操作B先行发生于操作C，那就可以得出操作A先行发生于操作C的结论。</li>
+</ul>
+<p>在Java程序中，时间先后顺序与先行发生原则之间基本没有太大的关系，所以衡量并发安全问题的时候不要受到时间顺序的干扰，一切必须以先行发生原则为准。 </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/04/成神之路/01-Java中的内存结构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/08/04/成神之路/01-Java中的内存结构/" itemprop="url">01 Java中的内存结构</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-04T20:36:24+08:00">
+                2018-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Java中的内存结构"><a href="#Java中的内存结构" class="headerlink" title="Java中的内存结构"></a>Java中的内存结构</h2><h3 id="运行时数据区域的划分："><a href="#运行时数据区域的划分：" class="headerlink" title="运行时数据区域的划分："></a>运行时数据区域的划分：</h3><p><img src="F:\desktop\Desktop\markdown\Java\成神之路\image\memory.jpg" alt="memory"></p>
+<h5 id="程序计数器（PC寄存器）"><a href="#程序计数器（PC寄存器）" class="headerlink" title="程序计数器（PC寄存器）"></a>程序计数器（PC寄存器）</h5><p>程序计数器（Program Counter Register）是一块较小的内存空间，可以看做是当前线程所执行的字节码的行号指示器。字节码解释器工作就是通过改变这个计数器的值来选择下一条执行的字节码指令，分支、跳转、循环、异常处理、线程恢复等基础功能都需要依赖计数器来完成。</p>
+<p>Java虚拟机的多线程就是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器都只会执行一条线程中的指令。为了线程切换后可以恢复到正确的执行位置，每个线程都需要有一个独立的程序计数器，各个线程之间的计数器互相不影响，独立存储，这类区域也称为“私有线程”的内存。</p>
+<p>线程执行Java方法，计数器记录的是正在执行的虚拟机字节码指令的地址；如果执行的是本地方法（Native），计数器为空（undefined）。<strong><em>程序计数器是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。</em></strong></p>
+<h5 id="Java虚拟机栈（Java方法栈）"><a href="#Java虚拟机栈（Java方法栈）" class="headerlink" title="Java虚拟机栈（Java方法栈）"></a>Java虚拟机栈（Java方法栈）</h5><p>Java虚拟机栈（Java Virtual Machine Stack）也是线程私有的，他的生命周期与线程相同。虚拟机栈描述的是Java方法执行的内存模型：每个方法在执行时都会创建一个栈帧（Stack Frame：方法运行时的基础数据结构）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的一个过程。</p>
+<p>局部变量表存放了编译期可知的各种基本数据类型（byte、short、int、long、float、double、char、boolean）、对象引用（reference类型，它不等同与对象本身，可能是一个指向对象起始地址的指针，也可能是指向一个代表对象句柄或其它与此对象相关的位置）和returnAddress类型（指向一条字节码指令的地址）。其中的64位的long和double类型的数据会占用两个局部变量空间，其余数据类型只占用一个。（可以将局部变量表看成一个数组，long和double占用两个数组单元，其余占用一个数组单元，一个数组单元在64位的HotSpot上占用8个字节，32位的HotSpot上占用4个字节，这也意味着在局部变量表，除了long和double，其余的类型所占的空间大小是相同的。但是在堆上存储的字节长度与实际值域相吻合）局部变量表所需的内存空间在编译期间就完成了分配，当进入一个方法时，这个方法需要在帧中分配多大的局部变量空间是完全确定的，在方法运行期间不回改变局部变量表的大小。</p>
+<p>两个异常：线程请求的栈深度大于虚拟机所允许的深度，抛出StackOverflowError异常。虚拟机的动态扩展无法申请到足够的内存，会抛出OutOfMemoryError异常。</p>
+<h5 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h5><p>本地方法栈（Native Method Stack）与虚拟机栈所发挥的作用是非常类似的，他们之间的区别不过是虚拟机栈为虚拟机执行java方法（也就是字节码）服务，二本地方法栈为虚拟机使用到的Navicat方法服务 。</p>
+<p>本地方法栈也会抛出SatckOverflowError和OutOfMemoryError。 </p>
+<h5 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h5><p>Java堆（Java Heap）是Java虚拟机所管理的内存中最大的一块。java堆是被所有线程共享的一块内存区域，在虚拟机启动时创建。 此内存区域的唯一目的就是存放对象实例，<strong><em>几乎</em></strong>所有的对象实例都在这分配内存。 Java虚拟机规范中描述：所有的对象实例以及数组都要在堆上分配，但是对着JIT编译器的发挥和逃逸技术逐渐成熟，栈上分配、标量替换优化技术将会导致一些微妙的变化发生，所有的对象都分配在堆上也逐渐变得不是那么绝对。 </p>
+<p>Java堆可以处在物理上不连续的内存空间中，只要逻辑上是连续的即可。如果在堆中没有内存完成实例分配，并且堆页无法扩展时，将会抛出OutOfMemoryError异常。 </p>
+<p>字符串常量池是在堆中存放和实现的。</p>
+<h5 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h5><p>方法区（Method Area）和Java堆一样，是各个线程共享的内存区域。用于存储已被虚拟机加载的类信息、常量、静态常量。即时编译编译后额代码等数据（字节码相关的文件）。当方法区无法满足内存分配需求时，将抛出OutOfMemoryError异常。 </p>
+<p>运行时常量池（Runtime Constant Pool）是方法区的一部分，Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有常量池信息。常量池用于存放编译器生成的各种字面量（文本字符串、八种基本类型的值、被声明为final的常量等）和符号引用（类和方法的全限定名、字段的名称和描述符、方法的名称和描述符），当常量池无法申请到内存时会抛出OutOfMemoryError异常。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/02/直面Java/直面Java02-异常汇总/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/08/02/直面Java/直面Java02-异常汇总/" itemprop="url">直面Java02-异常汇总</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-02T16:40:51+08:00">
+                2018-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/WangZhi.github.io/categories/直面Java/" itemprop="url" rel="index">
+                    <span itemprop="name">直面Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="异常相关的总结"><a href="#异常相关的总结" class="headerlink" title="异常相关的总结"></a>异常相关的总结</h2><h3 id="异常的层次结构"><a href="#异常的层次结构" class="headerlink" title="异常的层次结构"></a>异常的层次结构</h3><p><img src="F:\desktop\Desktop\markdown\Java\直面Java\image\throwale.jpg" alt="throwale"></p>
+<p>Throwable是Java中最顶级的异常类，继承Object，实现序列化接口，有两个重要的子类：Exception和Error，二者都是Java异常处理的重要子类，各自包含了大量子类。</p>
+<h5 id="Exception与Error"><a href="#Exception与Error" class="headerlink" title="Exception与Error"></a>Exception与Error</h5><p>Error是系统级的错误，是Java运行环境内部错误或者硬件错误问题，不能指望依靠程序类处理这样的问题，除了退出程序外，别无选择，是由JVM抛出的。</p>
+<p>Exception表示程序需要捕捉、需要处理的异常，是由于程序设计不完善而出现的问题，程序必须处理的问题。</p>
+<p>二者都是继承Throwable类，在java中只有Throwable类的实例才能被抛出（throw）或者捕获（catch），他是异常机制的基本组成类型。 </p>
+<h5 id="Exception的分类"><a href="#Exception的分类" class="headerlink" title="Exception的分类"></a>Exception的分类</h5><p>Exception分为两类，一类是受检异常（编译期异常），一类是非受检异常（运行时异常）。</p>
+<p>受检异常是一个方法在生命过程中抛出受检异常，那么在调用这个方法的时候就要对抛出的受检异常进行处理（继续上抛或者捕获处理），否则无法编译通过，这个是一种规范。这种异常在IO操作中是比较多的，比方说FileNotFoundException，意思是文件可能不存在，不存在的话就会抛出异常。当希望方法的调用者明确处理一些特殊情况的时候，就应该使用受检异常。</p>
+<p>非受检异常继承自RuntimeException。这种异常不需要显示的进行捕获，在运行期间一旦出现异常就会中断程序的运行。这种异常一般是代码原因导致，比如说空指针异常、数组越界、by/zero等等，都是可以避免的。</p>
+<h5 id="处理受检异常"><a href="#处理受检异常" class="headerlink" title="处理受检异常"></a>处理受检异常</h5><p>使用throw制造异常（应该不算是处理异常）。</p>
+<p>使用throws抛出异常。</p>
+<p>使用try{}catch(){}finally}{}捕获异常。</p>
+<p>总的来说，处理异常只有两种方式，抛出和捕获。</p>
+<h5 id="捕获异常之后应该做什么？"><a href="#捕获异常之后应该做什么？" class="headerlink" title="捕获异常之后应该做什么？"></a>捕获异常之后应该做什么？</h5><p>常见的处理方法：记录日志、封装异常重新抛出、忽略、正常返回。最不可取的处理方法是忽略，最好的是伴随日志记录，把异常信息记录下来。</p>
+<h5 id="异常处理的关键字"><a href="#异常处理的关键字" class="headerlink" title="异常处理的关键字"></a>异常处理的关键字</h5><p>throws、throw、try、catch、finally是异常处理的关键字。</p>
+<p>try是指定一块预防所有异常的程序。catch子句是紧跟try块后面，用来制定你想要捕获的异常类型。finally是为了确保一段代码不管发生什么异常状况都要执行。throw语句是用来明确地抛出一个异常。throws是用来声明一个方法可能抛出的各种异常。</p>
+<h5 id="finally语句与return"><a href="#finally语句与return" class="headerlink" title="finally语句与return"></a>finally语句与return</h5><p>finally语句被执行的前提条件是对应try语句块被执行并程序正常运行，正常运行的意思是JVM没有退出或者线程没有被killed、interrupted。</p>
+<p>try-catch-finally与return语句的关系。try与catch语句块中有语句：return a + b; 则finally语句块会在a + b之后执行，return 之前执行，也就是<strong>返回前，操作后</strong>执行。</p>
+<p>如果finally 中有 return ，那将结果直接返回，在 try 或 catch 中也有 return a，会将 a 的值压栈，再弹出保存到变量表,最终返回新生成的 a 值。 因此在 finally 中操作原来的 a 值对结果没有影响，如果 a 是引用就有影响。 简单说finally中操作的变量不会影响try中的数据，但是不要操作引用数据类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(method()); // 返回的值是0</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static  int method()&#123;</span><br><span class="line">        int a = 10;</span><br><span class="line">        int b = 10;</span><br><span class="line">        try &#123;</span><br><span class="line">            return a + b;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h5 id="finally语句一定会执行？"><a href="#finally语句一定会执行？" class="headerlink" title="finally语句一定会执行？"></a>finally语句一定会执行？</h5><p>不一定，前面说过finally会执行的两个前提条件，必须满足才可以执行。比方说在try或者catch块中使用System.exit(0)语句是的JVM中断，这个时候finally语句就不会被执行。</p>
+<h5 id="异常链的介绍"><a href="#异常链的介绍" class="headerlink" title="异常链的介绍"></a>异常链的介绍</h5><p>“异常链”是Java中非常流行的异常处理概念，是指在进行一个异常处理时抛出了另外一个异常，由此产生了一个异常链条。该技术大多用于将“ 受检查异常” （ checked exception）封装成为“非受检查异常”（unchecked exception)或者RuntimeException。顺便说一下，如果因为异常你决定抛出一个新的异常，你一定要包含原有的异常，这样，处理程序才可以通过getCause()和initCause()方法来访问异常最终的根源。 </p>
+<h5 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h5><p>自定义异常就是开发人员自己定义的异常，一般通过继承Exception的子类的方式实现。  编写自定义异常类实际上是继承一个API标准异常类，用新定义的异常处理信息覆盖原有信息的过程。  这种用法在Web开发中也比较常见，一般可以用来自定义也无异常。如余额不足、重复提交等。这种自定义异常有业务含义，更容易让上层理解和处理。 </p>
+<h5 id="try-with-resources"><a href="#try-with-resources" class="headerlink" title="try-with-resources"></a>try-with-resources</h5><p>这个是Java7中新出的，下面比较一下JDK7之前和之后的异常捕获，以IO流来举例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line">package com.wzlove.demo;</span><br><span class="line"></span><br><span class="line">import java.io.FileReader;</span><br><span class="line">import java.io.FileWriter;</span><br><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 标准的IO格式处理</span><br><span class="line"> *</span><br><span class="line"> * @author WZLOVE</span><br><span class="line"> * @create 2018-07-23 9:54</span><br><span class="line"> */</span><br><span class="line">public class StandardIO &#123;</span><br><span class="line"></span><br><span class="line">    // jdk7之前</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        // 初始赋值为null</span><br><span class="line">        FileReader fr = null;</span><br><span class="line">        FileWriter fw = null;</span><br><span class="line">          try &#123;</span><br><span class="line">            // 创建字符流对象</span><br><span class="line">            fr = new FileReader(&quot;student.txt&quot;);</span><br><span class="line">            fw = new FileWriter(&quot;student.txt&quot;);</span><br><span class="line"></span><br><span class="line">            // 操作资源(边读编写,耗资源,仅作为示例)</span><br><span class="line">            int len;</span><br><span class="line">            while((len = fr.read()) != -1)&#123;</span><br><span class="line">                fw.write((char) len);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                // 判断输入流是否为null</span><br><span class="line">                if(fr != null)&#123;</span><br><span class="line">                    // 关闭资源</span><br><span class="line">                    fr.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; catch (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; finally &#123;</span><br><span class="line"></span><br><span class="line">                try &#123;</span><br><span class="line">                    // 判断输入流是否为null</span><br><span class="line">                    if(fw != null) &#123;</span><br><span class="line">                        // 关闭资源</span><br><span class="line">                        fw.close();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // jdk7之后</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * try(创建IO流对象的代码)&#123;</span><br><span class="line">     *     其他代码</span><br><span class="line">     * &#125;catch(可能出现的异常)&#123;</span><br><span class="line">     *      打印异常信息</span><br><span class="line">     * &#125;</span><br><span class="line">     * 上面的代码会自动调用close方法(也就是IO流对象都实现了Closeable接口(Closeable实现了AutoCloseable接口),</span><br><span class="line">     * 重写close方法).有兴趣的可以查看源码</span><br><span class="line">     */</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try (</span><br><span class="line">                // 创建字符流对象</span><br><span class="line">                FileReader fr = new FileReader(&quot;student.txt&quot;);</span><br><span class="line">                FileWriter fw = new FileWriter(&quot;student.txt&quot;);</span><br><span class="line">                )&#123;</span><br><span class="line">                         // 操作资源(边读编写,耗资源,仅作为示例)</span><br><span class="line">                int len;</span><br><span class="line">                while((len = fr.read()) != -1)&#123;</span><br><span class="line">                    fw.write((char) len);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>JDK7之后更新的优化还有Multi-Catch Exceptions、Rethrowing Exceptions、Suppressed Exceptions（<a href="http://www.oracle.com/technetwork/articles/java/java7exceptions-486908.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/articles/java/java7exceptions-486908.html</a>） </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/02/直面Java/直面Java01-AIO-NIO-BIO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/08/02/直面Java/直面Java01-AIO-NIO-BIO/" itemprop="url">直面Java01-AIO-NIO-BIO</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-02T16:39:31+08:00">
+                2018-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/WangZhi.github.io/categories/直面Java/" itemprop="url" rel="index">
+                    <span itemprop="name">直面Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong><em>Hollis知识星球的一些学习笔记,有兴趣的朋友可以微信搜一下</em></strong></p>
+<h2 id="什么是NIO"><a href="#什么是NIO" class="headerlink" title="什么是NIO"></a>什么是NIO</h2><p>什么是IO? 它是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。  在 Java 编程中，直到最近一直使用 流 的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，通过一个称为 Stream 的对象一次移动一个字节。流 I/O 用于与外部世界接触。它也在内部使用，用于将对象转换为字节，然后再转换回对象。 </p>
+<p>什么是NIO? NIO 与原来的 I/O 有同样的作用和目的, 他们之间最重要的区别是数据打包和传输的方式。原来的 I/O 以流的方式处理数据，而 NIO 以块的方式处理数据。  面向流 的 I/O 系统一次一个字节地处理数据。一个输入流产生一个字节的数据，一个输出流消费一个字节的数据。为流式数据创建过滤器非常容易。链接几个过滤器，以便每个过滤器只负责单个复杂处理机制的一部分，这样也是相对简单的。不利的一面是，面向流的 I/O 通常相当慢。  一个 面向块 的 I/O 系统以块的形式处理数据。每一个操作都在一步中产生或者消费一个数据块。按块处理数据比按(流式的)字节处理数据要快得多。但是面向块的 I/O 缺少一些面向流的 I/O 所具有的优雅性和简单性。 </p>
+<h2 id="什么是AIO"><a href="#什么是AIO" class="headerlink" title="什么是AIO"></a>什么是AIO</h2><p>Java AIO即Async非阻塞，是异步非阻塞的IO。 </p>
+<h2 id="什么是BIO"><a href="#什么是BIO" class="headerlink" title="什么是BIO"></a>什么是BIO</h2><p>Java BIO即Block I/O ， 同步并阻塞的IO。  BIO就是传统的java.io包下面的代码实现。 </p>
+<h2 id="AIO-BIO-NIO的联系和区别"><a href="#AIO-BIO-NIO的联系和区别" class="headerlink" title="AIO,BIO,NIO的联系和区别"></a>AIO,BIO,NIO的联系和区别</h2><p>BIO （Blocking I/O）：同步阻塞I/O模式，数据的读取写入必须阻塞在一个线程内等待其完成。这里假设一个烧开水的场景，有一排水壶在烧开水，BIO的工作模式就是， 叫一个线程停留在一个水壶那，直到这个水壶烧开，才去处理下一个水壶。但是实际上线程在等待水壶烧开的时间段什么都没有做。 </p>
+<p>NIO （New I/O）：同时支持阻塞与非阻塞模式，但这里我们以其同步非阻塞I/O模式来说明，那么什么叫做同步非阻塞？如果还拿烧开水来说，NIO的做法是叫一个线程不断的轮询每个水壶的状态，看看是否有水壶的状态发生了改变，从而进行下一步的操作。   </p>
+<p>AIO （ Asynchronous I/O）：异步非阻塞I/O模型。异步非阻塞与同步非阻塞的区别在哪里？异步非阻塞无需一个线程去轮询所有IO操作的状态改变，在相应的状态改变后，系统会通知对应的线程来处理。对应到烧开水中就是，为每个水壶上面装了一个开关，水烧开之后，水壶会自动通知我水烧开了。 </p>
+<h2 id="BIO实现文件读写"><a href="#BIO实现文件读写" class="headerlink" title="BIO实现文件读写"></a>BIO实现文件读写</h2><p>直接代码实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">package com.wzlove.bio;</span><br><span class="line"></span><br><span class="line">import java.io.Serializable;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author 王智</span><br><span class="line"> * @date 2018/7/31</span><br><span class="line"> * @描述 用户实体类</span><br><span class="line"> */</span><br><span class="line">public class User implements Serializable &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    private static final long serialVersionUID = -7521946815608679573L;</span><br><span class="line">    private  String name;</span><br><span class="line"></span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    public User() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;User&#123;&quot; +</span><br><span class="line">                &quot;name=&apos;&quot; + name + &apos;\&apos;&apos; +</span><br><span class="line">                &quot;, age=&quot; + age +</span><br><span class="line">                &apos;&#125;&apos;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getAge() &#123;</span><br><span class="line">        return age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setAge(int age) &#123;</span><br><span class="line">        this.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public User(String name, int age) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">package com.wzlove.bio;</span><br><span class="line"></span><br><span class="line">import java.io.*;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author 王智</span><br><span class="line"> * @date 2018/7/31</span><br><span class="line"> * @描述 用来测试BIO</span><br><span class="line"> * BIO : Java BIO即Block I/O ， 同步并阻塞的IO。 测试BIO</span><br><span class="line"> * 其实BIO 也就是我们时常说的序列化流和反序列化流</span><br><span class="line"> */</span><br><span class="line">public class BIODemo &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line"></span><br><span class="line">        // 使用输出流进行写入到文件中</span><br><span class="line">        User user = new User(&quot;王智&quot;,23);</span><br><span class="line">        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(&quot;test.txt&quot;))) &#123;</span><br><span class="line">            // 写入</span><br><span class="line">            oos.writeObject(user);</span><br><span class="line"></span><br><span class="line">        &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 使用输入流进行读取</span><br><span class="line">        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(&quot;test.txt&quot;))) &#123;</span><br><span class="line">            // 进行信息的读取</span><br><span class="line">            User user1 = (User)ois.readObject();</span><br><span class="line">            System.out.println(user1);</span><br><span class="line">        &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>需要注意的是,写入的读取的对象必须实现Serializable接口,生成serialVersionUID,还有无参构造,都要存在.</p>
+</blockquote>
+<h2 id="NIO实现文件的读写"><a href="#NIO实现文件的读写" class="headerlink" title="NIO实现文件的读写"></a>NIO实现文件的读写</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line">package com.wzlove.nio;</span><br><span class="line"></span><br><span class="line">import java.io.FileInputStream;</span><br><span class="line">import java.io.FileNotFoundException;</span><br><span class="line">import java.io.FileOutputStream;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.nio.ByteBuffer;</span><br><span class="line">import java.nio.channels.FileChannel;</span><br><span class="line">import java.nio.charset.Charset;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author 王智</span><br><span class="line"> * @date 2018/7/31</span><br><span class="line"> * @描述 NIO 以块的方式处理数据</span><br><span class="line"> * 使用的方法有:</span><br><span class="line"> *    ByteBuffer的常用方法:</span><br><span class="line">     *   static ByteBuffer allocate(int capacity) 分配一个新的字节缓冲区。</span><br><span class="line">     *   int capacity() 返回此缓冲区的容量。</span><br><span class="line">     * 	 int position() 返回此缓冲区的位置。</span><br><span class="line">     * 	 int read(ByteBuffer dst) 从该通道读取到给定缓冲区的字节序列。</span><br><span class="line"> *    Charset的常用方法:</span><br><span class="line">     * 	  Charset forName(String charsetName) 返回名为charset的charset对象。</span><br><span class="line">     * 	  ByteBuffer encode(String str) 在此字符集中将字符串编码为字节的便捷方法。</span><br><span class="line"> */</span><br><span class="line">public class NIODemo &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        writeNIO();</span><br><span class="line">        System.out.println(&quot;===========================================/&quot;);</span><br><span class="line">        readNIO();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 步骤 :</span><br><span class="line">     *  1.使用输入流创建文件通道</span><br><span class="line">     *  2. 创建字节缓冲区</span><br><span class="line">     *  3. 开始读取内容</span><br><span class="line">     *  4. 将读取的内容转化为字节数组,使用System.out的write方法输出</span><br><span class="line">     */</span><br><span class="line">    public static void readNIO()&#123;</span><br><span class="line">        try (</span><br><span class="line">                // c创建文件通道</span><br><span class="line">                FileChannel fc = new FileInputStream(&quot;nio.txt&quot;).getChannel()</span><br><span class="line">        ) &#123;</span><br><span class="line">            // 创建字节缓冲区(static ByteBuffer allocate(int capacity)分配一个新的字节缓冲区。指定缓冲区的大小  )</span><br><span class="line">            ByteBuffer bb = ByteBuffer.allocate(100);</span><br><span class="line">            // 输出缓冲区的大小</span><br><span class="line">            System.out.println(&quot;输入缓冲区的大小为 : &quot; + bb.capacity());</span><br><span class="line">            // 输出缓冲区的限制大小</span><br><span class="line">            System.out.println(&quot;输入缓冲区的限制大小为 : &quot;  + bb.limit());</span><br><span class="line">            // 输出缓冲区的位置</span><br><span class="line">            System.out.println(&quot;输入缓冲区的位置 : &quot; + bb.position());</span><br><span class="line">            // 进行文件的读取</span><br><span class="line">            int length = -1;</span><br><span class="line">            while((length = fc.read(bb)) != -1)&#123;</span><br><span class="line">                /*</span><br><span class="line">                 * 注意，读取后，将位置置为0，将limit置为容量, 以备下次读入到字节缓冲中，从0开始存储</span><br><span class="line">                 */</span><br><span class="line">                bb.clear();</span><br><span class="line">                byte[] bytes = bb.array();</span><br><span class="line">                System.out.write(bytes,0,length);</span><br><span class="line">                System.out.println();</span><br><span class="line">                // 输出缓冲区的大小</span><br><span class="line">                System.out.println(&quot;输入缓冲区的大小为 : &quot; + bb.capacity());</span><br><span class="line">                // 输出缓冲区的限制大小</span><br><span class="line">                System.out.println(&quot;输入缓冲区的限制大小为 : &quot;  + bb.limit());</span><br><span class="line">                // 输出缓冲区的位置</span><br><span class="line">                System.out.println(&quot;输入缓冲区的位置 : &quot; + bb.position());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 步骤:</span><br><span class="line">     *  1. 使用输出流创建文件通道</span><br><span class="line">     *  2. 创建字节缓冲区</span><br><span class="line">     *  3. 开始进行写入</span><br><span class="line">     */</span><br><span class="line">    public static void writeNIO()&#123;</span><br><span class="line"></span><br><span class="line">        try (</span><br><span class="line">                // 创建FileChannel通道(使用try-with-resouce的形式)</span><br><span class="line">                FileChannel fc = new FileOutputStream(&quot;nio.txt&quot;).getChannel()</span><br><span class="line"></span><br><span class="line">        ) &#123;</span><br><span class="line">            // 按照指定的编码和内容创建字节缓冲区</span><br><span class="line">            ByteBuffer  bb = Charset.forName(&quot;UTF-8&quot;).encode(&quot;你好啊,世界,我爱你,世界&quot;);</span><br><span class="line">            // 输出初始化容量</span><br><span class="line">            System.out.println(&quot;初始化容量 : &quot; + bb.capacity());</span><br><span class="line">            // 输出缓冲区的限制大小</span><br><span class="line">            System.out.println(&quot;缓冲区的限制为 : &quot; + bb.limit());</span><br><span class="line">            int len = 0;</span><br><span class="line">            // 标准的写入文件的代码</span><br><span class="line">            while((len = fc.write(bb)) != 0)&#123;</span><br><span class="line">                /*</span><br><span class="line">                 * 注意，这里不需要clear，将缓冲中的数据写入到通道中后 第二次接着上一次的顺序往下读</span><br><span class="line">                 */</span><br><span class="line">                System.out.println(&quot;写入的长度为 : &quot; + len);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="AIO实现文件的读写-不是特别理解"><a href="#AIO实现文件的读写-不是特别理解" class="headerlink" title="AIO实现文件的读写(不是特别理解)"></a>AIO实现文件的读写(不是特别理解)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line">public class AioWrite &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        // AsynchronousFileChannel用于读取，写入和操作文件的异步通道。当通过调用此类定义的open方法之一来打开文件时，将创建异步文件通道。</span><br><span class="line">        // static AsynchronousFileChannel open(Path file, OpenOption... options) 打开或创建用于读取和/或写入的文件，返回异步文件通道以访问该文件。</span><br><span class="line">        /*</span><br><span class="line">        StandardOpenOption枚举类:</span><br><span class="line">            APPEND 如果文件打开 WRITE访问，则字节将被写入文件的末尾而不是开头。</span><br><span class="line">            CREATE  创建一个新文件（如果不存在）。</span><br><span class="line">            CREATE_NEW 创建一个新的文件，如果该文件已经存在失败。</span><br><span class="line">            DELETE_ON_CLOSE 关闭时删除。</span><br><span class="line">            DSYNC 要求将文件内容的每次更新都与底层存储设备同步写入。</span><br><span class="line">            READ 打开阅读权限。</span><br><span class="line">            SPARSE 稀疏文件</span><br><span class="line">            SYNC 要求将文件内容或元数据的每次更新都同步写入底层存储设备。</span><br><span class="line">            TRUNCATE_EXISTING 如果文件已经存在，并且打开 WRITE访问，则其长度将截断为0。</span><br><span class="line">            WRITE 打开以进行写入。</span><br><span class="line">         */</span><br><span class="line">        AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(</span><br><span class="line">                Paths.get(&quot;asynchronous.txt&quot;), StandardOpenOption.READ,</span><br><span class="line">                StandardOpenOption.WRITE, StandardOpenOption.CREATE);</span><br><span class="line">        /*</span><br><span class="line">            CompletionHandler 用于消除异步I / O操作结果的处理程序。</span><br><span class="line">            在此包中定义的异步通道允许指定完成处理程序以消耗异步操作的结果。 当I / O操作成功完成时，</span><br><span class="line">            将调用completed方法。 如果I / O操作失败，则调用failed方法。 这些方法的实现应该及时完成，</span><br><span class="line">            以避免将调用线程调度到其他完成处理程序。</span><br><span class="line">        */</span><br><span class="line">        CompletionHandler&lt;Integer, Object&gt; handler = new CompletionHandler&lt;&gt;() &#123;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void completed(Integer result, Object attachment) &#123;</span><br><span class="line">                System.out.println(&quot;Attachment: &quot; + attachment + &quot; &quot; + result</span><br><span class="line">                        + &quot; bytes written&quot;);</span><br><span class="line">                System.out.println(&quot;CompletionHandler Thread ID: &quot;</span><br><span class="line">                        + Thread.currentThread().getId());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void failed(Throwable e, Object attachment) &#123;</span><br><span class="line">                System.err.println(&quot;Attachment: &quot; + attachment + &quot; failed with:&quot;);</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;Main Thread ID: &quot; + Thread.currentThread().getId());</span><br><span class="line">        // abstract &lt;A&gt; void write(ByteBuffer src, long position, A attachment, CompletionHandler&lt;Integer,? super A&gt; handler)</span><br><span class="line">        // 从给定的缓冲区向给定的文件位置开始，向该通道写入一个字节序列。</span><br><span class="line">        // static ByteBuffer wrap(byte[] array) 将一个字节数组包装到缓冲区中。</span><br><span class="line">        fileChannel.write(ByteBuffer.wrap(&quot;Sample&quot;.getBytes()), 0, &quot;First Write&quot;,</span><br><span class="line">                handler);</span><br><span class="line">        // 第一次写入Sample,第二次写入也是从索引0位置开始的,所以讲Sam覆盖掉了,变为Box,所以结果为Boxple</span><br><span class="line">        fileChannel.write(ByteBuffer.wrap(&quot;Box&quot;.getBytes()), 0, &quot;Second Write&quot;,</span><br><span class="line">                handler);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class AioReader &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        // Path可用于在文件系统中定位文件的对象。 它通常表示系统相关的文件路径</span><br><span class="line">        Path file = Paths.get(&quot;asynchronous.txt&quot;);</span><br><span class="line">        // AsynchronousFileChannel是用于读取，写入和操作文件的异步通道。</span><br><span class="line">        AsynchronousFileChannel channel = AsynchronousFileChannel.open(file);</span><br><span class="line">        // 创建字节缓冲区,指定缓冲区的大小</span><br><span class="line">        ByteBuffer buffer = ByteBuffer.allocate(100_000);</span><br><span class="line">        // Future接口,A Future计算的结果。 提供方法来检查计算是否完成，等待其完成，并检索计算结果</span><br><span class="line">        Future&lt;Integer&gt; result = channel.read(buffer, 0);</span><br><span class="line">        // boolean isDone() 返回 true如果任务已完成</span><br><span class="line">        while (!result.isDone()) &#123;</span><br><span class="line">            // 暂时不了解</span><br><span class="line">            ProfitCalculator.calculateTax();</span><br><span class="line">        &#125;</span><br><span class="line">        // V get() 等待计算完成，然后检索其结果。</span><br><span class="line">        Integer bytesRead = result.get();</span><br><span class="line">        // 输出文件内容的字节长度</span><br><span class="line">        System.out.println(&quot;Bytes read [&quot; + bytesRead + &quot;]&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class ProfitCalculator &#123;</span><br><span class="line">    public ProfitCalculator() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public static void calculateTax() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="BIO-NIO-AIO适用的场景"><a href="#BIO-NIO-AIO适用的场景" class="headerlink" title="BIO,NIO,AIO适用的场景"></a>BIO,NIO,AIO适用的场景</h2><p>BIO方式适用于连接数目比较小且固定的架构，这种方式对服务器资源要求比较高，并发局限于应用中，JDK1.4以前的唯一选择，但程序直观简单易理解。</p>
+<p>NIO方式适用于连接数目多且连接比较短（轻操作）的架构，比如聊天服务器，并发局限于应用中，编程比较复杂，JDK1.4开始支持。</p>
+<p>AIO方式适用于连接数目多且连接比较长（重操作）的架构，比如相册服务器，充分调用OS参与并发操作，编程比较复杂，JDK7开始支持。  </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/01/深入理解Java虚拟机/02-Java的基本数据类型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/08/01/深入理解Java虚拟机/02-Java的基本数据类型/" itemprop="url">day02_Java的基本数据类型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-01T20:21:29+08:00">
+                2018-08-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/WangZhi.github.io/categories/深入理解Java虚拟机/" itemprop="url" rel="index">
+                    <span itemprop="name">深入理解Java虚拟机</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="基本数据类型的加载和存储"><a href="#基本数据类型的加载和存储" class="headerlink" title="基本数据类型的加载和存储"></a>基本数据类型的加载和存储</h2><h3 id="虚拟机中的Boolean类型"><a href="#虚拟机中的Boolean类型" class="headerlink" title="虚拟机中的Boolean类型"></a>虚拟机中的Boolean类型</h3><p>在Java语言规范中,boolean类型的值只有两种可能,那就是”true”和”false”. 但是这两个符号是不能被Java虚拟机直接使用的.</p>
+<p>在Java虚拟机规范中,boolean类型则被映射成int类型. 也就是说,”true”被映射为整数1,”false”被映射为整数0.这个编码规则约束了Java字节码的具体实现.</p>
+<h3 id="Java中的基本类型"><a href="#Java中的基本类型" class="headerlink" title="Java中的基本类型"></a>Java中的基本类型</h3><p>Java中的基本类型有8个,上面的boolean类型, 整数类型的byte、short、char、int和 long，以及浮点类型 float 和 double.</p>
+<p><img src="./image/java01.jpg" alt="基本数据类型"></p>
+<p>java的基本类型都有对应的值域和默认值,如图,从上到下的值域一次增大,后面的值域包含前面的值域,意味着上面的数据类型转换为下面的数据类型不需要进行强制转换。还有注意默认值看起来不一样，实际在内存中都是0。</p>
+<p>8个基本数据类型中，只有char和boolean是无符号数。并且boolean类型的取值范围为0或者1，char类型的取值范围为[0,65535]。通常我们认为char类型的值为非负数。</p>
+<p>Java 的浮点类型采用 IEEE 754 浮点数格式。以 float 为例，浮点类型通常有两个 0，+0.0F 以及 -0.0F。前者在 Java 里是 0，后者是符号位为 1、其他位均为 0 的浮点数，在内存中等同于十六进制整数 0x8000000（即 -0.0F 可通过Float.intBitsToFloat(0x8000000) 求得）。尽管它们的内存</p>
+<p>数值不同，但是在 Java 中 +0.0F == -0.0F 会返回真。</p>
+<p>有了+0.0F和-0.0F后，那么浮点数中的正无穷和负无穷就可以定义了。正无穷就是任意正浮点数（不包括 +0.0F）除以 +0.0F 得到的值，而负无穷是任意正浮点数除以 -0.0F得到的值。在 Java 中，正无穷和负无穷是有确切的值，在内存中分别等同于十六进制整数0x7F800000 和 0xFF800000。</p>
+<p>那超出范围的数字呢？ 对应的是NaN（Not-a-Number）,0x7FC00000为标准的NaN，其他的称之为不标准的NaN。并且NaN有一个特性，任何数 ！= NaN 永远返回true。</p>
+<h3 id="Java基本类型的大小"><a href="#Java基本类型的大小" class="headerlink" title="Java基本类型的大小"></a>Java基本类型的大小</h3><h5 id="存储时的大小"><a href="#存储时的大小" class="headerlink" title="存储时的大小"></a>存储时的大小</h5><p>Java 虚拟机每调用一个 Java 方法，便会创建一个栈帧。暂时理解为解释器使用的解释栈帧。包括两个组成部分，局部变量区和字节码操作数栈。</p>
+<p>在Java虚拟机规范中，局部变量区等价于一个数组，并且可以用正整数索引。除了long、double值需要用两个数组单元来存储之外，其他的基本类型以及引用类型的值均占用一个数组单元。</p>
+<p>也就是说，boolean、byte、char、short这四种类型，在栈上占用的空间和int是一样的，和引用类型也是一样的。也就是32位的HotSpot上，栈上占用4个字节；64位的HotSpot上，占用8个字节。</p>
+<p>当然，这种情况仅存在于局部变量，而并不会出现在存储于堆上的字段和数组元素伤。对于byte、char以及short这三种类型的字段或者数组单元，他们在堆上占用的空间分别为一字节、两字节以及两字节，与值域是相吻合的。</p>
+<p>因此，当我们将一个 int 类型的值，存储到这些类型的字段或数组时，相当于做了一次隐式的掩码操作。举例来说，当我们把0xFFFFFFFF（-1）存储到一个声明为 char 类型的字段里时，由</p>
+<p>于该字段仅占两字节，所以高两位的字节便会被截取掉，最终存入“\uFFFF”。</p>
+<p>boolean 字段和 boolean 数组则比较特殊。在 HotSpot 中，boolean 字段占用一字节，而boolean 数组则直接用 byte 数组来实现。为了保证堆中的 boolean 值是合法的，HotSpot 在存储时显式地进行掩码操作，也就是说，只取最后一位的值存入boolean 字段或数组中。</p>
+<h5 id="加载时的大小"><a href="#加载时的大小" class="headerlink" title="加载时的大小"></a>加载时的大小</h5><p>Java 虚拟机的算数运算几乎全部依赖于操作数栈。也就是说，我们需要将堆中的 boolean、byte、char 以及 short 加载到操作数栈上，而后将栈上的值当成 int 类型来运算。</p>
+<p>对于 boolean、char 这两个无符号类型来说，加载伴随着零扩展。举个例子，char 的大小为两个字节。在加载时 char 的值会被复制到 int 类型的低二字节，而高二字节则会用 0 来填充。</p>
+<p>对于 byte、short 这两个类型来说，加载伴随着符号扩展。举个例子，short 的大小为两个字节。在加载时 short 的值同样会被复制到 int 类型的低二字节。如果该 short 值为非负数，即最</p>
+<p>高位为 0，那么该 int 类型的值的高二字节会用 0 来填充，否则用 1 来填充。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>其中，boolean 类型在 Java 虚拟机中被映射为整数类型：“true”被映射为 1，而“false”被映射为 0。Java 代码中的逻辑运算以及条件跳转，都是用整数相关的字节码来实现的。</p>
+<p>除 boolean 类型之外，Java 还有另外 7 个基本类型。它们拥有不同的值域，但默认值在内存中均为 0。这些基本类型之中，浮点类型比较特殊。基于它的运算或比较，需要考虑+0.0F、-0.0F 以及 NaN 的情况。</p>
+<p>除 long 和 double 外，其他基本类型与引用类型在解释执行的方法栈帧中占用的大小是一致的，但它们在堆中占用的大小确不同。在将 boolean、byte、char 以及 short 的值存入字段或</p>
+<p>者数组单元时，Java 虚拟机会进行掩码操作。在读取时，Java 虚拟机则会将其扩展为 int 类型。</p>
+<h5 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h5><p>从这个中，可以学到，8种基本数据的大小，还有虚拟机对于基本数据类型的规范是什么，堆上和解释执行的方法栈帧上的byte、short、char、boolean类型的存储的大小是不一样的，加载（读取）的时候，会进行掩码的操作。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/01/Java学习笔记/02-Java的基本数据类型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/08/01/Java学习笔记/02-Java的基本数据类型/" itemprop="url">day02_Java的基本数据类型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-01T20:21:29+08:00">
+                2018-08-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="基本数据类型的加载和存储"><a href="#基本数据类型的加载和存储" class="headerlink" title="基本数据类型的加载和存储"></a>基本数据类型的加载和存储</h2><h3 id="虚拟机中的Boolean类型"><a href="#虚拟机中的Boolean类型" class="headerlink" title="虚拟机中的Boolean类型"></a>虚拟机中的Boolean类型</h3><p>在Java语言规范中,boolean类型的值只有两种可能,那就是”true”和”false”. 但是这两个符号是不能被Java虚拟机直接使用的.</p>
+<p>在Java虚拟机规范中,boolean类型则被映射成int类型. 也就是说,”true”被映射为整数1,”false”被映射为整数0.这个编码规则约束了Java字节码的具体实现.</p>
+<h3 id="Java中的基本类型"><a href="#Java中的基本类型" class="headerlink" title="Java中的基本类型"></a>Java中的基本类型</h3><p>Java中的基本类型有8个,上面的boolean类型, 整数类型的byte、short、char、int和 long，以及浮点类型 float 和 double.</p>
+<p><img src="./image/java01.jpg" alt="基本数据类型"></p>
+<p>java的基本类型都有对应的值域和默认值,如图,从上到下的值域一次增大,后面的值域包含前面的值域,意味着上面的数据类型转换为下面的数据类型不需要进行强制转换。还有注意默认值看起来不一样，实际在内存中都是0。</p>
+<p>8个基本数据类型中，只有char和boolean是无符号数。并且boolean类型的取值范围为0或者1，char类型的取值范围为[0,65535]。通常我们认为char类型的值为非负数。</p>
+<p>Java 的浮点类型采用 IEEE 754 浮点数格式。以 float 为例，浮点类型通常有两个 0，+0.0F 以及 -0.0F。前者在 Java 里是 0，后者是符号位为 1、其他位均为 0 的浮点数，在内存中等同于十六进制整数 0x8000000（即 -0.0F 可通过Float.intBitsToFloat(0x8000000) 求得）。尽管它们的内存</p>
+<p>数值不同，但是在 Java 中 +0.0F == -0.0F 会返回真。</p>
+<p>有了+0.0F和-0.0F后，那么浮点数中的正无穷和负无穷就可以定义了。正无穷就是任意正浮点数（不包括 +0.0F）除以 +0.0F 得到的值，而负无穷是任意正浮点数除以 -0.0F得到的值。在 Java 中，正无穷和负无穷是有确切的值，在内存中分别等同于十六进制整数0x7F800000 和 0xFF800000。</p>
+<p>那超出范围的数字呢？ 对应的是NaN（Not-a-Number）,0x7FC00000为标准的NaN，其他的称之为不标准的NaN。并且NaN有一个特性，任何数 ！= NaN 永远返回true。</p>
+<h3 id="Java基本类型的大小"><a href="#Java基本类型的大小" class="headerlink" title="Java基本类型的大小"></a>Java基本类型的大小</h3><h5 id="存储时的大小"><a href="#存储时的大小" class="headerlink" title="存储时的大小"></a>存储时的大小</h5><p>Java 虚拟机每调用一个 Java 方法，便会创建一个栈帧。暂时理解为解释器使用的解释栈帧。包括两个组成部分，局部变量区和字节码操作数栈。</p>
+<p>在Java虚拟机规范中，局部变量区等价于一个数组，并且可以用正整数索引。除了long、double值需要用两个数组单元来存储之外，其他的基本类型以及引用类型的值均占用一个数组单元。</p>
+<p>也就是说，boolean、byte、char、short这四种类型，在栈上占用的空间和int是一样的，和引用类型也是一样的。也就是32位的HotSpot上，栈上占用4个字节；64位的HotSpot上，占用8个字节。</p>
+<p>当然，这种情况仅存在于局部变量，而并不会出现在存储于堆上的字段和数组元素伤。对于byte、char以及short这三种类型的字段或者数组单元，他们在堆上占用的空间分别为一字节、两字节以及两字节，与值域是相吻合的。</p>
+<p>因此，当我们将一个 int 类型的值，存储到这些类型的字段或数组时，相当于做了一次隐式的掩码操作。举例来说，当我们把0xFFFFFFFF（-1）存储到一个声明为 char 类型的字段里时，由</p>
+<p>于该字段仅占两字节，所以高两位的字节便会被截取掉，最终存入“\uFFFF”。</p>
+<p>boolean 字段和 boolean 数组则比较特殊。在 HotSpot 中，boolean 字段占用一字节，而boolean 数组则直接用 byte 数组来实现。为了保证堆中的 boolean 值是合法的，HotSpot 在存储时显式地进行掩码操作，也就是说，只取最后一位的值存入boolean 字段或数组中。</p>
+<h5 id="加载时的大小"><a href="#加载时的大小" class="headerlink" title="加载时的大小"></a>加载时的大小</h5><p>Java 虚拟机的算数运算几乎全部依赖于操作数栈。也就是说，我们需要将堆中的 boolean、byte、char 以及 short 加载到操作数栈上，而后将栈上的值当成 int 类型来运算。</p>
+<p>对于 boolean、char 这两个无符号类型来说，加载伴随着零扩展。举个例子，char 的大小为两个字节。在加载时 char 的值会被复制到 int 类型的低二字节，而高二字节则会用 0 来填充。</p>
+<p>对于 byte、short 这两个类型来说，加载伴随着符号扩展。举个例子，short 的大小为两个字节。在加载时 short 的值同样会被复制到 int 类型的低二字节。如果该 short 值为非负数，即最</p>
+<p>高位为 0，那么该 int 类型的值的高二字节会用 0 来填充，否则用 1 来填充。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>其中，boolean 类型在 Java 虚拟机中被映射为整数类型：“true”被映射为 1，而“false”被映射为 0。Java 代码中的逻辑运算以及条件跳转，都是用整数相关的字节码来实现的。</p>
+<p>除 boolean 类型之外，Java 还有另外 7 个基本类型。它们拥有不同的值域，但默认值在内存中均为 0。这些基本类型之中，浮点类型比较特殊。基于它的运算或比较，需要考虑+0.0F、-0.0F 以及 NaN 的情况。</p>
+<p>除 long 和 double 外，其他基本类型与引用类型在解释执行的方法栈帧中占用的大小是一致的，但它们在堆中占用的大小确不同。在将 boolean、byte、char 以及 short 的值存入字段或</p>
+<p>者数组单元时，Java 虚拟机会进行掩码操作。在读取时，Java 虚拟机则会将其扩展为 int 类型。</p>
+<h5 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h5><p>从这个中，可以学到，8种基本数据的大小，还有虚拟机对于基本数据类型的规范是什么，堆上和解释执行的方法栈帧上的byte、short、char、boolean类型的存储的大小是不一样的，加载（读取）的时候，会进行掩码的操作。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/31/Java学习笔记/day14-reflect/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/31/Java学习笔记/day14-reflect/" itemprop="url">day14-reflect</a></h1>
         
 
         <div class="post-meta">
@@ -908,7 +1830,7 @@ public class ReflectDemo {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/30/01_Java如何运行的/">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/30/深入理解Java虚拟机/01_Java如何运行的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="王智家园">
@@ -927,7 +1849,169 @@ public class ReflectDemo {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/30/01_Java如何运行的/" itemprop="url">Java是怎么运行的</a></h1>
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/30/深入理解Java虚拟机/01_Java如何运行的/" itemprop="url">Java是怎么运行的</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-30T18:40:21+08:00">
+                2018-07-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/WangZhi.github.io/categories/深入理解Java虚拟机/" itemprop="url" rel="index">
+                    <span itemprop="name">深入理解Java虚拟机</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Java为什么要在虚拟机中运行"><a href="#Java为什么要在虚拟机中运行" class="headerlink" title="Java为什么要在虚拟机中运行"></a>Java为什么要在虚拟机中运行</h2><ol>
+<li>简单的来说,Java作为一门高级程序语言,语法复杂,抽象度高,不能直接翻译为机器码在机器上运行,所以设计者就设计了虚拟机,通过编译器将Java程序转换成虚拟机所能识别的指令码,也就是Java字节码,Java字节码会被虚拟机翻译为可以被机器识别的机器码.这也实现了Java的跨平台</li>
+<li>虚拟机的第二个好处就是带来了一个托管环境,托管环境能够代替我们处理代码中冗余并且容易出错的部分,比如自动内存管理,垃圾回收. 还有诸如数组越界、动态类型、安全权限等等动态监测.</li>
+</ol>
+<h2 id="Java如何在虚拟机中运行的"><a href="#Java如何在虚拟机中运行的" class="headerlink" title="Java如何在虚拟机中运行的"></a>Java如何在虚拟机中运行的</h2><ol>
+<li>从虚拟机角度来看,执行Java代码首先需要将它编译而成的class文件加载到虚拟机中.加载后的Java类会被存放与方法区(Method Area)中,运行时,虚拟机执行方法区内的代码</li>
+</ol>
+<h4 id="Java虚拟机如何存储运行时的数据"><a href="#Java虚拟机如何存储运行时的数据" class="headerlink" title="Java虚拟机如何存储运行时的数据"></a>Java虚拟机如何存储运行时的数据</h4><p>Java虚拟机在内存中划分出堆和栈来存储运行时数据.并且将栈细分为面向Java方法的Java方法栈,面向本地方法的本地方法栈,以及存放各个线程执行位置的PC寄存器.</p>
+<p>运行的过程中,每当调用一个方法,Java虚拟机会在当前线程的Java方法栈中生成一个栈帧,存放局部变量以及字节码操作数.这个栈帧大小提前计算好,而且Java虚拟机不要求栈帧在内存空间中连续分步.退出执行方法时,Java虚拟机会弹出当前线程的当前栈帧,并舍弃.</p>
+<p>前面说到Java字节码会被虚拟机翻译成机器码,那是如何翻译的呢?有两种形式:第一种是解释执行,也就是逐条将字节码翻译成机器码并执行,优势是无需等待编译.第二种是即时编译(JIT),也就是将一个方法中包含的所有字节码编译成机器码后再执行,优势在于实际运行速度很快.而我们常用的HotSpot虚拟机默认采用混合模式,综合了解释执行和即时编译两者的优点,先解释执行字节码,而后将反复执行的热点代码,以方法为单位进行即时编译.</p>
+<h2 id="运行效率如何"><a href="#运行效率如何" class="headerlink" title="运行效率如何"></a>运行效率如何</h2><p>前面说的极是编译就是用来提升性能以及峰值性能,它是建立在程序符合二八定律的假设上,也就是百分之二十的代码占据百分之八十的计算资源.</p>
+<p>如何理解?对于占据大部分不常用的代码,无需耗费时间将其编译成机器码,而是采取解释执行的方式运行;另一方面,对于占据小部分的热点代码,将其编译器成机器码,提高运行速度.</p>
+<p>HotSpot 内置了多个即时编译器：C1、C2 和 Graal。Graal 是<br>Java 10 正式引入的实验性即时编译器,InfoQ上有个介绍(<a href="http://www.infoq.com/cn/articles/Graal-Java-JIT-Compiler?utm_source=articles_about_java&amp;utm_medium=link&amp;utm_campaign=java),有兴趣的可以了解下" target="_blank" rel="noopener">http://www.infoq.com/cn/articles/Graal-Java-JIT-Compiler?utm_source=articles_about_java&amp;utm_medium=link&amp;utm_campaign=java),有兴趣的可以了解下</a>.</p>
+<p>C1 又叫做 Client 编译器，面向的是对启动性能有要求的客户端 GUI 程序，采用的优化手段相对简单，因此编译时间较短。</p>
+<p>C2 又叫做 Server 编译器，面向的是对峰值性能有要求的服务器端程序，采用的优化手段相对复杂，因此编译时间较长，但同时生成代码的执行效率较高。</p>
+<p>Java7开始,HotSpot默认采取分层编译:热点方法首先被C1编译,而后热点方法中的热点会进一步被C2编译.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>之所以要在虚拟机中运行，是因为它提供了可移植性。一旦 Java 代码被编译为 Java 字节码，便可以在不同平台上的 Java 虚拟机实现上运行。此外，虚拟机还提供了一个代码托管的环境，<br>代替我们处理部分冗长而且容易出错的事务，例如内存管理。</p>
+<p>Java 虚拟机将运行时内存区域划分为五个部分，分别为方法区、堆、PC 寄存器、Java 方法栈和本地方法栈。Java 程序编译而成的 class 文件，需要先加载至方法区中，方能在 Java 虚拟机<br>中运行。</p>
+<p>为了提高运行效率，标准 JDK 中的 HotSpot 虚拟机采用的是一种混合执行的策略。</p>
+<p>它会解释执行 Java 字节码，然后会将其中反复执行的热点代码，以方法为单位进行即时编译，翻译成机器码后直接运行在底层硬件之上。</p>
+<p>HotSpot 装载了多个不同的即时编译器，以便在编译时间和生成代码的执行效率之间做取舍。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/30/Java学习笔记/01_Java如何运行的/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/30/Java学习笔记/01_Java如何运行的/" itemprop="url">Java是怎么运行的</a></h1>
         
 
         <div class="post-meta">
@@ -1048,7 +2132,7 @@ public class ReflectDemo {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/28/day13-Stream流/">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/28/Java学习笔记/day13-Stream流/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="王智家园">
@@ -1067,7 +2151,7 @@ public class ReflectDemo {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/28/day13-Stream流/" itemprop="url">day13-Stream流</a></h1>
+                <a class="post-title-link" href="/WangZhi.github.io/2018/07/28/Java学习笔记/day13-Stream流/" itemprop="url">day13-Stream流</a></h1>
         
 
         <div class="post-meta">
@@ -1564,3019 +2648,11 @@ public class Demo4 {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/28/day12-函数式接口/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/28/day12-函数式接口/" itemprop="url">day12-函数式接口</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-28T20:04:35+08:00">
-                2018-07-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h1><h4 id="概述-接口中只有一个抽象方法"><a href="#概述-接口中只有一个抽象方法" class="headerlink" title="概述:接口中只有一个抽象方法"></a>概述:接口中只有一个抽象方法</h4><p><strong>下面介绍的可能很抽象,理解不了,至少在我看来单独的这几个借口是没有用的,跟最下面说的 Stream流一起用才会有效果</strong></p>
-<ul>
-<li><p>函数式接口，即适用于函数式编程场景的接口。而Java中的函数式编程体现就是Lambda，所以函数式接口就是可<br>以适用于Lambda使用的接口。只有确保接口中有且仅有一个抽象方法，Java中的Lambda才能顺利地进行推导。</p>
-<blockquote>
-<p>备注：“语法糖”是指使用更加方便，但是原理不变的代码语法。例如在遍历集合时使用的for-each语法，其实</p>
-<pre><code>底层的实现原理仍然是迭代器，这便是“语法糖”。从应用层面来讲，Java中的Lambda可以被当做是匿名内部
-类的“语法糖”，但是二者在原理上是不同的。
-</code></pre></blockquote>
-</li>
-<li><p>格式:</p>
-<ol>
-<li><p>只要确保接口中有且仅有一个抽象方法即可：</p>
-<pre><code>修饰符 interface 接口名称 {
-   public abstract 返回值类型 方法名称(可选参数信息);
-   // 其他非抽象方法内容
-}
-</code></pre></li>
-<li><p>@FunctionalInterface注解</p>
-<p> 与@Override 注解的作用类似，Java 8中专门为函数式接口引入了一个新的注解： @FunctionalInterface 。该注<br>解可用于一个接口的定义上,一旦使用该注解来定义接口，编译器将会强制检查该接口是否确实有且仅有一个抽象方法，否则将会报错。需要注<br>意的是，即使不使用该注解，只要满足函数式接口的定义，这仍然是一个函数式接口，使用起来都一样。</p>
-</li>
-<li><p>自定义函数式接口(前面已经写过,这就不重复写了)</p>
-</li>
-</ol>
-</li>
-</ul>
-<pre><code>package com.wzlove.function;
-
-/**
- * 自定义函数式接口
- *
- * 使用@FunctionalInterface可以说明该接口是函数式接口,但是不加,如果接口中只有一个抽象方法,这个接口也是函数式接口
- *
- * 也就是说函数式接口不以注解的存在而存在
- */
-@FunctionalInterface
-public interface MyFunctionalInterface {
-
-    public abstract void show();
-}
-</code></pre><h4 id="lambda表达式-参数列表-gt-代码"><a href="#lambda表达式-参数列表-gt-代码" class="headerlink" title="lambda表达式: (参数列表)-&gt;{代码}"></a>lambda表达式: (参数列表)-&gt;{代码}</h4><h2 id="lambda表达式-前面有篇文章说过-不详细说明"><a href="#lambda表达式-前面有篇文章说过-不详细说明" class="headerlink" title="lambda表达式(前面有篇文章说过,不详细说明)"></a>lambda表达式(前面有篇文章说过,不详细说明)</h2><p>有参数,有返回值的自定义函数式接口</p>
-<pre><code>@FunctionalInterface
-public interface Sumable {
-    int sum(int a, int b);
-}
-</code></pre><h2 id="JDK1-8之后的某些函数式接口"><a href="#JDK1-8之后的某些函数式接口" class="headerlink" title="JDK1.8之后的某些函数式接口"></a>JDK1.8之后的某些函数式接口</h2><h4 id="supplier生产数据函数式接口"><a href="#supplier生产数据函数式接口" class="headerlink" title="supplier生产数据函数式接口"></a>supplier生产数据函数式接口</h4><p>目的是生产数据.  </p>
-<p>目前好像看不出来有什么用,但是好像和jdk8的Stream流有关.,举个小例子</p>
-<pre><code>package com.wzlove.supplier;
-
-import java.util.function.Supplier;
-
-/**
- * 使用supplier函数式接口求数组的最大值
- */
-public class ArrMaxValue {
-
-    public static int getMaxValue(Supplier&lt;Integer&gt; sup){
-        return sup.get();
-    }
-
-    public static void main(String[] args) {
-        // 创建数组
-        int[] arr = {100,20,50,30,99,101,-50};
-
-        int maxValue = getMaxValue(()-&gt;{
-            int max = arr[0];
-            for (int i : arr) {
-                if(i &gt; max){
-                    max = i;
-                }
-            }
-            return max;
-        });
-
-        System.out.println(&quot;数组中的最大值为:&quot; + maxValue);
-    }
-
-}
-</code></pre><h4 id="Consumer消费数据函数式接口"><a href="#Consumer消费数据函数式接口" class="headerlink" title="Consumer消费数据函数式接口"></a>Consumer消费数据函数式接口</h4><p>这个方法是用来消费数据的,如何消费,消费规则自己定义.</p>
-<p>java.util.function.Supplier<t> 接口仅包含一个无参的方法： T get() 。用来获取一个泛型参数指定类型的对<br>象数据。由于这是一个函数式接口，这也就意味着对应的Lambda表达式需要“对外提供”一个符合泛型类型的对象<br>数据。</t></p>
-<pre><code>package com.wzlove.comsumer;
-
-import java.util.function.Consumer;
-
-/**
- * 使用Consumer函数式接口实现格式化输出
- */
-public class ConsumerDemo2 {
-
-    public static void printInfo(String[] strArr, Consumer&lt;String&gt; con1, Consumer&lt;String&gt; con2){
-
-        for (int i = 0; i &lt; strArr.length; i++) {
-            con1.andThen(con2).accept(strArr[i]);
-        }
-
-    }
-
-    public static void main(String[] args) {
-        String[] strArr = {&quot;迪丽热巴,女&quot;,&quot;郑爽,女&quot;,&quot;杨紫,女&quot;};
-        printInfo(strArr,(message)-&gt;{
-            System.out.print(&quot;姓名:&quot; + message.split(&quot;,&quot;)[0] + &quot;。  &quot;);
-        },(message)-&gt;{
-            System.out.println(&quot;性别:&quot; + message.split(&quot;,&quot;)[1] + &quot;。&quot;);
-
-        });
-    }
-}
-</code></pre><h4 id="Predicate判断函数式接口"><a href="#Predicate判断函数式接口" class="headerlink" title="Predicate判断函数式接口"></a>Predicate判断函数式接口</h4><p>Predicate 接口中包含一个抽象方法： boolean test(T t) 。用于条件判断的场景</p>
-<p>默认方法:</p>
-<ul>
-<li>default Predicate<t> and(Predicate&lt;? super T&gt; other)  : 将两个Predicate 条件使用“与”逻辑连接起来实现“并且”的效果</t></li>
-<li>default Predicate<t> or(Predicate&lt;? super T&gt; other)  : or 实现逻辑关系中的“或”</t></li>
-<li><p>default Predicate<t> negate()  : 取反</t></p>
-<p>  package com.wzlove.functionalinterface.predicate;</p>
-<p>  import java.util.ArrayList;<br>  import java.util.function.Predicate;</p>
-<p>  /*<em>
-   </em><br>   */<br>  public class PredicateDemo2 {</p>
-<pre><code>/**
- * 检查数组中的元素是否符合要求,满足要求加入List中并返回
- * @param arr      需要判断的数组
- * @param pre1     判断接口1,判断性别是否为女
- * @param pre2     判断接口2,判断姓名长度是否大于2
- * @return         集合
- */
-public static ArrayList&lt;String&gt; checkStar(String[] arr, Predicate&lt;String&gt; pre1, Predicate&lt;String&gt; pre2){
-    // 创建集合
-    ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();
-    for (String s : arr) {
-       if( pre1.and(pre2).test(s)){
-           list.add(s);
-       }
-    }
-    return list;
-}
-
-public static void main(String[] args) {
-    // 创建数组
-    String[] arr = {&quot;迪丽热巴,女&quot;,&quot;杨洋,男&quot;,&quot;李溪芮,女&quot;,&quot;郑爽,女&quot;};
-
-    // 调用方法(Lambda表达式可以简化)
-    ArrayList&lt;String&gt; list = checkStar(arr,(str)-&gt;{
-        return str.split(&quot;,&quot;)[1].equals(&quot;女&quot;);
-    },(str)-&gt;{
-        return str.split(&quot;,&quot;)[0].length() &gt; 2;
-    });
-
-    // 遍历集合
-    for (String elem : list) {
-        System.out.print(elem + &quot;   &quot;);
-    }
-}
-</code></pre><p>  }</p>
-</li>
-</ul>
-<h4 id="Function类型转换函数式接口"><a href="#Function类型转换函数式接口" class="headerlink" title="Function类型转换函数式接口"></a>Function类型转换函数式接口</h4><p>Function 接口中最主要的抽象方法为： R apply(T t) ，根据类型T的参数获取类型R的结果。</p>
-<p>Function 接口中有一个默认的andThen 方法，用来进行组合操作。</p>
-<pre><code>package com.wzlove.functionalinterface.function;
-
-import java.util.function.Function;
-
-/**
- *
- */
-public class FunctionDemo2 {
-
-    /**
-     * 将String分割,获得第二个元素,将数据转化为int,int数据加100,再将int转化为String
-     * @param str    转化的数据
-     * @param fun1   String -&gt; String
-     * @param fun2   String -&gt; Integer
-     * @param fun3   Integer -&gt; String
-     * @return       最后的String
-     */
-    public static String convert(String str,
-                              Function&lt;String,String&gt; fun1,
-                              Function&lt;String, Integer&gt; fun2,
-                              Function&lt;Integer,String&gt; fun3){
-
-        return fun1.andThen(fun2).andThen(fun3).apply(str);
-
-    }
-
-    public static void main(String[] args) {
-        String str = convert(&quot;迪丽热巴,23&quot;,(s)-&gt;{
-            return s.split(&quot;,&quot;)[1];
-        },(s)-&gt;{
-            return Integer.parseInt(s) + 100;
-        },(s)-&gt;{
-            return String.valueOf(s);
-        });
-        System.out.println(str);
-    }
-}
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/26/day11-网络编程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/26/day11-网络编程/" itemprop="url">day10-网络编程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-26T19:31:48+08:00">
-                2018-07-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
-<li>网络编程 : 通过编程实现不同计算机间数据的共享</li>
-<li>C/S : 客户端/服务器模式<ol>
-<li>好处:部分代码放在客户端,访问服务器只需要传输有效的数据.</li>
-<li>弊端:必须安装客户端,并且服务器升级,对应的客户端必须升级.</li>
-</ol>
-</li>
-<li>B/S : 浏览器/服务器模式<ol>
-<li>好处:不需要安装客户端,不需要考虑服务器升级问题.</li>
-<li>弊端:所有的数据都在服务器,网络不好,反应慢,不友好.</li>
-</ol>
-</li>
-</ul>
-<h2 id="网络编程三要素"><a href="#网络编程三要素" class="headerlink" title="网络编程三要素"></a>网络编程三要素</h2><ol>
-<li>协议 : 计算机与计算机之间传输的规则(协议的三要素如下)<ol>
-<li>语法，就是这一段内容要符合一定的规则和格式。例如，括号要成对，结束要使用分号等。</li>
-<li>语义，就是这一段内容要代表某种意义。例如数字减去数字是有意义的，数字减去文本一般来说就没有意义。</li>
-<li>顺序，就是先干啥，后干啥。例如，可以先加上某个数值，然后再减去某个数值。</li>
-</ol>
-</li>
-<li>IP地址 : 在网络中,ip地址是唯一标识</li>
-<li>端口号 : 计算机中应用程序的唯一标识</li>
-</ol>
-<h4 id="客户端的代码步骤"><a href="#客户端的代码步骤" class="headerlink" title="客户端的代码步骤"></a>客户端的代码步骤</h4><ol>
-<li>创建Socket的对象,指定ip地址和端口号</li>
-<li>利用socket获取文件字节输出流对象(可以使用转换流将字节流转化为打印流)</li>
-<li>利用字节流向服务端发送消息</li>
-<li>关闭socket资源</li>
-</ol>
-<h4 id="服务端的代码步骤"><a href="#服务端的代码步骤" class="headerlink" title="服务端的代码步骤"></a>服务端的代码步骤</h4><ol>
-<li>创建ServerSocket对象,设置端口号</li>
-<li>利用创建的ServerSocket对象使用sccept方法获取Socket对象</li>
-<li>利用第二步获取的socket获取字节输入流对象(可以只用转换流将字节流转化为字符高效流)</li>
-<li>使用第三步的流读取客户端发送的信息</li>
-<li>关闭资源</li>
-</ol>
-<blockquote>
-<p>在整个过程中,需要注意的是随时刷新缓冲区和关闭流,所以推荐使用打印流,会自动刷新和自动换行.</p>
-</blockquote>
-<p>写个小例子,实现客户端和服务端的单次通信</p>
-<pre><code>package homework.demo5;
-
-import java.io.*;
-import java.net.Socket;
-
-/**
- * 创建客户端
- *
- * @author WZLOVE
- * @create 2018-07-25 20:47
- */
-public class ClientDemo {
-
-    public static void main(String[] args) throws IOException {
-        // 创建Socket对象
-        Socket socket = new Socket(&quot;localhost&quot;,8888);
-
-        // 利用转换流转换成打印流
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
-
-        // 向服务器写内容
-        pw.println(&quot;你好,我是客户端&quot;);
-
-        // 获取高效字符输入流
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        // 获取服务器发送的消息
-        String s = br.readLine();
-        System.out.println(&quot;服务器说:&quot; + s);
-
-        // 关闭流
-        socket.close();
-    }
-
-}
-
-package homework.demo5;
-
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-/**
- * 服务端
- *
- * @author WZLOVE
- * @create 2018-07-25 20:57
- */
-public class ServerDemo {
-
-    public static void main(String[] args) throws IOException {
-        // 创建服务端网络对象,指定端口号
-        ServerSocket ss = new ServerSocket(8888);
-        // 获取Socket对象
-        Socket accept = ss.accept();
-        // 获取高效输入流
-        BufferedReader br = new BufferedReader(new InputStreamReader(accept.getInputStream()));
-        // 获取输入的信息
-        String s = br.readLine();
-        System.out.println(&quot;客户端说 : &quot; + s);
-
-        // 获取打印流
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true );
-        // 向客户端发送消息
-        pw.println(&quot;你好,我是服务端&quot;);
-        // 关闭资源
-        accept.close();
-        ss.close();
-    }
-}
-</code></pre><p>写个例子,实现客户端向服务器上传图片</p>
-<pre><code>package homework.demo7;
-
-import java.io.*;
-import java.net.Socket;
-
-/**
- * 网络通信中的客户端
- */
-public class Cilent {
-
-    public static void main(String[] args) throws IOException {
-        // 创建Socket客户端对象
-        Socket socket = new Socket(&quot;localhost&quot;,8888);
-        // 准备文件进行传输
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(&quot;yz.jpg&quot;));
-        // 使用socket对象获取字节输入流对象
-        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-        // 一边读文件,一边向服务器发送数据
-        byte[] arr = new byte[1024 * 5];
-        int len;
-        while((len = bis.read(arr)) != -1){
-            bos.write(arr,0,len);
-        }
-        // 数据上传完毕,刷新缓存区
-        bos.flush();
-        // 关闭不用的资源
-        bis.close();
-        // 关闭输出流套接字,这个步骤是必须的
-        socket.shutdownOutput();
-
-        // 读取反馈的数据
-        // 使用socket对象获取字节输入流
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        String line;
-        StringBuilder sb = new StringBuilder();
-        while((line = br.readLine()) != null){
-            sb.append(line);
-        }
-        System.out.println(sb);
-        // 关闭资源
-        socket.close();
-    }
-
-}
-
-
-package homework.demo7;
-
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-/**
- * 服务端
- */
-public class Server {
-    public static void main(String[] args) throws IOException {
-        // 创建服务端的对象
-        ServerSocket ss = new ServerSocket(8888);
-        // 使用服务端对象获取Socket对象
-        Socket accept = ss.accept();
-        // 准备接受上传的文件并且写入服务器
-        // 创建高效字节输出流,用来指向文件
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(&quot;test.jpg&quot;));
-        // 使用socket对象获取文件字节输入流(转化为高效字节输入流)
-        BufferedInputStream bis = new BufferedInputStream(accept.getInputStream());
-        // 边读边写
-        byte[] arr = new byte[1024 * 5];
-        int len;
-        while((len = bis.read(arr)) != -1){
-            bos.write(arr,0,len);
-            // 进行刷新
-            bos.flush();
-        }
-        // 关闭不使用的资源
-        bos.close();
-        // 向客户端反馈信息
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(accept.getOutputStream()),true);
-        // 写信息
-        pw.println(&quot;上传成功&quot;);
-        // 关闭资源
-        accept.close();
-        ss.close();
-    }
-}
-</code></pre><blockquote>
-<p>有关网络的相关知识大家可以去订阅极客时间上的趣谈网络协议,那个讲的很清楚</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/24/day10-commonsio-FileUtiles/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/24/day10-commonsio-FileUtiles/" itemprop="url">day10-commonsio-FileUtiles</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-24T18:07:38+08:00">
-                2018-07-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Apache-Commons-IO"><a href="#Apache-Commons-IO" class="headerlink" title="Apache Commons IO"></a>Apache Commons IO</h1><p><strong><em>在学习io流的时候研究(翻译)了一下这个,只有FileUtils的某些方法,并不全面,还请谅解</em></strong></p>
-<h2 id="org-apache-commons-io"><a href="#org-apache-commons-io" class="headerlink" title="org.apache.commons.io"></a>org.apache.commons.io</h2><p>这个包下定义了基于 streams, readers, writers and files.的实用工具类.</p>
-<h2 id="org-apache-commons-io-comparator"><a href="#org-apache-commons-io-comparator" class="headerlink" title="org.apache.commons.io.comparator"></a>org.apache.commons.io.comparator</h2><p>这个包下定义了基于文件的各种比较器的实现</p>
-<h2 id="org-apache-commons-io-filefilter"><a href="#org-apache-commons-io-filefilter" class="headerlink" title="org.apache.commons.io.filefilter"></a>org.apache.commons.io.filefilter</h2><p>这个包定义了一个接口（IoFielFieldField），融合了FieldField1和FielnaMeField.</p>
-<h2 id="org-apache-commons-io-input"><a href="#org-apache-commons-io-input" class="headerlink" title="org.apache.commons.io.input"></a>org.apache.commons.io.input</h2><p>这个包提供输入类的实现，如输入流和读取字符流。</p>
-<h2 id="org-apache-commons-io-monitor"><a href="#org-apache-commons-io-monitor" class="headerlink" title="org.apache.commons.io.monitor"></a>org.apache.commons.io.monitor</h2><p>这个包提供了一个用于监视文件系统事件（目录和文件创建、更新和删除事件）的组件。</p>
-<h2 id="org-apache-commons-io-output"><a href="#org-apache-commons-io-output" class="headerlink" title="org.apache.commons.io.output"></a>org.apache.commons.io.output</h2><p>这个包提供输出类的实现, 如输出流和写入流</p>
-<h2 id="org-apache-commons-io-serialization"><a href="#org-apache-commons-io-serialization" class="headerlink" title="org.apache.commons.io.serialization"></a>org.apache.commons.io.serialization</h2><p>这个包提供了一个用于控制类反序列化的框架。</p>
-<h3 id="FileUtils中的常用方法"><a href="#FileUtils中的常用方法" class="headerlink" title="FileUtils中的常用方法"></a>FileUtils中的常用方法</h3><pre><code>package com.wzlove.commons;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-/**
- * 测试FileUtiles中的常用方法
- *
- * @author WZLOVE
- * @create 2018-07-21 13:29
- */
-public class FileUtilsDemo {
-
-
-    /**
-     * static void    cleanDirectory(File directory)
-     * 删除文件夹内的所有内容,但不删除本文件夹
-     */
-    @Test
-    public void testCleanDirectory() throws IOException {
-        // 注意的是创建的文件夹的虚拟路径
-        File dir = new File(&quot;F:\\ddd\\aaa&quot;);
-        FileUtils.cleanDirectory(dir);
-    }
-
-    /**
-     * static boolean contentEquals(File file1, File file2)
-     * 比较两个文件的内容是否相同,相同返回true,不同返回false(.注意的是两个文件不存在,也会返回true)
-     */
-    @Test
-    public void testContentEquals() throws IOException {
-        File file1 = new File(&quot;F:\\ddd\\aaa\\a.txt&quot;);
-        File file2 = new File(&quot;F:\\ddd\\aaa\\b.txt&quot;);
-        System.out.println(FileUtils.contentEquals(file1,file2));
-    }
-
-    /**
-     * static File[] convertFileCollectionToFileArray(Collection&lt;File&gt; files)
-     * 将集合转化为数组
-     */
-    @Test
-    public void testConvertFileCollectionToFileArray(){
-        ArrayList&lt;File&gt; fileList = new ArrayList&lt;&gt;();
-        fileList.add(new File(&quot;C:\\aa&quot;));
-        fileList.add(new File(&quot;D:\\aa&quot;));
-        fileList.add(new File(&quot;E:\\aa&quot;));
-        fileList.add(new File(&quot;F:\\aa&quot;));
-        File[] files = FileUtils.convertFileCollectionToFileArray(fileList);
-        for (int i = 0; i &lt; files.length; i++) {
-            System.out.println(files[i].getAbsolutePath());
-        }
-    }
-
-    /**
-     * static void    copyDirectory(File srcDir, File destDir)
-     * 将srcDir目录下的文件复制到destDir目录下,文件存在则不重复复制
-     * 还有很多重载的方法,可以传递文件过滤器等等
-     */
-    @Test
-    public void testCopyDirectory() throws IOException {
-        File srcDir = new File(&quot;F:\\aaa&quot;);
-        File destDir = new File(&quot;F:\\bbb&quot;);
-        FileUtils.copyDirectory(srcDir,destDir);
-    }
-
-    /**
-     * static void    copyDirectoryToDirectory(File srcDir, File destDir)
-     * 将srcDir整个文件夹放在destDir的文件夹下
-     */
-    @Test
-    public void testCopyDirectoryToDirectory() throws IOException {
-        File srcDir = new File(&quot;F:\\aaa&quot;);
-        File destDir = new File(&quot;F:\\bbb&quot;);
-        FileUtils.copyDirectoryToDirectory(srcDir,destDir);
-    }
-
-    /**
-     * static void    copyFile(File srcFile, File destFile)
-     * 将srcFile文件复制到destFile中,destFile不存在则会创建目标文件
-     */
-    @Test
-    public void testCopyFile() throws IOException {
-        File srcDir = new File(&quot;F:\\aaa\\1.txt&quot;);
-        File destDir = new File(&quot;F:\\bbb\\a.txt&quot;);
-        FileUtils.copyFile(srcDir,destDir);
-    }
-
-    /**
-     * static void    copyFileToDirectory(File srcFile, File destDir)
-     * 将srcFile文件复制到destDir的目录下
-     */
-    @Test
-    public void testCopyFileToDirectory() throws IOException {
-        File srcDir = new File(&quot;F:\\aaa\\1.txt&quot;);
-        File destDir = new File(&quot;F:\\bbb&quot;);
-        FileUtils.copyFileToDirectory(srcDir,destDir);
-    }
-
-    /**
-     * static void    copyToDirectory(File src, File destDir)
-     * 复制文件或者文件夹到目标文件夹下
-     */
-    @Test
-    public void testCopyToDirectory() throws IOException {
-        File srcDir = new File(&quot;F:\\aaa&quot;);
-        File destDir = new File(&quot;F:\\bbb&quot;);
-        FileUtils.copyToDirectory(srcDir,destDir);
-    }
-
-    /**
-     * static void    copyURLToFile(URL source, File destination)
-     * Copies bytes from the URL source to a file destination.
-     */
-    @Test
-    public void testCopyURLToFile() throws IOException {
-        File destination = new File(&quot;F:\\bbb\\baidu.txt&quot;);
-        FileUtils.copyURLToFile(new URL(&quot;http://ntlias-stu.boxuegu.com/#/index&quot;),destination);
-    }
-
-    /**
-     * static void    deleteDirectory(File directory)
-     * 删除这个文件夹,全部删除,包括这个文件,和cleanDirectory方法做个对比
-     */
-    @Test
-    public void testDeleteDirectory() throws IOException {
-        File directory = new File(&quot;F:\\bbb\\ccc&quot;);
-        FileUtils.deleteDirectory(directory);
-    }
-
-    /**
-     * static boolean    deleteQuietly(File file)
-     * 删除这个文件,不会抛出异常
-     */
-    @Test
-    public void testDeleteQuietly() {
-        File directory = new File(&quot;F:\\bbb\\a.txt&quot;);
-        System.out.println(FileUtils.deleteQuietly(directory));
-    }
-
-    /**
-     * static void    forceMkdir(File directory)
-     * 创建文件夹,可以创建多级文件夹
-     */
-    @Test
-    public void testForceMkdir() throws IOException {
-        File directory = new File(&quot;F:\\bbb\\ccc\\ddd\\aaa&quot;);
-        FileUtils.forceMkdir(directory);
-    }
-
-    /**
-     * static void    forceMkdirParent(File file)
-     * 为一个文件创建父路径,但不会创建这个文件(比较奇怪)
-     */
-    @Test
-    public void testForceMkdirParent() throws IOException {
-        File directory = new File(&quot;F:\\bbb\\aaa\\ccc\\a.txt&quot;);
-        FileUtils.forceMkdirParent(directory);
-    }
-
-    /**
-     * static String getUserDirectoryPath()
-     * 返回用户的主目录
-     */
-    @Test
-    public void testGetUserDirectoryPath(){
-        String str = FileUtils.getUserDirectoryPath();
-        System.out.println(str);
-    }
-
-    /**
-     * static void    moveDirectory(File srcDir, File destDir)
-     * 修改文件名,将srcDir.getName()的文件名更改为destDir.getName(),如果文件名存在,报错
-     */
-    @Test
-    public void testMoveDirectory() throws IOException {
-        File srcDir = new File(&quot;F:\\aaa&quot;);
-        File destDir = new File(&quot;F:\\ccc&quot;);
-        FileUtils.moveDirectory(srcDir,destDir);
-    }
-
-    /**
-     * static void    moveDirectoryToDirectory(File src, File destDir, boolean createDestDir)
-     *  将src移动到destDir,后面的boolean表示是不是当destDir文件夹不存在时创建文件夹,false是不创建,true是创建
-     *  如果src不存在报错,如果src已经存在destDir中,则报错
-     */
-    @Test
-    public void testMoveDirectoryToDirectory() throws IOException {
-        File srcDir = new File(&quot;F:\\bbb&quot;);
-        File destDir = new File(&quot;F:\\eee&quot;);
-        FileUtils.moveDirectoryToDirectory(srcDir,destDir,true);
-    }
-
-    /**
-     * static void    moveFile(File srcFile, File destFile)
-     * 修改文件名
-     * static void    moveFileToDirectory(File srcFile, File destDir, boolean createDestDir)
-     * 移动一个文件到文件夹中,最后的参数为true表示如果destDir不存在的话则创建,为false则不创建
-     * static void    moveToDirectory(File src, File destDir, boolean createDestDir)
-     * 移动文件或者文件夹到目标文件夹,最后的参数为true表示如果destDir不存在的话则创建,为false则不创建
-     */
-
-
-    /**
-     * static FileInputStream openInputStream(File file)
-     * 返回文件字节输入流
-     */
-    @Test
-    public void testOpenInputStream() throws IOException {
-        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
-        FileInputStream fis = FileUtils.openInputStream(file);
-        // 可以进行字节流的读取操作
-
-        fis.close();
-    }
-
-     /**
-      * static FileOutputStream openOutputStream(File file)
-      * 返回字节输出流,如果文件等多及目录不存在,则创建多级目录,目录存在,清空文件内容
-      */
-
-    /**
-     * static FileOutputStream    openOutputStream(File file, boolean append)
-     * 返回字节输出流,如果文件等多及目录不存在,则创建多级目录,如果目录存在,则不会清空内容,输出到文件的时候,会追加到原内容的后面
-     */
-
-    /**
-     * static byte[]    readFileToByteArray(File file)
-     * 读取文件,返回字节数组
-     */
-    @Test
-    public void testReadFileToByteArray() throws IOException {
-        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
-        byte[] bytes = FileUtils.readFileToByteArray(file);
-        System.out.println(new String(bytes));
-    }
-
-    /**
-     * static String    readFileToString(File file, String encoding)
-     * 按照指定编码格式读取文件
-     */
-    @Test
-    public void testReadFileToString() throws IOException {
-        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
-        String str = FileUtils.readFileToString(file,&quot;UTF-8&quot;);
-        System.out.println(str);
-    }
-
-    /**
-     * static List&lt;String&gt;    readLines(File file, String encoding)
-     *  按照指定编码读取文件,返回String集合,文件的每一行是一个元素
-     */
-    @Test
-    public void testReadLines() throws IOException {
-        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
-        List&lt;String&gt; list = FileUtils.readLines(file, &quot;UTF-8&quot;);
-        for (String s : list) {
-            System.out.println(s);
-        }
-    }
-
-    /**
-     * static long    sizeOf(File file)
-     * 返回文件或者文件夹的大小
-     */
-    @Test
-    public void testSizeOf() throws IOException {
-        File file = new File(&quot;F:\\bbb\\1.txt&quot;);
-        long l  = FileUtils.sizeOf(file);
-        System.out.println(l);
-        File file1 = new File(&quot;F:\\bbb&quot;);
-        System.out.println(FileUtils.sizeOf(file1));
-    }
-
-    /**
-     * static File    toFile(URL url)
-     * Convert from a URL to a File.
-     * 没理解
-     */
-    @Test
-    public void testToFile() throws IOException {
-        File file = FileUtils.toFile(new URL(&quot;file:\\F:\\bbb&quot;));
-        System.out.println(file.getAbsolutePath());
-    }
-
-    /**
-     * static void    writeByteArrayToFile(File file, byte[] data)
-     * 向文件中写入字节数组,如果目标文件不存在,则会创建目标文件,文件存在清空文件内容,再进行输入
-     * static void    writeByteArrayToFile(File file, byte[] data, boolean append)
-     * 向文件中写入字节数组,如果目标文件不存在,则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
-     * static void    writeByteArrayToFile(File file, byte[] data, int off, int len)
-     * 将byte类型的数组data,从off索引开始,长度为len的内容输出到指定的文件,如果目标文件不存在,则会创建目标文件,文件存在清空文件内容,再进行输入
-     * static void    writeByteArrayToFile(File file, byte[] data, int off, int len, boolean append)
-     * 将byte类型的数组data,从off索引开始,长度为len的内容输出到指定的文件,如果目标文件不存在,则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
-     * static void    writeStringToFile(File file, String data, String encoding)
-     * 按照指定的编码格式将String类型的数据写入到文件中,如果目标文件不存在,则会创建目标文件,文件存在清空文件内容,再进行输入
-     * static void    writeStringToFile(File file, String data, String encoding, boolean append)
-     * 按照指定的编码格式将String类型的数据写入到文件中,如果目标文件不存在,则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
-     */
-
-
-    /**
-     * static void    writeLines(File file, Collection&lt;?&gt; lines)
-     * 将集合数据写入文件,每条数据占据一行,如果目标文件不存在,则会创建目标文件,文件存在清空文件内容,再进行输入
-     * static void    writeLines(File file, Collection&lt;?&gt; lines, boolean append)
-     *  将集合数据写入文件,每条数据占据一行,
-     */
-    @Test
-    public void testWriteLines() throws IOException {
-        File file = new File(&quot;F:\\ddd\\a.txt&quot;);
-        ArrayList&lt;String&gt; coll = new ArrayList&lt;&gt;();
-        coll.add(&quot;I love Java&quot;);
-        coll.add(&quot;I love you&quot;);
-        FileUtils.writeLines(file,coll);
-    }
-
-    /**
-     * static void    writeLines(File file, Collection&lt;?&gt; lines, String lineEnding)
-     * 所有的集合数据保存在一行,并且是间隔的,也就是每条集合数据后会跟一个lineEnding字符串,如果目标文件不存在,
-     * 则会创建目标文件,文件存在清空文件内容,再进行输入
-     * static void    writeLines(File file, Collection&lt;?&gt; lines, String lineEnding, boolean append)
-     * 所有的集合数据保存在一行,并且是间隔的,也就是每条集合数据后会跟一个lineEnding字符串.如果目标文件不存在,
-     * 则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
-     */
-    @Test
-    public void tesWriteLines2() throws IOException {
-        File file = new File(&quot;F:\\ddd\\a.txt&quot;);
-        ArrayList&lt;String&gt; coll = new ArrayList&lt;&gt;();
-        coll.add(&quot;I love Java&quot;);
-        coll.add(&quot;I love Java&quot;);
-        coll.add(&quot;I love Java&quot;);
-        FileUtils.writeLines(file,coll,&quot;I love you&quot;);
-    }
-
-    /**
-     * static void    writeLines(File file, String encoding, Collection&lt;?&gt; lines)
-     * 按照encoding编码格式将集合数据写出到文件中,每条数据占据一行,如果目标文件不存在,
-     * 则会创建目标文件,文件存在清空文件内容,再进行输入
-     * static void    writeLines(File file, String encoding, Collection&lt;?&gt; lines, boolean append)
-     * 按照encoding编码格式将集合数据写出到文件中,每条数据占据一行,如果目标文件不存在,
-     *  则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
-     */
-    @Test
-    public void tesWriteLines3() throws IOException {
-        File file = new File(&quot;F:\\ddd\\a.txt&quot;);
-        ArrayList&lt;String&gt; coll = new ArrayList&lt;&gt;();
-        coll.add(&quot;I love Java&quot;);
-        coll.add(&quot;I love Java&quot;);
-        coll.add(&quot;I love Java&quot;);
-        FileUtils.writeLines(file,&quot;UTF-8&quot;,coll);
-    }
-
-    /**
-     * static void    writeLines(File file, String encoding, Collection&lt;?&gt; lines, String lineEnding)
-     * 按照encoding编码格式将集合数据写出到文件中,所有的集合数据保存在一行,并且是间隔的,也就是每条集合数据后会跟一
-     * 个lineEnding字符串,如果目标文件不存在, 则会创建目标文件,文件存在清空文件内容,再进行输入
-     * static void    writeLines(File file, String encoding, Collection&lt;?&gt; lines, String lineEnding, boolean append)
-     * 按照encoding编码格式将集合数据写出到文件中,所有的集合数据保存在一行,并且是间隔的,也就是每条集合数据后会跟一
-     * 个lineEnding字符串,如果目标文件不存在, 则会创建目标文件,文件存在且最后一个参数是true,会将内容追加到原内容的后面
-     */
-    @Test
-    public void tesWriteLines4() throws IOException {
-        File file = new File(&quot;F:\\ddd\\a.txt&quot;);
-        ArrayList&lt;String&gt; coll = new ArrayList&lt;&gt;();
-        coll.add(&quot;I love Java&quot;);
-        coll.add(&quot;I love Java&quot;);
-        coll.add(&quot;I love Java&quot;);
-        FileUtils.writeLines(file,&quot;UTF-8&quot;,coll,&quot;I love you&quot;);
-    }
-
-}
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/24/day09-io流/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/24/day09-io流/" itemprop="url">day09-io流</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-24T18:06:55+08:00">
-                2018-07-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="IO流和Properties"><a href="#IO流和Properties" class="headerlink" title="IO流和Properties"></a>IO流和Properties</h1><h2 id="IO流"><a href="#IO流" class="headerlink" title="IO流"></a>IO流</h2><p>IO流是指计算机与外部世界或者一个程序与计算机的其余部分的之间的接口。它对于任何计算机系统都非常关键，因而所有 I/O 的主体实际上是内置在操作系统中的。单独的程序一般是让系统为它们完成大部分的工作。  在 Java 编程中，一直使用流的方式完成 I/O。所有 I/O 都被视为单个的字节的移动，通过一个称为 Stream 的对象一次移动一个字节。流 I/O 用于与外部世界接触。它也在内部使用，用于将对象转换为字节，然后再转换回对象。输入也叫做读取数据，输出也叫做作写出数据。</p>
-<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><ul>
-<li>IO流是设备间的数据的传输.  </li>
-<li>IO流的输入和输出(基于程序的角度,而不是基于文件的角度)</li>
-</ul>
-<h3 id="IO流的分类"><a href="#IO流的分类" class="headerlink" title="IO流的分类"></a>IO流的分类</h3><p>数据流向:</p>
-<ul>
-<li>输入流: 文件到程序</li>
-<li>输出流: 程序到文件</li>
-</ul>
-<p>数据类型(计算机内的数据存储都是以字节的形式存储的):</p>
-<ul>
-<li>字节流: 所有的文件都可以使用字节流操作</li>
-<li>字符流: 在文本文件的读取的时候,我们需要将字节转化为字符.</li>
-</ul>
-<p>几个字节表示一个字符?  不一定.</p>
-<h3 id="基类"><a href="#基类" class="headerlink" title="基类"></a>基类</h3><p>数据流向:</p>
-<ul>
-<li>输入流(InputStream): 将内存中的数据输如入到指定的设备上</li>
-<li>输出流(OutputStream):将设备上的数据输出到设备上</li>
-</ul>
-<p>数据类型:</p>
-<ul>
-<li>字节流: <ol>
-<li>字节输入流(FileInputStream):将内存中的数据输如入到指定的设备上</li>
-<li>字符输出流(FileOutputStream):将设备上的数据输出到设备上</li>
-</ol>
-</li>
-<li>字符流: <ol>
-<li>字符输入流(FileReader)</li>
-<li>字符输出流(FileWriter)</li>
-</ol>
-</li>
-</ul>
-<h3 id="FileOutputStream"><a href="#FileOutputStream" class="headerlink" title="FileOutputStream"></a>FileOutputStream</h3><p>构造方法(如果指定的文件不存在,则创建对象;存在,会清空文件中的数据(除非使用后两个构造方法,字符流同理)):</p>
-<ul>
-<li>public FileOutputStream(File file) ：创建文件输出流以写入由指定的 File对象表示的文件。</li>
-<li>public FileOutputStream(String name) ： 创建文件输出流以指定的名称写入文件(name表示操作文件的路径)。</li>
-<li>FileOutputStream(File file, boolean append) : 创建文件输出流以写入由指定的 File对象表示的文件,boolean类型表示是否追加内容。</li>
-<li>FileOutputStream(String name, boolean append) : 创建文件输出流以指定的名称写入文件,boolean类型表示是否追加内容。  </li>
-</ul>
-<p>常用方法:</p>
-<ul>
-<li>void write(int b) : 将指定的字节写出到文件中(97 -&gt; a)。</li>
-<li>void write(byte[] b) : 将字节数组中的字节写出到文件中。</li>
-<li>void write(byte[] b, int off, int len) : off表示字节数组起始的索引位置,输出len个字节长度到文件中的</li>
-<li>void close() : 关闭此文件输出流并释放与此流相关联的任何系统资源。</li>
-</ul>
-<p>使用步骤:</p>
-<ol>
-<li>创建流</li>
-<li>写入流</li>
-<li><p>关闭流</p>
-<pre><code>public static void main(String[] args) throws Exception {
-    // 使用构造方法创建FileOutputStream对象
-    FileOutputStream fos = new FileOutputStream(&quot;F:\\bbb\\wangzhi.txt&quot;);
-    // FileOutputStream fos2 = new FileOutputStream(new File(&quot;F:\\bbb\\wangzhi.txt&quot;));
-
-    // 调用write方法向文件中输出内容
-    // int字节,查询ASICC表
-    fos.write(97);
-    fos.write(65);
-    fos.write(98);
-    fos.write(66);
-    fos.write(99);
-
-    fos.write(new byte[]{67,100,68});
-
-    fos.close();
-}    
-</code></pre></li>
-</ol>
-<h3 id="FileInputStream"><a href="#FileInputStream" class="headerlink" title="FileInputStream"></a>FileInputStream</h3><p>构造方法(文件必须存在,不存在抛异常):</p>
-<ul>
-<li>FileInputStream(File file) : 通过打开与实际文件的连接创建一个 FileInputStream ，该文件由文件系统中的 File对象 file命名。  </li>
-<li>FileInputStream(String name) : 通过打开与实际文件的连接来创建一个 FileInputStream ，该文件由文件系统中的路径名 name命名。  </li>
-</ul>
-<p>常用方法:</p>
-<ul>
-<li>int read() : 从该输入流读取一个字节的数据。  </li>
-<li>int read(byte[] b) : 从该输入流读取最多 b.length个字节的数据为字节数组(返回的是读取到的字节的个数)。  </li>
-<li><p>void close() : 关闭此文件输入流并释放与流相关联的任何系统资源。</p>
-<pre><code>// 使用字节流复制图片
-public static void main(String[] args) throws IOException {
-
-    FileInputStream fis = new FileInputStream(&quot;D:\\美女.jpg&quot;);
-
-    FileOutputStream fos = new FileOutputStream(&quot;F:\\bbb\\美女.jpg&quot;);
-
-    /*long start = System.currentTimeMillis();
-    byte[] arr = new byte[1024 * 4];
-    int len;
-    while((len = fis.read(arr)) != -1){
-        fos.write(arr,0,len);
-    }
-    long end = System.currentTimeMillis();
-    System.out.println(end - start);*/
-
-    byte[] arr1 = new byte[1024 * 4];
-    int len1;
-    StringBuilder sb = new StringBuilder();
-    while((len1 = fis.read(arr1)) != -1){
-        sb.append(new String(arr1,0,len1));
-    }
-    fos.write(sb.toString().getBytes());
-
-    /*System.out.println(System.currentTimeMillis() - end);*/
-    fos.close();
-    fis.close();
-}
-</code></pre></li>
-</ul>
-<h3 id="字符流"><a href="#字符流" class="headerlink" title="字符流"></a>字符流</h3><p>使用字节流去读中文(一个中文占据3个字节)可能出现乱码.</p>
-<ul>
-<li>Writer: 写数据的流<ol>
-<li>FileWriter</li>
-</ol>
-</li>
-<li>Reader: 读数据的流<ol>
-<li>FileReader</li>
-</ol>
-</li>
-</ul>
-<h3 id="FileReader"><a href="#FileReader" class="headerlink" title="FileReader"></a>FileReader</h3><p>构造方法:</p>
-<ul>
-<li>FileReader(String fileName)<br>创建一个新的 FileReader ，给定要读取的文件的名称。 </li>
-<li>FileReader(File file)<br>创建一个新的 FileReader ，给出 File读取。 </li>
-</ul>
-<p>常用方法:</p>
-<ul>
-<li>int read()<br>读一个字符  </li>
-<li>int read(char[] cbuf)<br>将字符读入数组。 </li>
-<li>void close()<br>关闭流并释放与之相关联的任何系统资源。 </li>
-</ul>
-<h3 id="FileWriter"><a href="#FileWriter" class="headerlink" title="FileWriter"></a>FileWriter</h3><p>构造方法:</p>
-<ul>
-<li>FileWriter(File file)<br>给一个File对象构造一个FileWriter对象。  </li>
-<li>FileWriter(File file, boolean append)<br>给一个File对象构造一个FileWriter对象。 </li>
-<li>FileWriter(String fileName)<br> 构造一个给定文件名的FileWriter对象。  </li>
-<li>FileWriter(String fileName, boolean append)<br> 构造一个FileWriter对象，给出一个带有布尔值的文件名，表示是否附加写入的数据。 </li>
-</ul>
-<p>常用方法:</p>
-<ul>
-<li>void write(char[] cbuf)<br>写入一个字符数组。    </li>
-<li>void write(int c)<br>写一个字符  </li>
-<li>void write(String str)<br>写一个字符串  </li>
-<li>void write(String str, int off, int len)<br>写一个字符串的一部分。</li>
-<li>void flush()<br>刷新流。  </li>
-<li>void close()<br>关闭流，先刷新。  </li>
-</ul>
-<pre><code>// 复制txt文件
-public static void main(String[] args) throws IOException {
-    // 创建字符输入流
-    FileReader fr = new FileReader(&quot;wangzhi.txt&quot;);
-
-    // 创建字符输出流
-    FileWriter fw = new FileWriter(&quot;wangzhi2.txt&quot;);
-
-    // 读取资源
-    char[] arr = new char[1024];
-    int len;
-    StringBuilder sb = new StringBuilder();
-    while((len = fr.read(arr)) != -1){
-        sb.append(arr);
-    }
-    fw.write(sb.toString());
-    // 关闭流
-    fw.close();
-    fr.close();
-}
-</code></pre><h1 id="IO流-高级"><a href="#IO流-高级" class="headerlink" title="IO流(高级)"></a>IO流(高级)</h1><h2 id="释放资源的标准代码"><a href="#释放资源的标准代码" class="headerlink" title="释放资源的标准代码"></a>释放资源的标准代码</h2><p>主要考虑的是在什么时候释放资源比较合适.而且在jdk1.7之前和之后是不同的.</p>
-<pre><code>package com.wzlove.demo;
-
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
-/**
- * 标准的IO格式处理
- *
- * @author WZLOVE
- * @create 2018-07-23 9:54
- */
-public class StandardIO {
-
-    // jdk7之前
-    public static void main(String[] args) {
-
-        // 初始赋值为null
-        FileReader fr = null;
-        FileWriter fw = null;
-</code></pre><p>​<br>            try {<br>                // 创建字符流对象<br>                fr = new FileReader(“student.txt”);<br>                fw = new FileWriter(“student.txt”);</p>
-<pre><code>        // 操作资源(边读编写,耗资源,仅作为示例)
-        int len;
-        while((len = fr.read()) != -1){
-            fw.write((char) len);
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    } finally {
-        try {
-            // 判断输入流是否为null
-            if(fr != null){
-                // 关闭资源
-                fr.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-
-            try {
-                // 判断输入流是否为null
-                if(fw != null) {
-                    // 关闭资源
-                    fw.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-}
-
-// jdk7之后
-
-/**
- * try(创建IO流对象的代码){
- *     其他代码
- * }catch(可能出现的异常){
- *      打印异常信息
- * }
- * 上面的代码会自动调用close方法(也就是IO流对象都实现了Closeable接口(Closeable实现了AutoCloseable接口),
- * 重写close方法).有兴趣的可以查看源码
- */
-public static void main(String[] args) {
-    try (
-            // 创建字符流对象
-            FileReader fr = new FileReader(&quot;student.txt&quot;);
-            FileWriter fw = new FileWriter(&quot;student.txt&quot;);
-            ){
-</code></pre><p>​<br>                    // 操作资源(边读编写,耗资源,仅作为示例)<br>                    int len;<br>                    while((len = fr.read()) != -1){<br>                        fw.write((char) len);<br>                    }</p>
-<pre><code>        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre><h2 id="Properties"><a href="#Properties" class="headerlink" title="Properties"></a>Properties</h2><p>是Map下的一个子类(意味着map有的它都有).该类的key和value的类型都是String类型,<br>开发中Properties使用会结合IO流对文件进行操作,  </p>
-<p>特殊的方法:</p>
-<ul>
-<li>String getProperties(String key): 根据键获取对应的值</li>
-<li>Object setProperties(String key,String value): 给集合中添加键值对映射关系,返回值是被替换的值.</li>
-</ul>
-<p>将Properties对象中的数据进行持久化保存(写数据到文件中):</p>
-<ul>
-<li>void store(OutputStream out, String comments):使用字节流将Properties对象中的内容写入到指定文件,<br>comments的意思是对文件的数据进行说明</li>
-<li>void store(Writer writer, String comments):使用字符流将Properties对象中的内容写入到指定文件,<br>comments的意思是对文件的数据进行说明</li>
-</ul>
-<p>从文件中获取数据到Properties集合中</p>
-<ul>
-<li>void load(InputStream inStream) : 将文件中的内容以字节流的方式写入到Properties的对象中.</li>
-<li>void load(Reader reader) : 将文件中的内容以字符流的方式写入到Properties的对象中.</li>
-</ul>
-<pre><code>public static void main(String[] args) throws IOException {
-
-       // 创建属性集对象
-       Properties p = new Properties();
-       // 添加数据
-       /*p.put(&quot;001&quot;,&quot;迪丽热巴&quot;);
-       p.put(&quot;002&quot;,&quot;郑爽&quot;);
-       p.put(&quot;003&quot;,&quot;杨紫&quot;);*/
-       // 调用方法,写入文件
-       // p.store(new FileWriter(&quot;a.properties&quot;),&quot;测试文件&quot;);
-
-       // p.store(new FileWriter(&quot;a.txt&quot;),&quot;测试文件&quot;);
-       //p.store(new FileOutputStream(&quot;b.properties&quot;),&quot;测试文件&quot;);
-
-       // 调用方法,读取文件
-       /*p.load(new FileReader(&quot;a.properties&quot;));
-       // map的子类,遍历的方法和map一样
-       Set&lt;Map.Entry&lt;Object, Object&gt;&gt; entries = p.entrySet();
-       for (Map.Entry&lt;Object, Object&gt; entry : entries) {
-           System.out.println(entry.getKey() + &quot;=&quot; + entry.getValue());
-       }*/
-
-       p.load(new FileInputStream(&quot;b.properties&quot;));
-       // map的子类,遍历的方法和map一样
-       Set&lt;Map.Entry&lt;Object, Object&gt;&gt; entries = p.entrySet();
-       Iterator&lt;Map.Entry&lt;Object, Object&gt;&gt; iterator = entries.iterator();
-       while(iterator.hasNext()){
-           Map.Entry&lt;Object, Object&gt; map = iterator.next();
-           System.out.println(map.getKey() + &quot;=&quot; + map.getValue());
-
-       }
-</code></pre><p>​<br>        }</p>
-<h2 id="高效流"><a href="#高效流" class="headerlink" title="高效流"></a>高效流</h2><ul>
-<li>高效字节流:<ol>
-<li>高效字节输入流(BufferedInputStream)</li>
-<li>高效字节输出流(BufferedOutStream)</li>
-</ol>
-</li>
-<li>高效字符流:<ol>
-<li>高效字符输入流(BufferedReader)</li>
-<li>高效字符输出流(BufferedWriter)</li>
-</ol>
-</li>
-</ul>
-<h3 id="高效字节流"><a href="#高效字节流" class="headerlink" title="高效字节流"></a>高效字节流</h3><p>构造方法:</p>
-<ul>
-<li>public BufferedInputStream(InputStream in) ：创建一个 新的缓冲输入流。</li>
-<li>public BufferedOutputStream(OutputStream out) ： 创建一个新的缓冲输出流。</li>
-</ul>
-<p>常用方法:<br>方法与普通字节流的方法没有区别.下面用个例子测试一下两个的效率,文件大小是七十几兆</p>
-<pre><code>public static void main(String[] args) throws IOException {
-
-    // bufferedCopy();
-
-    byteCopy();
-}
-
-public static void bufferedCopy() throws IOException {
-
-    long startTime = System.currentTimeMillis();
-
-    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(&quot;F:\\desktop\\Desktop\day09\\day09\\avi\\01-今日内容.itcast&quot;));
-    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(&quot;abc.avi&quot;));
-
-    int len;
-    while((len = bis.read()) != -1){
-        bos.write(len);
-    }
-
-    bos.close();
-    bis.close();
-    System.out.println(System.currentTimeMillis() - startTime); // 3171
-
-}
-
-public static void byteCopy() throws IOException {
-
-    long startTime = System.currentTimeMillis();
-
-    FileInputStream fis = new FileInputStream(&quot;F:\\desktop\\Desktop\\day09\\day09\\avi\\01-今日内容.itcast&quot;);
-    FileOutputStream fos = new FileOutputStream(&quot;bcd.avi&quot;);
-
-    int len;
-    while((len = fis.read()) != -1){
-        fos.write(len);
-    }
-
-    fis.close();
-    fos.close();
-
-    System.out.println(System.currentTimeMillis() - startTime); // 297409
-
-}
-</code></pre><h3 id="字符高效流"><a href="#字符高效流" class="headerlink" title="字符高效流"></a>字符高效流</h3><p>构造方法:</p>
-<ul>
-<li>public BufferedReader(Reader in) ：创建一个 新的缓冲输入流。</li>
-<li>public BufferedWriter(Writer out) ： 创建一个新的缓冲输出流。    </li>
-</ul>
-<p>常用方法(父类有的它都有):</p>
-<ul>
-<li>void newLine() : (高效输出字符流的方法)写出一个换行符,跨平台.</li>
-<li>String readLine() : 读取一行数据(结束标志为null)</li>
-</ul>
-<pre><code>package com.wzlove.buffered;
-
-import java.io.*;
-import java.util.Scanner;
-
-/**
- * 测试高效字符流
- *
- * @author WZLOVE
- * @create 2018-07-23 15:32
- */
-public class Demo1 {
-
-    public static void main(String[] args) throws IOException {
-        BufferedWriter bw = new BufferedWriter(new FileWriter(&quot;c.txt&quot;));
-        Scanner in = new Scanner(System.in);
-        String str;
-        while(true){
-            System.out.println(&quot;请输入您想要的内容:&quot;);
-            str = in.nextLine();
-            if(str.equals(&quot;ends&quot;)){
-                break;
-            }
-            bw.write(str);
-            bw.newLine();
-        }
-        bw.flush();
-        bw.close();
-
-        System.out.println(&quot;您输入的内容是:&quot;);
-        BufferedReader br = new BufferedReader(new FileReader(&quot;c.txt&quot;));
-        String str2;
-        while((str2 = br.readLine()) != null){
-            System.out.println(str2);
-        }
-        br.close();
-    }
-}
-</code></pre><h3 id="转换流-字符流"><a href="#转换流-字符流" class="headerlink" title="转换流(字符流)"></a>转换流(字符流)</h3><ul>
-<li>InputStreamReader<ol>
-<li>构造方法<ol>
-<li>InputStreamReader(InputStream in) : 创建一个使用默认字符集的字符流。</li>
-<li>InputStreamReader(InputStream in, String charsetName) : 创建一个指定字符集的字符流。</li>
-</ol>
-</li>
-<li>常用方法<ol>
-<li>int read() 读一个字符  </li>
-<li>void close() 关闭流并释放与之相关联的任何系统资源。 </li>
-</ol>
-</li>
-</ol>
-</li>
-<li>OutputStreamWriter<ol>
-<li>构造方法<ol>
-<li>OutputStreamWriter(OutputStream in) : 创建一个使用默认字符集的字符流。</li>
-<li>OutputStreamWriter(OutputStream in, String charsetName) : 创建一个指定字符集的字符流。</li>
-</ol>
-</li>
-<li>常用方法:<ol>
-<li>void close()  关闭流，先刷新。  </li>
-<li>void flush()  刷新流。</li>
-<li>void write(int c)  写一个字符</li>
-<li>void write(String str) 写一个字符串  </li>
-</ol>
-</li>
-</ol>
-</li>
-</ul>
-<p>什么时候使用?如果需要以指定的字符集进行数据的读写操作.</p>
-<p>​<br>        package com.wzlove.demo1;</p>
-<pre><code>import java.io.*;
-import java.util.Scanner;
-
-/**
- * 测试转换流
- * @author WZLOVE
- * @create 2018-07-23 18:20
- */
-public class Demo {
-
-    public static void main(String[] args) throws IOException {
-        // 创建高效输出流
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(&quot;d.txt&quot;),&quot;GBK&quot;));
-
-        // 写入数据
-        Scanner in = new Scanner(System.in);
-        while(true){
-            System.out.println(&quot;请输出内容&quot;);
-            String str = in.nextLine();
-            if(str.equals(&quot;ends&quot;)){
-                break;
-            }
-            bw.write(str);
-            bw.newLine();
-        }
-        in.close();
-        // 关闭流
-        bw.flush();
-        bw.close();
-
-        // 创建高效输入流
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(&quot;d.txt&quot;),&quot;GBK&quot;));
-        String str;
-        while((str = br.readLine()) != null){
-            System.out.println(str);
-        }
-        br.close();
-    }
-}
-</code></pre><h2 id="对象操作流-序列化流"><a href="#对象操作流-序列化流" class="headerlink" title="对象操作流(序列化流)"></a>对象操作流(序列化流)</h2><p>每次读取和写出的都是JavaBean对象.</p>
-<ul>
-<li><p>序列化:将对象写入到文件中的过程</p>
-</li>
-<li><p>反序列化:从文件中读取对象到程序的过程</p>
-</li>
-<li><p>transient: 标识瞬态,序列化的时候,该修饰符修饰的成员不能序列化</p>
-</li>
-</ul>
-<h4 id="ObjectOutputStream"><a href="#ObjectOutputStream" class="headerlink" title="ObjectOutputStream"></a>ObjectOutputStream</h4><ul>
-<li>构造方法:<ul>
-<li>public ObjectOutputStream(OutputStream out) ： 创建一个指定OutputStream的ObjectOutputStream。</li>
-</ul>
-</li>
-<li>特有方法:<ul>
-<li>public final void writeObject (Object obj) : 将指定的对象写出。</li>
-</ul>
-</li>
-</ul>
-<h4 id="ObjectInputStream"><a href="#ObjectInputStream" class="headerlink" title="ObjectInputStream"></a>ObjectInputStream</h4><ul>
-<li>构造方法:<ul>
-<li>public ObjectInputStream(InputStream in) ： 创建一个指定InputStream的ObjectInputStream。</li>
-</ul>
-</li>
-<li><p>特有方法:</p>
-<ul>
-<li>public final Object readObject () : 读取一个对象。</li>
-</ul>
-</li>
-<li><p>java.io.EOFException : 数据输出流到了末尾,继续读取会抛出此异常(读到文件的末尾)</p>
-<ul>
-<li>解决方案:使用集合存储要写出的对象,写数据的时候只需要写一个集合对象,下次使用的时候只需要读取了一次就可以.</li>
-</ul>
-</li>
-</ul>
-<p>举个例子:</p>
-<pre><code>package review.serializable;
-
-import lombok.*;
-
-import java.io.Serializable;
-import java.net.ServerSocket;
-
-/**
- * 创建学生类
- * 利用lombok可以使用注解来写get,set等方法,使实体类看起来很简单
- * @author WZLOVE
- * @create 2018-07-25 19:17
- */
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-public class Student implements Serializable {
-
-    private static final long serialVersionUID = -1495868075552053159L;
-    private String name;
-    private int age;
-    private double score;
-
-}
-</code></pre><p>​<br>    package review.serializable;</p>
-<pre><code>import java.io.*;
-import java.util.ArrayList;
-
-/**
- * 测试序列化流
- *
- * @author WZLOVE
- * @create 2018-07-25 19:19
- */
-public class SerializableDemo {
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        // 创建对象输出流
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(&quot;stu1.txt&quot;));
-        // 向文件中输出数据(为了方便读取,所以存入集合,这样的话,读取的时候只用读取一次,查看源码也可以看出,集合也实现了Serializable接口)
-        ArrayList&lt;Student&gt; list = new ArrayList&lt;&gt;();
-        // 向集合中添加数据
-        list.add(new Student(&quot;stu1&quot;,23,100.0));
-        list.add(new Student(&quot;stu2&quot;,23,98.0));
-        list.add(new Student(&quot;stu3&quot;,24,96.0));
-        // 利用对象输入流向文件中写入内容
-        oos.writeObject(list);
-        oos.close();
-
-        // 创建对象输入流
-        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(&quot;stu1.txt&quot;));
-        // 利用对象输入流获取文件内容
-        Object object = ois.readObject();
-        // 强制类型转换,将Object转换为集合
-        ArrayList&lt;Student&gt; arrayList = (ArrayList&lt;Student&gt;)object;
-        // 进行遍历
-        for (int i = 0; i &lt; arrayList.size(); i++) {
-            System.out.println(arrayList.get(i));
-        }
-        // 关闭流
-        ois.close();
-
-    }
-}
-</code></pre><h2 id="打印流-只有输出流"><a href="#打印流-只有输出流" class="headerlink" title="打印流(只有输出流)"></a>打印流(只有输出流)</h2><ul>
-<li>字节打印流(了解)<ul>
-<li>PrintStream:</li>
-</ul>
-</li>
-<li><p>字符打印流(掌握)</p>
-<ul>
-<li><p>PrintWriter</p>
-<ul>
-<li><p>构造方法:</p>
-<ol>
-<li>public PrintStream(String fileName) ： 使用指定的文件名创建一个新的打印流。</li>
-<li>PrintWriter(File file) 使用指定的文件创建一个新的PrintWriter，而不需要自动的线路刷新。</li>
-<li>PrintWriter(OutputStream out) 从现有的OutputStream创建一个新的PrintWriter，而不需要自动线路刷新。</li>
-<li>PrintWriter(Writer out) 创建一个新的PrintWriter，没有自动线冲洗(追加内容考虑参数的变化)。  </li>
-<li>PrintWriter(Writer out, boolean autoFlush)创建一个新的PrintWriter。</li>
-<li>PrintWriter(OutputStream out, boolean autoFlush) 从现有的OutputStream创建一个新的PrintWriter。</li>
-</ol>
-</li>
-<li><p>特有方法(自动换行(实现自动换行,必须使用println方法)和自动刷新(在构造方法中启用并且要使用println()方法)功能):</p>
-<ol>
-<li>void println(Object x) 打印一个对象，然后终止该行。 </li>
-</ol>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>注意:</p>
-<blockquote>
-<ol>
-<li>实现自动换行必须使用PrintWriter中特有的方法println</li>
-<li>实现自动刷新必须满足两个要求,第一个是在构造方法中启用自动刷新,第二个是使用PrintWriter中特有的方法println</li>
-</ol>
-</blockquote>
-</blockquote>
-<p>举个例子:</p>
-<pre><code>package review.print;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-/**
- * 测试打印流的书写
- * 打印流也是用写文件的,简单的是他能实现自动刷新和自动换行,其他的都简单,就不演示了
- * 打印流分为打印字节流和打印字符流
- * @author WZLOVE
- * @create 2018-07-25 19:55
- */
-public class PrintWriteDemo {
-
-    public static void main(String[] args) throws IOException {
-        // 打印流只有输出流
-        // 创建打印字符流对象(一个true表示追加,第二个true代表开启自动刷新)
-        PrintWriter pw = new PrintWriter(new FileWriter(&quot;pw.txt&quot;,true),true);
-        // 利用特有的方法进行输出(无论是自动刷新还是自动换行,都要利用这个特有的方法)
-        pw.println(&quot;qazxswedc,我爱你&quot;);
-        pw.println(&quot;qazxswedc,我爱你&quot;);
-        pw.println(&quot;qazxswedc,我爱你&quot;);
-        // 关闭流
-        pw.close();
-    }
-
-}
-</code></pre><p>回忆学过的IO流:</p>
-<pre><code>字节:
-    InputStream
-        |-- FileInputStream : 输入字节流
-        |-- FilterInputStream (不用管,没学)
-            |-- BufferedInputStream : 高效缓冲输入字节流
-        |-- ObjectInputStream : 对象输入字节流(反序列化流)
-    OutputStream
-        |-- FileOutputStream : 输出字符流
-        |-- FilterOutputStream (不用管,没学)
-            |-- BufferedOutputStream : 高效缓冲输出字节流
-        |-- ObjectOutputStream : 对象输出字节流(序列化流)
-        |-- PrintStream : 打印字节流
-字符:      
-    Reader
-        |-- BufferedReader : 高效缓冲字符输入流(读取字符串的时候使用,注意readLine读取一行数据,但不会读取换行符)
-        |-- InputStreamReader : 转换流,将字节流转化为字符流
-            |-- FileReader : 字符输入流
-    Writer
-        |-- BufferedWriter : 高效缓冲字符输出流(newLine方法是换行)
-        |-- OutputStreamWriter : 转换流,将字符流转化为字节流
-            |-- FileWriter : 字符输出流
-        |-- PrintWriter : 打印字符流(方便使用,自动刷新和自动换行)
-</code></pre><blockquote>
-<p>转换流的使用场景:</p>
-<blockquote>
-<ol>
-<li>读取数据需要指定字符编码集或者就是本身的意义,将字节流转化为字符流</li>
-<li>写出数据需要指定字符编码集,注意字节流和字符流的使用场景</li>
-<li>对于文件的拷贝使用字节流</li>
-<li>文本文件的数据的读取的话,使用字符流</li>
-<li>文本文件的数据的写出的话,字符流和字节流都可以</li>
-</ol>
-</blockquote>
-</blockquote>
-<p>​        </p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day08-file-recursive/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day08-file-recursive/" itemprop="url">day08_file_recursive</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:36:39+08:00">
-                2018-07-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="File类的使用和递归思想"><a href="#File类的使用和递归思想" class="headerlink" title="File类的使用和递归思想"></a>File类的使用和递归思想</h1><h2 id="File类"><a href="#File类" class="headerlink" title="File类"></a>File类</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>文件: 存储数据</p>
-<p>文件夹: 管理文件与文件夹</p>
-<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><ul>
-<li>public File(String pathname) ：通过将给定的路径名字符串转换为抽象路径名来创建新的 File实例。</li>
-<li>public File(String parent, String child) ：从父路径名字符串和子路径名字符串创建新的 File实例。</li>
-<li>public File(File parent, String child) ：从父抽象路径名和子路径名字符串创建新的 File实例。</li>
-</ul>
-<h3 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h3><h4 id="创建方法"><a href="#创建方法" class="headerlink" title="创建方法"></a>创建方法</h4><ul>
-<li>public boolean createNewFile() : 创建文件,存在返回false,不存在创建文件返回true</li>
-<li>boolean mkdir() : 创建文件夹,存在返回false,不存在创建文件夹返回true</li>
-<li>boolean mkdirs() : 创建多级文件夹,存在返回false,不存在创建多级文件夹返回true</li>
-</ul>
-<h4 id="删除方法"><a href="#删除方法" class="headerlink" title="删除方法"></a>删除方法</h4><ul>
-<li>boolean delete() : 删除文件或者文件夹,文件存在返回true,文件不存在返回false;<br>可以删除空的文件夹,如果文件夹下有子文件或者子文件夹,删除不掉</li>
-</ul>
-<h4 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h4><ul>
-<li>public boolean exists() ：此File表示的文件或目录是否实际存在。</li>
-<li>public boolean isDirectory() ：此File表示的是否为目录(文件夹)。</li>
-<li>public boolean isFile() ：此File表示的是否为文件。</li>
-</ul>
-<h4 id="路径问题"><a href="#路径问题" class="headerlink" title="路径问题"></a>路径问题</h4><p>绝对路径 : 以盘符开头<br>相对路径 : 相对于本项目 </p>
-<ul>
-<li>public String getAbsolutePath() ：返回此File的绝对路径名字符串。</li>
-<li>public String getParent() : 获取父路径,在创建对象时制定了父路径才能获取,没有指定返回null(相对路径返回null).</li>
-<li>public String getPath() ：将此File转换为路径名字符串(获取构建时的路径)。</li>
-<li>public String getName() ：返回由此File表示的文件或目录的名称。</li>
-<li>public long length() ：返回由此File表示的文件的长度。</li>
-</ul>
-<h4 id="高级方法"><a href="#高级方法" class="headerlink" title="高级方法"></a>高级方法</h4><ul>
-<li>public String[] list() ：返回一个String数组，表示该File目录中的所有子文件或目录。</li>
-<li>public File[] listFiles() ：返回一个File数组，表示该File目录中的所有的子文件或目录。</li>
-</ul>
-<h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><h3 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h3><p>递归就是方法内部自己调用自己.</p>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
-<li>必须有出口,否则会出现栈内存溢出的错误.</li>
-<li>递归的次数不宜过多.否则容易出现栈内存溢出</li>
-<li>构造方法不能递归</li>
-</ul>
-<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><p>对于递归,可以使用栈来理解,入栈和出栈,对于整个程序的流程,首先,main方法入栈,接着递归方法入栈,方法内调用自己,<br>继续入栈,知道出口进行返回出栈,层层出栈,这个就是底层的原理吧.</p>
-<h3 id="计算n的阶乘"><a href="#计算n的阶乘" class="headerlink" title="计算n的阶乘"></a>计算n的阶乘</h3><pre><code>import java.util.Scanner;
-
-/**
- * 求n阶乘
- *  1.手动输入计算的值
- *  2.创建递归方法进行计算
- * @author WZLOVE
- * @create 2018-07-20 14:34
- */
-public class Demo1 {
-
-    public static void main(String[] args) {
-
-        Scanner in = new Scanner(System.in);
-
-        System.out.println(&quot;请输入您要计算的值是:&quot;);
-        int n = in.nextInt();
-        in.close();
-
-        long result = getRecursive(n);
-
-        System.out.println(&quot;您输入的值的阶乘计算结果为:&quot; + result);
-
-    }
-
-    public static long getRecursive(int n){
-
-        // 定义出口
-        if( n == 1 ){
-            return 1;
-        }
-
-        return n * getRecursive( n - 1 );
-    }
-}
-</code></pre><h3 id="打印多级目录"><a href="#打印多级目录" class="headerlink" title="打印多级目录"></a>打印多级目录</h3><pre><code>package com.wzlove.recursive;
-
-import java.io.File;
-
-/**
- * 遍历多级目录
- *
- * @author WZLOVE
- * @create 2018-07-20 15:11
- */
-public class Demo2 {
-
-    public static void main(String[] args) {
-
-        // 程序的健壮性测试
-        // File file = null;
-       // File file = new File(&quot;E:\\&quot;);
-       // 测试路径
-        File file = new File(&quot;G:\\工作区间\\Intellij IDEA\\JavaSE&quot;);
-        printDirsAndFiles(file);
-    }
-
-    public static void printDirsAndFiles(File file){
-
-        // 程序的健壮性
-        if(file == null || !file.exists()){
-            return ;
-        }
-
-        // 如果是文件,直接输出
-        if(file.isFile()){
-            System.out.println(file.getAbsolutePath());
-        }
-
-
-        // 如果是文件夹,进行遍历递
-        File[] files = file.listFiles();
-        // 如果没有访问权限,直接返回
-        if(files == null){
-            return ;
-        }
-        for (File file1 : files) {
-
-            if(file1.isFile()){
-
-                System.out.println(file1.getAbsolutePath());
-
-            } else {
-
-                System.out.println(file1.getAbsolutePath());
-
-                printDirsAndFiles(file1);
-
-            }
-
-        }
-    }
-}
-</code></pre><h3 id="打印某个目录下的所有-java文件"><a href="#打印某个目录下的所有-java文件" class="headerlink" title="打印某个目录下的所有.java文件"></a>打印某个目录下的所有.java文件</h3><p>两种方法,第一种:</p>
-<pre><code>package com.wzlove.recursive;
-
-import java.io.File;
-
-/**
- * 搜索G:\工作区间\Intellij IDEA\JavaSE 目录中的.java 文件。
- *  1.创建File的对象,传递File的虚拟路径
- *  2.递归方法
- *  3.进行健壮性判断:
- *      * null的判断
- *      * 文件不存在
- *      * 如果路径是文件,这三种情况都是直接返回
- *      * 如果路径合法
- *          (1) 判断有无权限,有继续向下,无直接返回
- *          (2) 返回该文件夹下的所有文件和文件夹
- *          (3) 增强for循环进行遍历
- *              如果是文件,判断是否满足要求(递归的出口)
- *              如果是文件夹,进行递归调用
- *
- * @author WZLOVE
- * @create 2018-07-20 16:27
- */
-public class Demo3 {
-
-    public static void main(String[] args) {
-        File file = new File(&quot;G:\\工作区间\\Intellij IDEA\\JavaSE&quot;);
-        printAllJavaFiles(file);
-    }
-
-    public static void printAllJavaFiles(File file){
-        if(file == null || !file.exists() || file.isFile()){
-            return ;
-        }
-
-        File[] files = file.listFiles();
-        if(files == null){
-            return ;
-        }
-        for (File file1 : files) {
-            if(file1.isFile()){
-                if(file1.getName().endsWith(&quot;.java&quot;)){
-                    System.out.println(file1.getAbsolutePath());
-                }
-            }else{
-                printAllJavaFiles(file1);
-            }
-        }
-    }
-
-}
-</code></pre><p>第二种,要使用到文件过滤器:</p>
-<ul>
-<li><p>File[] listFiles(FileFilter filter) 返回一个抽象路径名数组，表示由此抽象路径名表示的满足指定过滤器的目录中的文件和目录。</p>
-<pre><code>package com.wzlove.recursive;
-
-import java.io.File;
-import java.io.FileFilter;
-
-/**
- *
- * @author WZLOVE
- * @create 2018-07-20 16:27
- */
-public class Demo4 {
-
-    public static void main(String[] args) {
-        File file = new File(&quot;G:\\工作区间\\Intellij IDEA\\传智播客\\JavaSE&quot;);
-        printAllJavaFiles(file);
-    }
-
-    public static void printAllJavaFiles(File file){
-        if(file == null || !file.exists() || file.isFile()){
-            return ;
-        }
-
-        // 使用listFiles(FileFilter)
-        /**
-         * File[] listFiles(FileFilter filter)
-         * 返回一个抽象路径名数组，表示由此抽象路径名表示的满足指定过滤器的目录中的文件和目录。
-         */
-        File[] files = file.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                if(pathname.isFile() &amp;&amp; pathname.getName().endsWith(&quot;.java&quot;)){
-                    // 是以.java文件结尾的文件
-                    return true;
-                }
-                // 如果是文件夹,也进行返回
-                if(pathname.isDirectory()){
-                    return true;
-                }
-                // 其余情况返回false
-                return false;
-            }
-        });
-
-        for (File file1 : files) {
-            if(file1.isFile()){
-                System.out.println(file1.getAbsolutePath());
-            }else{
-                printAllJavaFiles(file1);
-            }
-        }
-
-    }
-
-}
-</code></pre></li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day07-threadpool-lambda/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day07-threadpool-lambda/" itemprop="url">day07_threadpool_lambda</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:36:05+08:00">
-                2018-07-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="线程池和lambda表达式"><a href="#线程池和lambda表达式" class="headerlink" title="线程池和lambda表达式"></a>线程池和lambda表达式</h1><p><strong><em>学习线程池和lambda表达式的理解</em></strong></p>
-<h2 id="补充一个知识点-单例设计模式"><a href="#补充一个知识点-单例设计模式" class="headerlink" title="补充一个知识点(单例设计模式)"></a>补充一个知识点(单例设计模式)</h2><p>在多线程中,我们只需要一个任务类,为了防止创建多个任务类,这个时候就需要用到单例模式,单例模式有两种设计:</p>
-<ol>
-<li>延迟加载(懒汉式)<ul>
-<li>私有构造方法</li>
-<li>创建本类对象,但不初始化</li>
-<li>创建静态方法进行初始化对象并返回</li>
-</ul>
-</li>
-<li>立即加载(饿汉式)<ul>
-<li>私有构造方法</li>
-<li>创建本类的对象并初始化(私有的)</li>
-<li>创建静态方法获取本类对象</li>
-</ul>
-</li>
-</ol>
-<p>下面用代码做个实例:</p>
-<pre><code>package com.wzlove.single;
-
-/**
- * 延迟加载(懒汉式)
- *  1.私有构造方法
- *  2.创建本类对象,但不初始化
- *  3.创建静态方法进行初始化对象并返回
- *
- *  优点:
- *      使用到类的对象才会加载,不消耗内存
- *  缺点:
- *      可能会出现线程安全问题,但是可以使用同步代码块消除这个安全问题
- * @author WZLOVE
- * @create 2018-07-19 10:36
- */
-public class DeplayedSingle {
-
-    // 私有构造方法
-    private DeplayedSingle(){}
-
-    // 创建本类对象,不初始化
-    private  static DeplayedSingle instance ;
-
-    // 静态方法初始化
-    public static DeplayedSingle getInstance(){
-        synchronized (DeplayedSingle.class){
-            if(instance == null){
-                instance = new DeplayedSingle();
-            }
-        }
-        return instance;
-    }
-}
-
-
-
-package com.wzlove.single;
-
-/**
- * 立即加载(饿汉式)
- *  1.私有构造方法
- *  2.创建本类的对象并初始化(私有的)
- *  3.创建静态方法获取本类对象
- *
- *  优点:
- *      保证的线程的安全,没有线程安全问题
- *  缺点:
- *      使用类就会加载,比较消耗内存
- * @author WZLOVE
- * @create 2018-07-19 10:37
- */
-public class ImmediateSingle {
-
-    private ImmediateSingle(){}
-
-    private static ImmediateSingle instance = new ImmediateSingle();
-
-    public static ImmediateSingle getInstance(){
-        return instance;
-    }
-}
-</code></pre><h2 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h2><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>线程池其实就是一个容纳多个线程的容器，其中的线程可以反复使用，省去了频繁创建线程对象的操作，<br>无需反复创建线程而消耗过多资源。作用是节省资源,原理是容器.</p>
-<p>使用线程池的好处是减少在创建和销毁线程上所花的时间以及系统资源的开销,解决资源不足的问题.如果不使用线程池,<br>有可能造成系统创建大量同类线程而导致消耗完内存或者”过度切换”的问题.</p>
-<p>创建线程池:</p>
-<ul>
-<li>public static ExecutorService newFixedThreadPool(int nThreads) ：返回线程池对象。(创建的是有界线<br>程池,也就是池中的线程个数可以指定最大数量)</li>
-<li>public Future&lt;?&gt; submit(Runnable task) :获取线程池中的某一个线程对象，并执行</li>
-<li>Future接口：用来记录线程任务执行完毕后产生的结果。线程池创建与使用。</li>
-</ul>
-<p>步骤:</p>
-<ul>
-<li>使用线程池的工厂类Executors里面提供静态方法newFixedThreadPool生产一个指定线程数量的线程池</li>
-<li>创建一个类,实现Runnable接口,重写run方法,设置线程任务</li>
-<li>调用ExecutorService中的方法submit,传递线程任务(实现类),开启线程(前提是线程池中有线程可用),执行run方法</li>
-<li>调用ExecutorService中的shutdown方法销毁线程池(不建议执行)</li>
-</ul>
-<h2 id="补充线程的创建"><a href="#补充线程的创建" class="headerlink" title="补充线程的创建"></a>补充线程的创建</h2><p>创建线程的第三种方式(这种方式很少见)</p>
-<pre><code>package com.wzlove.executor;
-
-import java.util.ArrayList;
-import java.util.concurrent.Callable;
-
-/**
- * 线程的第三种创建方法
- *  Callable有返回值并且可以抛出异常
- * @author WZLOVE
- * @create 2018-07-18 14:14
- */
-public class CallableImpl implements Callable&lt;String&gt; {
-
-    private static ArrayList&lt;String&gt; arrayList = new ArrayList&lt;&gt;();
-
-    static{
-        arrayList.add(&quot;1&quot;);
-    }
-
-    @Override
-    public String call() throws Exception {
-        return Thread.currentThread().getName();
-    }
-}
-
-
-
-package com.wzlove.executor;
-
-import java.util.concurrent.*;
-
-/**
- * 测试线程的第三中创建方式
- *
- * @author WZLOVE
- * @create 2018-07-18 14:14
- */
-public class Demo {
-
-    public static void main(String[] args) {
-        // 创建实现Callable的实现类对象
-        Callable&lt;String&gt; callable = new CallableImpl();
-        // 创建FutureTask,并传递Callable接口的实现类对象
-        FutureTask task = new FutureTask(callable);
-        // 创建线程池对象
-        // ExecutorService executor = Executors.newSingleThreadExecutor();
-        ExecutorService executor = Executors.newFixedThreadPool(3);
-        executor.submit(callable);
-        // 执行线程
-        executor.execute(task);
-
-        try {
-            System.out.println(task.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-}
-</code></pre><h2 id="Lambda表达式"><a href="#Lambda表达式" class="headerlink" title="Lambda表达式"></a>Lambda表达式</h2><p>lambda体现的是一种函数式编程的思想, 它强调的是做什么，而不是以什么形式做。</p>
-<h3 id="使用前提"><a href="#使用前提" class="headerlink" title="使用前提"></a>使用前提</h3><ul>
-<li>使用Lambda必须具有接口，且要求接口中有且仅有一个抽象方法。无论是JDK内置的Runnable 、Comparator 接口还是自定义的接口，只有当接口中的抽象方法存在且唯一时，才可以使用Lambda。</li>
-<li>使用Lambda必须具有上下文推断。也就是方法的参数或局部变量类型必须为Lambda对应的接口类型，才能使用Lambda作为该接口的实例。</li>
-</ul>
-<blockquote>
-<p>有且仅有一个抽象方法的接口，称为“函数式接口”。</p>
-</blockquote>
-<h3 id="Lambda标准格式"><a href="#Lambda标准格式" class="headerlink" title="Lambda标准格式"></a>Lambda标准格式</h3><p>Lambda省去面向对象的条条框框，格式由3个部分组成：</p>
-<ul>
-<li>一些参数</li>
-<li>一个箭头</li>
-<li>一段代码  </li>
-</ul>
-<p>Lambda表达式的标准格式为：</p>
-<pre><code>(参数类型 参数名称) ‐&gt; { 代码语句 }
-</code></pre><p>格式说明:</p>
-<ul>
-<li>小括号内的语法与传统方法参数列表一致：无参数则留空；多个参数则用逗号分隔。</li>
-<li>-&gt; 是新引入的语法格式，代表指向动作。</li>
-<li>大括号内的语法与传统方法体要求基本一致。</li>
-</ul>
-<h4 id="线程匿名内部类的转化-无参无返回值"><a href="#线程匿名内部类的转化-无参无返回值" class="headerlink" title="线程匿名内部类的转化(无参无返回值)"></a>线程匿名内部类的转化(无参无返回值)</h4><p>实现Runnable接口的匿名内部类的实现:</p>
-<pre><code>public class Demo01Runnable {
-    public static void main(String[] args) {
-        // 匿名内部类
-        Runnable task = new Runnable() {
-            @Override
-            public void run() { // 覆盖重写抽象方法
-                System.out.println(&quot;多线程任务执行！&quot;);
-            }
-        };
-        new Thread(task).start(); // 启动线程
-    }
-}
-</code></pre><blockquote>
-<p>代码分析</p>
-<blockquote>
-<ul>
-<li>Thread 类需要Runnable 接口作为参数，其中的抽象run 方法是用来指定线程任务内容的核心；</li>
-<li>为了指定run 的方法体，不得不需要Runnable 接口的实现类；</li>
-<li>为了省去定义一个RunnableImpl 实现类的麻烦，不得不使用匿名内部类；</li>
-<li>必须覆盖重写抽象run 方法，所以方法名称、方法参数、方法返回值不得不再写一遍，且不能写错；</li>
-<li>而实际上，似乎只有方法体才是关键所在。</li>
-</ul>
-</blockquote>
-</blockquote>
-<p>使用Lambda进行简化:</p>
-<pre><code>public class Demo01Runnable {
-    public static void main(String[] args) {
-         new Thread(()-&gt;System.out.println(&quot;多线程任务执行！&quot;)).start(); // 启动线程
-    }
-}
-</code></pre><h4 id="比较器内部类的转化-有参有返回值"><a href="#比较器内部类的转化-有参有返回值" class="headerlink" title="比较器内部类的转化(有参有返回值)"></a>比较器内部类的转化(有参有返回值)</h4><p>使用比较器举个例子:</p>
-<pre><code>// 创建数组
-Integer[] arr = {1,8,3,4,9,2,5};
-
-// 匿名内部类实现数组升序排序
-Arrays.sort(arr,new Comparator&lt;Integer&gt;(){
-
-    @Override
-    public int compare(Integer o1, Integer o2) {
-        return 0;
-    }
-});
-
-// 使用lambda进行数组的升序排序
-Arrays.sort(arr,( a, b)-&gt;{ return a - b ;});
-</code></pre><h4 id="Lambda表达式的省略规则"><a href="#Lambda表达式的省略规则" class="headerlink" title="Lambda表达式的省略规则"></a>Lambda表达式的省略规则</h4><p>在Lambda标准格式的基础上，使用省略写法的规则为：</p>
-<ol>
-<li>小括号内参数的类型可以省略；</li>
-<li>如果小括号内有且仅有一个参，则小括号可以省略；</li>
-<li>如果大括号内有且仅有一个语句，则无论是否有返回值，都可以省略大括号、return关键字及语句分号。</li>
-</ol>
-<p>虽然有省略写法,但是我感觉这个有点灵活,所以不建议省略,因为代码是给别人看的,省略的话感觉别人看起来会有点费劲.</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/21/day06-thread/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="王智家园">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IT小白进阶">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/WangZhi.github.io/2018/07/21/day06-thread/" itemprop="url">day06_thread</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T08:35:40+08:00">
-                2018-07-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h1><p><strong><em>学习线程相关的笔记,前面写过关于很多线程的使用,有兴趣的可以去了解下</em></strong></p>
-<h2 id="线程-1"><a href="#线程-1" class="headerlink" title="线程"></a>线程</h2><h4 id="概念理解"><a href="#概念理解" class="headerlink" title="概念理解"></a>概念理解</h4><ul>
-<li>并发 : 指两个或多个事件在<strong>同一个时间段内</strong>发生(交替执行)。</li>
-<li>并行 : 指两个或多个事件在<strong>同一时刻</strong>发生（同时发生）。</li>
-<li>进程 : 是指一个内存中运行的应用程序，每个进程都有一个独立的内存空间，一个应用程序可以同时运行多<br>   个进程；进程也是程序的一次执行过程，是系统运行程序的基本单位；系统运行一个程序即是一个进程从创<br>   建、运行到消亡的过程。</li>
-<li>线程 : 进程内部的一个独立执行单元；一个进程可以同时并发的运行多个线程，可以理解为一个进程便相当<br>   于一个单 CPU 操作系统，而线程便是这个系统中运行的多个任务(一个程序至少有一个进程,一个进程可以有多个线程)。<blockquote>
-<p>线程和进程的区别 : </p>
-<blockquote>
-<p>1.进程：有独立的内存空间，进程中的数据存放空间（堆空间和栈空间）是独立的，至少有一个线程。<br>2.线程：堆空间是共享的，栈空间是独立的，线程消耗的资源比进程小的多。</p>
-</blockquote>
-</blockquote>
-</li>
-</ul>
-<h3 id="多线程的原理"><a href="#多线程的原理" class="headerlink" title="多线程的原理"></a>多线程的原理</h3><p><img src="./image/thread.jpg" alt="多线程的原理"></p>
-<p>从图中可以看出,线程的启动实际上是开辟了新的空间,这样的话jvm就可以在U盾讴歌栈之间相互切换,这个就是多线程的原理.</p>
-<h3 id="Runnable接口"><a href="#Runnable接口" class="headerlink" title="Runnable接口"></a>Runnable接口</h3><p>Runnable是多线程的祖宗类,多线程都间接或直接的实现了这个接口.内部只有run方法,所以也可以看出run方法时多线程的核心.</p>
-<h3 id="Thread类"><a href="#Thread类" class="headerlink" title="Thread类"></a>Thread类</h3><p>先了解一下Thread类的内部方法:</p>
-<p>构造方法:</p>
-<ul>
-<li>public Thread() :分配一个新的线程对象。</li>
-<li>public Thread(String name) :分配一个指定名字的新的线程对象。</li>
-<li>public Thread(Runnable target) :分配一个带有指定目标新的线程对象。</li>
-<li>public Thread(Runnable target,String name) :分配一个带有指定目标新的线程对象并指定名字。</li>
-</ul>
-<p>常用方法:</p>
-<ul>
-<li>public String getName() :获取当前线程名称。</li>
-<li>public void start() :导致此线程开始执行; Java虚拟机调用此线程的run方法。</li>
-<li>public void run() :此线程要执行的任务在此处定义代码。</li>
-<li>public static void sleep(long millis) :使当前正在执行的线程以指定的毫秒数暂停（暂时停止执行）。</li>
-<li>public static Thread currentThread() :返回对当前正在执行的线程对象的引用。</li>
-</ul>
-<h4 id="使用Thread来创建线程"><a href="#使用Thread来创建线程" class="headerlink" title="使用Thread来创建线程"></a>使用Thread来创建线程</h4><ol>
-<li>创建Thread类的子类  </li>
-<li>在Thread类的子类中重写run方法,设置线程任务  </li>
-<li>创建Thread类的子类  </li>
-<li>调用Thread类的方法start方法,开启新的线程,执行run方法.(这需要注意,是调用start方法,而不是直接调用run方法)</li>
-</ol>
-<blockquote>
-<p>void start() :导致此线程开始执行; Java虚拟机调用此线程的run方法。结果是两个线程并发执行,当前线程(main)<br>和另一个线程(创建的新线程,执行其run方法),多次启动一个线程是非法的.特别当线程已经结束后,不能重新启动.java程序<br>是抢占式调度,哪个线程优先级高,哪个线程先执行;同一个优先级,随机选择一个.</p>
-</blockquote>
-<h5 id="获取线程名称"><a href="#获取线程名称" class="headerlink" title="获取线程名称"></a>获取线程名称</h5><p>获取线程的名称有两种方法:</p>
-<ul>
-<li>使用getName()获取线程名称,这个需要使用Thread类的子类对象来调用.</li>
-<li>使用Thread.currentThread().getName()获取线程名称(推荐使用)</li>
-</ul>
-<h5 id="设置线程名称"><a href="#设置线程名称" class="headerlink" title="设置线程名称"></a>设置线程名称</h5><p>设置线程的名称也有两种方式:</p>
-<ul>
-<li>使用setName()方法设置线程名称,也是需要Thread类或者子类的对象调用.</li>
-<li>使用构造方法,可以使用有参构造来设置线程名称.</li>
-</ul>
-<h3 id="Runnable接口-1"><a href="#Runnable接口-1" class="headerlink" title="Runnable接口"></a>Runnable接口</h3><ol>
-<li>定义一个类,实现Runnable接口(任务类).</li>
-<li>重写Runnable的run方法</li>
-<li>创建任务类对象</li>
-<li>创建线程类对象,并将任务对象参数作为参数进行传递</li>
-<li>使用线程类对象调用start方法启动线程.<blockquote>
-<p>这个过程中需要注意的是第四步,需要使用public Thread(Runnable target) :分配一个带有指定目标新的线程对象。<br>public Thread(Runnable target,String name) :分配一个带有指定目标新的线程对象并指定名字。这两个构造方法.</p>
-</blockquote>
-</li>
-</ol>
-<h3 id="创建线程的方式"><a href="#创建线程的方式" class="headerlink" title="创建线程的方式"></a>创建线程的方式</h3><ul>
-<li><p>实现Runnable接口</p>
-<pre><code>/**
- * 使用实现Runnable接口实现多线程
- *
- * @author WZLOVE
- * @create 2018-07-16 19:46
- */
-public class MyRunnable implements Runnable{
-
-    @Override
-    public void run() {
-        for (int i = 0; i &lt; 100; i++) {
-            System.out.println(Thread.currentThread().getName() + &quot;:&quot; + i);
-        }
-    }
-}
-</code></pre></li>
-<li><p>继承Thread类</p>
-<pre><code>/**
- * 使用继承实现多线程
- *
- * @author WZLOVE
- * @create 2018-07-16 19:47
- */
-public class MyThread extends Thread{
-
-    public MyThread() {
-    }
-
-    public MyThread(String name) {
-        super(name);
-    }
-
-    @Override
-    public void run() {
-        for (int i = 0; i &lt; 100; i++) {
-            System.out.println(getName() + &quot;:&quot; + i);
-        }
-    }
-}
-</code></pre></li>
-<li><p>不同的方法实现多线程,创建对象使用的方式也不同:</p>
-<pre><code>/**
- * @author WZLOVE
- * @create 2018-07-16 19:45
- */
-public class ThreadDemo {
-
-    public static void main(String[] args) {
-        // 继承创建对象相对简单
-        MyThread mt = new MyThread(&quot;继承&quot;);
-        mt.start();
-
-        // 实现接口创建对象
-        // 创建自定义类对象
-        MyRunnable mr = new MyRunnable();
-        // 创建线程对象
-        Thread thread = new Thread(mr,&quot;实现接口&quot;);
-        thread.start();
-    }
-}
-</code></pre><blockquote>
-<p>注意点:</p>
-<blockquote>
-<p>1.实际上,Thread类也实现了Runnable接口.<br>2.所有的多线程代码都在run方法里面<br>3.所有的多线程代码都是通过运行Thread的start()方法来运行的<br>4.Runnable对象仅仅作为Thread对象的target，Runnable实现类里包含的run()方法仅作为线程执行体。<br> 而实际的线程对象依然是Thread实例，只是该Thread线程负责执行其target的run()方法。</p>
-</blockquote>
-</blockquote>
-</li>
-</ul>
-<h3 id="实现Runnable接口与继承Thread类的不同点"><a href="#实现Runnable接口与继承Thread类的不同点" class="headerlink" title="实现Runnable接口与继承Thread类的不同点"></a>实现Runnable接口与继承Thread类的不同点</h3><p>使用接口比类是更有优势的:</p>
-<ul>
-<li>可以避免java中的单继承的局限性。</li>
-<li>增加程序的健壮性，实现解耦操作，代码可以被多个线程共享，代码和线程独立(任务类和线程类进行分离,解耦)。</li>
-<li>但是实现接口不能直接使用Thread类的方法,但是可以通过获取当前线程对象进行调用方法.</li>
-<li>适合多个相同的程序代码的线程去共享同一个资源。</li>
-<li>线程池只能放入实现Runable或Callable类线程，不能直接放入继承Thread的类。</li>
-</ul>
-<h3 id="线程的安全问题的产生"><a href="#线程的安全问题的产生" class="headerlink" title="线程的安全问题的产生"></a>线程的安全问题的产生</h3><p>线程的安全问题的产生是由于多个线程对共享资源的访问.简单的说线程安全问题都是由全局变量及静态变量引起的。<br>若每个线程中对全局变量、静态变量只有读操作，而无写操作，一般来说，这个全局变量是线程安全的；<br>若有多个线程同时执行写操作，一般都需要考虑线程同步，否则的话就可能影响线程安全。<br>买电影票的例子(出现安全问题,运行一下):</p>
-<pre><code>package com.wzlove.thread.movie;
-
-/**
- * 票数的任务类
- *
- * @author WZLOVE
- * @create 2018-07-17 14:35
- */
-public class TicketRunnableImpl implements Runnable{
-    /**
-     * 定义共享资源
-     */
-    private  int ticket = 100;
-    @Override
-    public void run() {
-        while  (true){
-            if(ticket &gt; 0){
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(Thread.currentThread().getName()+&quot;正在卖第&quot;+  ticket -- + &quot;张票&quot;);
-            }
-
-        }
-    }
-}
-
-
-
-package com.wzlove.thread.movie;
-
-/**
- * 多线程安全问题的测试
- *
- * @author WZLOVE
- * @create 2018-07-17 14:37
- */
-public class MovieDemo {
-
-    public static void main(String[] args) {
-        // 创建任务类对象
-        TicketRunnableImpl ticketRunnable = new TicketRunnableImpl();
-        // 创建线程对象
-        Thread t1 = new Thread(ticketRunnable,&quot;窗口1&quot;);
-        Thread t2 = new Thread(ticketRunnable,&quot;窗口2&quot;);
-        Thread t3 = new Thread(ticketRunnable,&quot;窗口3&quot;);
-        // 开始线程
-        t1.start();
-        t2.start();
-        t3.start();
-    }
-}
-</code></pre><p>上面的情况就会出现线程安全问题.</p>
-<h3 id="线程的安全问题的解决"><a href="#线程的安全问题的解决" class="headerlink" title="线程的安全问题的解决"></a>线程的安全问题的解决</h3><p>使用同步解决线程的安全问题.</p>
-<ul>
-<li>同步代码块</li>
-<li>同步方法</li>
-<li>lock锁机制</li>
-</ul>
-<p>1.同步代码块</p>
-<p>格式 : </p>
-<pre><code>// 同步对象可一是任意对象,推荐使用this
-synchronized(同步对象){
-    可能出现同步问题的代码
-}
-</code></pre><blockquote>
-<p>锁对象可以是任意对象,但是锁对象必须唯一.</p>
-</blockquote>
-<p>2.同步方法</p>
-<p>格式:</p>
-<pre><code>// 同步方法也是有锁对象的,也就是当前对象this
-修饰符 synchronized 返回值类型 方法名(参数列表){
-    可能出现同步问题的代码
-}
-</code></pre><blockquote>
-<p>需要注意的是静态同步方法内的同步锁不是this(因为静态代码的执行在this之前产生),而是类的字节码对象,也就是(类名.class)</p>
-</blockquote>
-<p>3.Lock锁机制</p>
-<ul>
-<li>public void lock() :加同步锁。</li>
-<li>public void unlock() :释放同步锁。</li>
-</ul>
-<p>使用步骤:</p>
-<ol>
-<li>创建ReentrantLock的对象</li>
-<li>在使用共享资源前使用lock方法进行加锁</li>
-<li>在使用共享资源结束后使用unlock方法释放同步锁</li>
-</ol>
-<h3 id="线程状态的概述"><a href="#线程状态的概述" class="headerlink" title="线程状态的概述"></a>线程状态的概述</h3><table><br>    <tr><br>        <th>线程状态</th><br>        <th>导致状态发生条件</th><br>    </tr><br>    <tr><br>        <td>new()新建</td><br>        <td>线程刚被创建，但是并未启动。还没调用start方法。</td><br>    </tr><br>    <tr><br>        <td>Runnable(可运行)</td><br>        <td>线程可以在java虚拟机中运行的状态，可能正在运行自己代码，也可能没有，这取决于操<br>            作系统处理器。</td><br>    </tr><br>    <tr><br>        <td>Blocked(锁阻塞)</td><br>        <td>当一个线程试图获取一个对象锁，而该对象锁被其他的线程持有，则该线程进入Blocked状<br>            态；当该线程持有锁时，该线程将变成Runnable状态。</td><br>    </tr><br>    <tr><br>        <td>Waiting(无限等待)</td><br>        <td>一个线程在等待另一个线程执行一个（唤醒）动作时，该线程进入Waiting状态。进入这个<br>            状态后是不能自动唤醒的，必须等待另一个线程调用notify或者notifyAll方法才能够唤醒。</td><br>    </tr><br>    <tr><br>        <td>Timed Waiting(计时等待)</td><br>        <td>同waiting状态，有几个方法有超时参数，调用他们将进入Timed Waiting状态。这一状态<br>            将一直保持到超时期满或者接收到唤醒通知。带有超时参数的常用方法有Thread.sleep 、<br>            Object.wait。</td><br>    </tr><br>    <tr><br>        <td>Teminated(被终止)</td><br>        <td>因为run方法正常退出而死亡，或者因为没有捕获的异常终止了run方法而死亡。</td><br>    </tr><br></table>
-
-<p>状态图:<br><img src="./image/thread_stata.jpg" alt="状态图"></p>
-<h3 id="等待唤醒机制"><a href="#等待唤醒机制" class="headerlink" title="等待唤醒机制"></a>等待唤醒机制</h3><p>Object类中的四个方法:</p>
-<ul>
-<li>wait() : 使线程处于等待状态,等待着其他的线程唤醒</li>
-<li>wait(long millis) : 使线程处于等待状态, 等待着其他的线程唤醒/等待时间到达</li>
-<li>notify() : 唤醒其他的单个等待的线程</li>
-<li>notifyAll() : 唤醒其他的所有等待的线程</li>
-</ul>
-<h4 id="sleep-与wait"><a href="#sleep-与wait" class="headerlink" title="sleep()与wait()"></a>sleep()与wait()</h4><ul>
-<li>sleep:Thread类中的静态方法,休眠指定的时间,在指定时间后自动唤醒,不回释放锁对象</li>
-<li>wait : Object类中的方法,无限等待,等待其他线程的唤醒,必须释放锁对象</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/WangZhi.github.io/page/2/">2</a><a class="extend next" rel="next" href="/WangZhi.github.io/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/WangZhi.github.io/page/2/">2</a><a class="page-number" href="/WangZhi.github.io/page/3/">3</a><a class="extend next" rel="next" href="/WangZhi.github.io/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -4622,12 +2698,21 @@ synchronized(同步对象){
               
                 <a href="/WangZhi.github.io/archives">
               
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
 
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/WangZhi.github.io/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
             
 
             
@@ -4635,7 +2720,7 @@ synchronized(同步对象){
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">34</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/WangZhi.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/WangZhi.github.io/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/WangZhi.github.io/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/WangZhi.github.io/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/WangZhi.github.io/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/WangZhi.github.io/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,集合," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="集合初次学习集合过程中的学习笔记,学习顶层,使用底层.包括常用的API Collection接口概述 集合 : 集合是Java中提供的一种容器,可以用来存储多个数据.  与数组的区别: 数组的长度是固定的,集合的长度是可变的. 数组只能存储同一种数据类型,集合可以存储任意数据类型. 数组可以存储基本数据类型和引用数据类型,集合只能存储引用数据类型.  集合的继承结构 常用的有:   collect">
+<meta name="keywords" content="java,集合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="集合">
+<meta property="og:url" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/20/Java学习笔记/day02_Collection_fx/index.html">
+<meta property="og:site_name" content="IT小白进阶">
+<meta property="og:description" content="集合初次学习集合过程中的学习笔记,学习顶层,使用底层.包括常用的API Collection接口概述 集合 : 集合是Java中提供的一种容器,可以用来存储多个数据.  与数组的区别: 数组的长度是固定的,集合的长度是可变的. 数组只能存储同一种数据类型,集合可以存储任意数据类型. 数组可以存储基本数据类型和引用数据类型,集合只能存储引用数据类型.  集合的继承结构 常用的有:   collect">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/20/Java学习笔记/day02_Collection_fx/image/collection.png">
+<meta property="og:updated_time" content="2018-07-20T05:31:50.842Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="集合">
+<meta name="twitter:description" content="集合初次学习集合过程中的学习笔记,学习顶层,使用底层.包括常用的API Collection接口概述 集合 : 集合是Java中提供的一种容器,可以用来存储多个数据.  与数组的区别: 数组的长度是固定的,集合的长度是可变的. 数组只能存储同一种数据类型,集合可以存储任意数据类型. 数组可以存储基本数据类型和引用数据类型,集合只能存储引用数据类型.  集合的继承结构 常用的有:   collect">
+<meta name="twitter:image" content="https://misswanglove.github.io/WangZhi.github.io/2018/07/20/Java学习笔记/day02_Collection_fx/image/collection.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/WangZhi.github.io/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://misswanglove.github.io/WangZhi.github.io/2018/07/20/Java学习笔记/day02_Collection_fx/"/>
+
+
+
+
+
+  <title>集合 | IT小白进阶</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/MissWangLove"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/WangZhi.github.io/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IT小白进阶</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/WangZhi.github.io/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/WangZhi.github.io/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/WangZhi.github.io/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/WangZhi.github.io/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/WangZhi.github.io/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-search">
+          <a href="/WangZhi.github.io/search" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/WangZhi.github.io/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-something">
+          <a href="/WangZhi.github.io/something" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            something
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/07/20/Java学习笔记/day02_Collection_fx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">集合</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-20T13:35:19+08:00">
+                2018-07-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h1><p><strong><em>初次学习集合过程中的学习笔记,学习顶层,使用底层.包括常用的API</em></strong></p>
+<h2 id="Collection接口"><a href="#Collection接口" class="headerlink" title="Collection接口"></a>Collection接口</h2><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><ul>
+<li>集合 : 集合是Java中提供的一种容器,可以用来存储多个数据.  <h6 id="与数组的区别"><a href="#与数组的区别" class="headerlink" title="与数组的区别:"></a>与数组的区别:</h6></li>
+<li>数组的长度是固定的,集合的长度是可变的.</li>
+<li>数组只能存储同一种数据类型,集合可以存储任意数据类型.</li>
+<li>数组可以存储基本数据类型和引用数据类型,集合只能存储引用数据类型.</li>
+</ul>
+<h4 id="集合的继承结构"><a href="#集合的继承结构" class="headerlink" title="集合的继承结构"></a>集合的继承结构</h4><p><img src="./image/collection.png" alt="集合的继承结构"></p>
+<p>常用的有:  </p>
+<pre><code>collection  
+    |--List : 有序,可重复,有索引  
+        |--Vector:与线程安全相关  
+        |--ArrayList:数组集合  
+        |--LinkedList:链表集合  
+    |--Set : 无序,不可重复,无索引  
+        |--TreeSet  
+        |--HashSet  
+            |--LinkedHashSet  
+</code></pre><blockquote>
+<p>List特点 : 存储有序(存取顺序一致),有索引,可以存储重复的元素<br>Set特点 : 存储无序(LinkedHashSet除外),没有索引,不可以存储重复的元素</p>
+</blockquote>
+<h4 id="共性方法"><a href="#共性方法" class="headerlink" title="共性方法"></a>共性方法</h4><ul>
+<li>public boolean add(E e) ： 把给定的对象添加到当前集合中,可以添加给定对象以及给定对象的子类。</li>
+<li>public void clear() :清空集合中所有的元素。</li>
+<li>public boolean remove(Object o) : 把给定的对象在当前集合中删除。对象不存在,返回false.</li>
+<li>public boolean contains(Object o) : 判断当前集合中是否包含给定的对象。</li>
+<li>public boolean isEmpty() : 判断当前集合是否为空。</li>
+<li>public int size() : 返回集合中元素的个数。</li>
+<li>public Object[] toArray() : 把集合中的元素，存储到数组中。</li>
+</ul>
+<h2 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h2><p>迭代器用来遍历集合,使用下面的方法来创建迭代器:</p>
+<ul>
+<li>Iterator<e> iterator() 返回此集合中元素的迭代器。</e></li>
+</ul>
+<p>迭代器中常用方法:</p>
+<ul>
+<li>boolean hasNext() 如果迭代具有更多元素，则返回 true 。  </li>
+<li>E next() 返回迭代中的下一个元素。 </li>
+</ul>
+<p>如何遍历集合? 如下:</p>
+<pre><code> // 创建集合
+ArrayList&lt;Student&gt; stuList = new ArrayList&lt;&gt;();
+// 创建学生对象
+Student stu1 = new Student(&quot;赵丽颖&quot;,23);
+stuList.add(stu1);
+stuList.add(new Student(&quot;郑爽&quot;,22));
+stuList.add(new Student(&quot;杨幂&quot;,34));
+stuList.add(new Student(&quot;迪丽热巴&quot;,22));
+// 使用迭代器进行遍历
+Iterator&lt;Student&gt; iterator = stuList.iterator();
+while(iterator.hasNext()){
+    System.out.println(iterator.next());
+}
+System.out.println(&quot;=======================&quot;);
+// 使用增强for循环的遍历
+for (Student student : stuList) {
+    System.out.println(student);
+}
+System.out.println(&quot;=======================&quot;);
+// 使用数组进行遍历,注意的是只能用Object数组进行接收
+Object[] objs = stuList.toArray();
+for (int i = 0; i &lt; objs.length; i++) {
+    System.out.println(objs[i]);
+}
+</code></pre><h2 id="增强for循环"><a href="#增强for循环" class="headerlink" title="增强for循环"></a>增强for循环</h2><p>增强for循环(也称for each循环)是JDK1.5以后出来的一个高级for循环，遍历集合内部原理其实是个Iterator迭代器，所以它只进行遍历元素，不要在遍历的过程中对集合元素进行增删操作。遍历数组内部原理其实是个普通for循环.<br>就是上面的第二种方式</p>
+<blockquote>
+<p>新for循环必须有被遍历的目标。目标只能是Collection或者是数组。新式for仅仅作为遍历操作出现。</p>
+</blockquote>
+<h2 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h2><h4 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h4><p>广泛的数据类型,将数据类型的确认推迟到使用的时候.<br>泛型只能是引用数据类型.</p>
+<h4 id="泛型类的定义"><a href="#泛型类的定义" class="headerlink" title="泛型类的定义"></a>泛型类的定义</h4><p>在定义类的时候,在类名后加上<e>,例如:</e></p>
+<pre><code>class A&lt;E&gt;{
+}
+</code></pre><p>泛型类在创建对象的时候确定类型.</p>
+<h4 id="定义含有泛型的方法"><a href="#定义含有泛型的方法" class="headerlink" title="定义含有泛型的方法"></a>定义含有泛型的方法</h4><p>格式如下:<br>修饰符 &lt;泛型&gt; 返回值 方法名(泛型参数列表){}<br>例子:</p>
+<pre><code>public &lt;E&gt; void method1(E e){
+    System.out.println(e);
+}
+</code></pre><p>使用的时候创建对象,调用方法,可以传入各种数据类型.</p>
+<h4 id="定义泛型的接口"><a href="#定义泛型的接口" class="headerlink" title="定义泛型的接口"></a>定义泛型的接口</h4><p>格式如下:<br>interface 接口名<i>{}</i></p>
+<p>泛型接口的子实现类有两种方式:  </p>
+<ul>
+<li>带泛型的 : class 类名<i> implements 接口名<i>{}</i></i></li>
+<li>不带泛型的 : class 类名 implements 接口名<string>{}</string></li>
+</ul>
+<blockquote>
+<p>也就是说实现的子接口可以确定泛型的类型,也可以不确定,继续使用泛型,这就是两种方式.</p>
+</blockquote>
+<h4 id="泛型通配符"><a href="#泛型通配符" class="headerlink" title="泛型通配符"></a>泛型通配符</h4><p>当使用泛型类或者接口时，传递的数据中，泛型类型不确定，可以通过通配符&lt;?&gt;表示。但是一旦使用泛型的通配符后，只能使用Object类中的共性方法，集合中元素自身方法无法使用.<br><strong>不知道使用什么类型来接收的时候,此时可以使用?,?表示未知通配符。</strong><br>例子:</p>
+<pre><code>public static void main(String[] args) {
+    Collection&lt;Intger&gt; list1 = new ArrayList&lt;Integer&gt;();
+    getElement(list1);
+    Collection&lt;String&gt; list2 = new ArrayList&lt;String&gt;();
+    getElement(list2);
+}
+public static void getElement(Collection&lt;?&gt; coll){}
+//？代表可以接收任意类型
+</code></pre><p>高级用法:  </p>
+<ul>
+<li>泛型的上限：<br>  格式： 类型名称 &lt;? extends 类 &gt; 对象名称<br>  意义： 只能接收该类型及其子类  </li>
+<li>泛型的下限：<br>  格式： 类型名称 &lt;? super 类 &gt; 对象名称<br>  意义： 只能接收该类型及其父类型<br>举个例子:  </li>
+</ul>
+<pre><code>public static void main(String[] args) {
+    Collection&lt;Integer&gt; list1 = new ArrayList&lt;Integer&gt;();
+    Collection&lt;String&gt; list2 = new ArrayList&lt;String&gt;();
+    Collection&lt;Number&gt; list3 = new ArrayList&lt;Number&gt;();
+    Collection&lt;Object&gt; list4 = new ArrayList&lt;Object&gt;();
+
+    getElement1(list1);
+    getElement1(list2);//报错
+    getElement1(list3);
+    getElement1(list4);//报错
+
+    getElement2(list1);//报错
+    getElement2(list2);//报错
+    getElement2(list3);
+    getElement2(list4);
+}
+// 泛型的上限：此时的泛型?，必须是Number类型或者Number类型的子类
+// Integer extends Number extends Object
+// String extends Object
+public static void getElement1(Collection&lt;? extends Number&gt; coll){}
+// 泛型的下限：此时的泛型?，必须是Number类型或者Number类型的父类
+public static void getElement2(Collection&lt;? super Number&gt; coll){}
+</code></pre><p>来个更明显的例子,四个类,如下:</p>
+<pre><code>public class People {
+
+    /**
+     * 姓名
+     */
+    private String name;
+
+    /**
+     * 年龄
+     */
+    private int age;
+
+    public People(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public People() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return &quot;Student{&quot; +
+                &quot;name=&apos;&quot; + name + &apos;\&apos;&apos; +
+                &quot;, age=&quot; + age +
+                &apos;}&apos;;
+    }
+}
+
+
+
+public class Student extends People{
+
+    public Student(String name, int age) {
+        super(name, age);
+    }
+
+    public Student() {
+    }
+}
+
+public class BasicStudent extends Student{
+
+    public BasicStudent(String name, int age) {
+        super(name, age);
+    }
+
+    public BasicStudent() {
+    }
+}
+
+public class DemoTest2 {
+
+    public static void main(String[] args) {
+        ArrayList&lt;People&gt; arrList1 = new ArrayList&lt;&gt;();
+
+        //  boolean add(E e)  确保此集合包含指定的元素（可选操作）。
+        // 说明add方法可以添加指定对象以及指定对象的子类
+        arrList1.add(new Student(&quot;迪丽热巴&quot;,22));
+        arrList1.add(new BasicStudent(&quot;邓伦&quot;,23));
+
+        ArrayList&lt;Student&gt; arrList2 = new ArrayList&lt;&gt;();
+        ArrayList&lt;BasicStudent&gt; arrList3 = new ArrayList&lt;&gt;();
+        ArrayList&lt;People&gt; arrList4 = new ArrayList&lt;&gt;();
+
+        //  boolean addAll(Collection&lt;? extends E&gt; c) 将指定集合中的所有元素添加到此集合（可选操作）。
+        // 测试addAll方法
+        arrList2.add(new Student(&quot;迪丽热巴&quot;,22));
+        arrList2.add(new Student(&quot;邓伦&quot;,23));
+
+        arrList3.add(new BasicStudent(&quot;杨幂&quot;,34));
+        arrList3.add(new BasicStudent(&quot;郑恺威&quot;,35));
+
+        arrList4.add(new People(&quot;杨洋&quot;,24));
+        arrList4.add(new People(&quot;郑爽&quot;,23));
+
+        // 可以添加成功
+        arrList2.addAll(arrList3);
+        // 报错,添加失败,原因是addAll方法的参数中通配符有上界的限制,只能添加该类以及该类的子类,不能添加父类等其他类
+        // arrList2.addAll(arrList4);
+
+        System.out.println(arrList2);
+
+
+    }
+}
+</code></pre><p>最后再来个小案例,案例要求如下:<br>按照斗地主的规则，完成洗牌发牌的动作。 具体规则：<br>使用54张牌打乱顺序,三个玩家参与游戏，三人交替摸牌，每人17张牌，最后三张留作底牌。</p>
+<pre><code>/**
+ * 斗地主的测试类
+ *  1.买牌
+ *  2.洗牌
+ *  3.发牌
+ *  4.看牌
+ *
+ * @author WZLOVE
+ * @create 2018-07-11 17:36
+ */
+public class DDZDemoTest {
+
+    public static void main(String[] args) {
+
+        // 买牌
+        ArrayList&lt;String&gt; poker = new ArrayList&lt;&gt;();
+
+        String[] arr1 = {&quot;♠&quot;,&quot;♥&quot;,&quot;♣&quot;,&quot;♦&quot;};
+        String[] arr2 = {&quot;2&quot;,&quot;A&quot;,&quot;K&quot;,&quot;Q&quot;,&quot;J&quot;,&quot;10&quot;,&quot;9&quot;,&quot;8&quot;,&quot;7&quot;,&quot;6&quot;,&quot;5&quot;,&quot;4&quot;,&quot;3&quot;};
+        for (String s : arr1) {
+            for (String s1 : arr2) {
+                poker.add(s + s1);
+            }
+        }
+        poker.add(&quot;大王&quot;);
+        poker.add(&quot;小王&quot;);
+        System.out.println(poker.size());
+
+        // 洗牌
+        Collections.shuffle(poker);
+
+        // 发牌
+        ArrayList&lt;String&gt; people1 = new ArrayList&lt;&gt;();
+        ArrayList&lt;String&gt; people2 = new ArrayList&lt;&gt;();
+        ArrayList&lt;String&gt; people3 = new ArrayList&lt;&gt;();
+        ArrayList&lt;String&gt; dipai = new ArrayList&lt;&gt;();
+
+        // 自己的思路
+        /*for (int i = 0; i &lt; poker.size();) {
+            if(i &gt;= 51){
+                dipai.add(poker.get(i++));
+            } else{
+                people1.add(poker.get(i++));
+                people2.add(poker.get(i++));
+                people3.add(poker.get(i++));
+            }
+        }*/
+
+
+         // 老师的思路
+        for (int i = 0; i &lt; poker.size();i++) {
+            if(i &gt;= 51){
+                dipai.add(poker.get(i));
+            } else if(i % 3 == 0) {
+                people1.add(poker.get(i));
+            }else if(i % 3 == 1) {
+                people2.add(poker.get(i));
+            }else if(i % 3 == 2){
+                people3.add(poker.get(i));
+            }
+        }
+        // 看牌
+        System.out.println(people1);
+        System.out.println(people2);
+        System.out.println(people3);
+        System.out.println(dipai);
+
+    }
+}
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/WangZhi.github.io/tags/java/" rel="tag"># java</a>
+          
+            <a href="/WangZhi.github.io/tags/集合/" rel="tag"># 集合</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/07/20/Java学习笔记/day01_Object_API/" rel="next" title="Object类和常用的API">
+                <i class="fa fa-chevron-left"></i> Object类和常用的API
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/07/20/Java学习笔记/day03_List_Set_DataType/" rel="prev" title="List、Set、数据结构、Collections">
+                List、Set、数据结构、Collections <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王智家园</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/WangZhi.github.io/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/WangZhi.github.io/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#集合"><span class="nav-number">1.</span> <span class="nav-text">集合</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Collection接口"><span class="nav-number">1.1.</span> <span class="nav-text">Collection接口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#概述"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#与数组的区别"><span class="nav-number">1.1.0.1.0.1.</span> <span class="nav-text">与数组的区别:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集合的继承结构"><span class="nav-number">1.1.0.2.</span> <span class="nav-text">集合的继承结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#共性方法"><span class="nav-number">1.1.0.3.</span> <span class="nav-text">共性方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器"><span class="nav-number">1.2.</span> <span class="nav-text">迭代器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增强for循环"><span class="nav-number">1.3.</span> <span class="nav-text">增强for循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#泛型"><span class="nav-number">1.4.</span> <span class="nav-text">泛型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#概念"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#泛型类的定义"><span class="nav-number">1.4.0.2.</span> <span class="nav-text">泛型类的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义含有泛型的方法"><span class="nav-number">1.4.0.3.</span> <span class="nav-text">定义含有泛型的方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义泛型的接口"><span class="nav-number">1.4.0.4.</span> <span class="nav-text">定义泛型的接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#泛型通配符"><span class="nav-number">1.4.0.5.</span> <span class="nav-text">泛型通配符</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王智家园</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/WangZhi.github.io/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>

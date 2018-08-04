@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/WangZhi.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/WangZhi.github.io/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/WangZhi.github.io/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/WangZhi.github.io/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/WangZhi.github.io/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/WangZhi.github.io/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,异常汇总," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="异常相关的总结异常的层次结构 Throwable是Java中最顶级的异常类，继承Object，实现序列化接口，有两个重要的子类：Exception和Error，二者都是Java异常处理的重要子类，各自包含了大量子类。 Exception与ErrorError是系统级的错误，是Java运行环境内部错误或者硬件错误问题，不能指望依靠程序类处理这样的问题，除了退出程序外，别无选择，是由JVM抛出的。 E">
+<meta name="keywords" content="Java,异常汇总">
+<meta property="og:type" content="article">
+<meta property="og:title" content="直面Java02-异常汇总">
+<meta property="og:url" content="https://misswanglove.github.io/WangZhi.github.io/2018/08/02/直面Java/直面Java02-异常汇总/index.html">
+<meta property="og:site_name" content="IT小白进阶">
+<meta property="og:description" content="异常相关的总结异常的层次结构 Throwable是Java中最顶级的异常类，继承Object，实现序列化接口，有两个重要的子类：Exception和Error，二者都是Java异常处理的重要子类，各自包含了大量子类。 Exception与ErrorError是系统级的错误，是Java运行环境内部错误或者硬件错误问题，不能指望依靠程序类处理这样的问题，除了退出程序外，别无选择，是由JVM抛出的。 E">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="f:/desktop/Desktop/markdown/Java/直面Java/image/throwale.jpg">
+<meta property="og:updated_time" content="2018-08-04T12:41:53.040Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="直面Java02-异常汇总">
+<meta name="twitter:description" content="异常相关的总结异常的层次结构 Throwable是Java中最顶级的异常类，继承Object，实现序列化接口，有两个重要的子类：Exception和Error，二者都是Java异常处理的重要子类，各自包含了大量子类。 Exception与ErrorError是系统级的错误，是Java运行环境内部错误或者硬件错误问题，不能指望依靠程序类处理这样的问题，除了退出程序外，别无选择，是由JVM抛出的。 E">
+<meta name="twitter:image" content="f:/desktop/Desktop/markdown/Java/直面Java/image/throwale.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/WangZhi.github.io/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://misswanglove.github.io/WangZhi.github.io/2018/08/02/直面Java/直面Java02-异常汇总/"/>
+
+
+
+
+
+  <title>直面Java02-异常汇总 | IT小白进阶</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/MissWangLove"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/WangZhi.github.io/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IT小白进阶</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/WangZhi.github.io/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/WangZhi.github.io/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/WangZhi.github.io/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/WangZhi.github.io/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/WangZhi.github.io/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-search">
+          <a href="/WangZhi.github.io/search" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/WangZhi.github.io/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-something">
+          <a href="/WangZhi.github.io/something" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            something
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://misswanglove.github.io/WangZhi.github.io/WangZhi.github.io/2018/08/02/直面Java/直面Java02-异常汇总/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王智家园">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/WangZhi.github.io/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IT小白进阶">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">直面Java02-异常汇总</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-02T16:40:51+08:00">
+                2018-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/WangZhi.github.io/categories/直面Java/" itemprop="url" rel="index">
+                    <span itemprop="name">直面Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="异常相关的总结"><a href="#异常相关的总结" class="headerlink" title="异常相关的总结"></a>异常相关的总结</h2><h3 id="异常的层次结构"><a href="#异常的层次结构" class="headerlink" title="异常的层次结构"></a>异常的层次结构</h3><p><img src="F:\desktop\Desktop\markdown\Java\直面Java\image\throwale.jpg" alt="throwale"></p>
+<p>Throwable是Java中最顶级的异常类，继承Object，实现序列化接口，有两个重要的子类：Exception和Error，二者都是Java异常处理的重要子类，各自包含了大量子类。</p>
+<h5 id="Exception与Error"><a href="#Exception与Error" class="headerlink" title="Exception与Error"></a>Exception与Error</h5><p>Error是系统级的错误，是Java运行环境内部错误或者硬件错误问题，不能指望依靠程序类处理这样的问题，除了退出程序外，别无选择，是由JVM抛出的。</p>
+<p>Exception表示程序需要捕捉、需要处理的异常，是由于程序设计不完善而出现的问题，程序必须处理的问题。</p>
+<p>二者都是继承Throwable类，在java中只有Throwable类的实例才能被抛出（throw）或者捕获（catch），他是异常机制的基本组成类型。 </p>
+<h5 id="Exception的分类"><a href="#Exception的分类" class="headerlink" title="Exception的分类"></a>Exception的分类</h5><p>Exception分为两类，一类是受检异常（编译期异常），一类是非受检异常（运行时异常）。</p>
+<p>受检异常是一个方法在生命过程中抛出受检异常，那么在调用这个方法的时候就要对抛出的受检异常进行处理（继续上抛或者捕获处理），否则无法编译通过，这个是一种规范。这种异常在IO操作中是比较多的，比方说FileNotFoundException，意思是文件可能不存在，不存在的话就会抛出异常。当希望方法的调用者明确处理一些特殊情况的时候，就应该使用受检异常。</p>
+<p>非受检异常继承自RuntimeException。这种异常不需要显示的进行捕获，在运行期间一旦出现异常就会中断程序的运行。这种异常一般是代码原因导致，比如说空指针异常、数组越界、by/zero等等，都是可以避免的。</p>
+<h5 id="处理受检异常"><a href="#处理受检异常" class="headerlink" title="处理受检异常"></a>处理受检异常</h5><p>使用throw制造异常（应该不算是处理异常）。</p>
+<p>使用throws抛出异常。</p>
+<p>使用try{}catch(){}finally}{}捕获异常。</p>
+<p>总的来说，处理异常只有两种方式，抛出和捕获。</p>
+<h5 id="捕获异常之后应该做什么？"><a href="#捕获异常之后应该做什么？" class="headerlink" title="捕获异常之后应该做什么？"></a>捕获异常之后应该做什么？</h5><p>常见的处理方法：记录日志、封装异常重新抛出、忽略、正常返回。最不可取的处理方法是忽略，最好的是伴随日志记录，把异常信息记录下来。</p>
+<h5 id="异常处理的关键字"><a href="#异常处理的关键字" class="headerlink" title="异常处理的关键字"></a>异常处理的关键字</h5><p>throws、throw、try、catch、finally是异常处理的关键字。</p>
+<p>try是指定一块预防所有异常的程序。catch子句是紧跟try块后面，用来制定你想要捕获的异常类型。finally是为了确保一段代码不管发生什么异常状况都要执行。throw语句是用来明确地抛出一个异常。throws是用来声明一个方法可能抛出的各种异常。</p>
+<h5 id="finally语句与return"><a href="#finally语句与return" class="headerlink" title="finally语句与return"></a>finally语句与return</h5><p>finally语句被执行的前提条件是对应try语句块被执行并程序正常运行，正常运行的意思是JVM没有退出或者线程没有被killed、interrupted。</p>
+<p>try-catch-finally与return语句的关系。try与catch语句块中有语句：return a + b; 则finally语句块会在a + b之后执行，return 之前执行，也就是<strong>返回前，操作后</strong>执行。</p>
+<p>如果finally 中有 return ，那将结果直接返回，在 try 或 catch 中也有 return a，会将 a 的值压栈，再弹出保存到变量表,最终返回新生成的 a 值。 因此在 finally 中操作原来的 a 值对结果没有影响，如果 a 是引用就有影响。 简单说finally中操作的变量不会影响try中的数据，但是不要操作引用数据类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(method()); // 返回的值是0</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static  int method()&#123;</span><br><span class="line">        int a = 10;</span><br><span class="line">        int b = 10;</span><br><span class="line">        try &#123;</span><br><span class="line">            return a + b;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h5 id="finally语句一定会执行？"><a href="#finally语句一定会执行？" class="headerlink" title="finally语句一定会执行？"></a>finally语句一定会执行？</h5><p>不一定，前面说过finally会执行的两个前提条件，必须满足才可以执行。比方说在try或者catch块中使用System.exit(0)语句是的JVM中断，这个时候finally语句就不会被执行。</p>
+<h5 id="异常链的介绍"><a href="#异常链的介绍" class="headerlink" title="异常链的介绍"></a>异常链的介绍</h5><p>“异常链”是Java中非常流行的异常处理概念，是指在进行一个异常处理时抛出了另外一个异常，由此产生了一个异常链条。该技术大多用于将“ 受检查异常” （ checked exception）封装成为“非受检查异常”（unchecked exception)或者RuntimeException。顺便说一下，如果因为异常你决定抛出一个新的异常，你一定要包含原有的异常，这样，处理程序才可以通过getCause()和initCause()方法来访问异常最终的根源。 </p>
+<h5 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h5><p>自定义异常就是开发人员自己定义的异常，一般通过继承Exception的子类的方式实现。  编写自定义异常类实际上是继承一个API标准异常类，用新定义的异常处理信息覆盖原有信息的过程。  这种用法在Web开发中也比较常见，一般可以用来自定义也无异常。如余额不足、重复提交等。这种自定义异常有业务含义，更容易让上层理解和处理。 </p>
+<h5 id="try-with-resources"><a href="#try-with-resources" class="headerlink" title="try-with-resources"></a>try-with-resources</h5><p>这个是Java7中新出的，下面比较一下JDK7之前和之后的异常捕获，以IO流来举例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line">package com.wzlove.demo;</span><br><span class="line"></span><br><span class="line">import java.io.FileReader;</span><br><span class="line">import java.io.FileWriter;</span><br><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 标准的IO格式处理</span><br><span class="line"> *</span><br><span class="line"> * @author WZLOVE</span><br><span class="line"> * @create 2018-07-23 9:54</span><br><span class="line"> */</span><br><span class="line">public class StandardIO &#123;</span><br><span class="line"></span><br><span class="line">    // jdk7之前</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        // 初始赋值为null</span><br><span class="line">        FileReader fr = null;</span><br><span class="line">        FileWriter fw = null;</span><br><span class="line">          try &#123;</span><br><span class="line">            // 创建字符流对象</span><br><span class="line">            fr = new FileReader(&quot;student.txt&quot;);</span><br><span class="line">            fw = new FileWriter(&quot;student.txt&quot;);</span><br><span class="line"></span><br><span class="line">            // 操作资源(边读编写,耗资源,仅作为示例)</span><br><span class="line">            int len;</span><br><span class="line">            while((len = fr.read()) != -1)&#123;</span><br><span class="line">                fw.write((char) len);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                // 判断输入流是否为null</span><br><span class="line">                if(fr != null)&#123;</span><br><span class="line">                    // 关闭资源</span><br><span class="line">                    fr.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; catch (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; finally &#123;</span><br><span class="line"></span><br><span class="line">                try &#123;</span><br><span class="line">                    // 判断输入流是否为null</span><br><span class="line">                    if(fw != null) &#123;</span><br><span class="line">                        // 关闭资源</span><br><span class="line">                        fw.close();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // jdk7之后</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * try(创建IO流对象的代码)&#123;</span><br><span class="line">     *     其他代码</span><br><span class="line">     * &#125;catch(可能出现的异常)&#123;</span><br><span class="line">     *      打印异常信息</span><br><span class="line">     * &#125;</span><br><span class="line">     * 上面的代码会自动调用close方法(也就是IO流对象都实现了Closeable接口(Closeable实现了AutoCloseable接口),</span><br><span class="line">     * 重写close方法).有兴趣的可以查看源码</span><br><span class="line">     */</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        try (</span><br><span class="line">                // 创建字符流对象</span><br><span class="line">                FileReader fr = new FileReader(&quot;student.txt&quot;);</span><br><span class="line">                FileWriter fw = new FileWriter(&quot;student.txt&quot;);</span><br><span class="line">                )&#123;</span><br><span class="line">                         // 操作资源(边读编写,耗资源,仅作为示例)</span><br><span class="line">                int len;</span><br><span class="line">                while((len = fr.read()) != -1)&#123;</span><br><span class="line">                    fw.write((char) len);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>JDK7之后更新的优化还有Multi-Catch Exceptions、Rethrowing Exceptions、Suppressed Exceptions（<a href="http://www.oracle.com/technetwork/articles/java/java7exceptions-486908.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/articles/java/java7exceptions-486908.html</a>） </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/WangZhi.github.io/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/WangZhi.github.io/tags/异常汇总/" rel="tag"># 异常汇总</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/08/02/直面Java/直面Java01-AIO-NIO-BIO/" rel="next" title="直面Java01-AIO-NIO-BIO">
+                <i class="fa fa-chevron-left"></i> 直面Java01-AIO-NIO-BIO
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/WangZhi.github.io/2018/08/04/成神之路/01-Java中的内存结构/" rel="prev" title="01 Java中的内存结构">
+                01 Java中的内存结构 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">王智家园</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/WangZhi.github.io/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/WangZhi.github.io/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#异常相关的总结"><span class="nav-number">1.</span> <span class="nav-text">异常相关的总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#异常的层次结构"><span class="nav-number">1.1.</span> <span class="nav-text">异常的层次结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Exception与Error"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">Exception与Error</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Exception的分类"><span class="nav-number">1.1.0.2.</span> <span class="nav-text">Exception的分类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#处理受检异常"><span class="nav-number">1.1.0.3.</span> <span class="nav-text">处理受检异常</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#捕获异常之后应该做什么？"><span class="nav-number">1.1.0.4.</span> <span class="nav-text">捕获异常之后应该做什么？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#异常处理的关键字"><span class="nav-number">1.1.0.5.</span> <span class="nav-text">异常处理的关键字</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#finally语句与return"><span class="nav-number">1.1.0.6.</span> <span class="nav-text">finally语句与return</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#finally语句一定会执行？"><span class="nav-number">1.1.0.7.</span> <span class="nav-text">finally语句一定会执行？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#异常链的介绍"><span class="nav-number">1.1.0.8.</span> <span class="nav-text">异常链的介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自定义异常"><span class="nav-number">1.1.0.9.</span> <span class="nav-text">自定义异常</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#try-with-resources"><span class="nav-number">1.1.0.10.</span> <span class="nav-text">try-with-resources</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王智家园</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/WangZhi.github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/WangZhi.github.io/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/WangZhi.github.io/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>
